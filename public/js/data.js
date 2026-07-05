@@ -14,7 +14,8 @@ var FIELDS=[
  {key:"legendary",label:"Legendary cities",type:"select",opts:["1","2","3","4","5"]},
  {key:"power",label:"Total power",type:"text"},
  {key:"maxed",label:"Maxed unit type",type:"multicheck",opts:["Infantry","Mage","Cavalry","Archer"]},
- {key:"exemplar",label:"Exemplar artefact",type:"check"}
+ {key:"exemplar",label:"Exemplar artefact",type:"check"},
+ {key:"maxpet",label:"Max pet",type:"proof",func:"GARRISON LEAD"}
 ];
 
 // ---- Rally grouping (the "grouping" the Rallies tab renders). Many-to-many. ----

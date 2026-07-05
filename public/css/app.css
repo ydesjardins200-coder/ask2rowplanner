@@ -98,3 +98,8 @@ table.t tr:nth-child(even) td{background:#131f2e}
 .buf .btxt{flex:0 0 auto;width:150px;font-size:12px;background:#0f2036;color:#fff;border:1px solid #2f5680;border-radius:6px;padding:4px}
 .buf .bmc{flex:1 1 auto;display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:flex-end}
 .buf .bmcw{display:flex;align-items:center;gap:4px;font-size:11px;white-space:nowrap}
+.imgmodal{display:none;position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.85);align-items:center;justify-content:center;cursor:zoom-out}
+.imgmodal.show{display:flex}
+.imgmodal img{max-width:92vw;max-height:88vh;border-radius:8px;box-shadow:0 6px 30px #000}
+.imgmodal-x{position:fixed;top:12px;right:20px;color:#fff;font-size:34px;font-weight:bold;cursor:pointer;line-height:1}
+.shotimg{cursor:zoom-in}

@@ -19,7 +19,9 @@ function isFilled(f,v){
   if(f.type==='multicheck'){if(!v||typeof v!=='object')return false;for(var k in v){if(v[k])return true;}return false;}
   return v!==undefined&&v!==null&&v!=='';
 }
-function buffCount(p){var n=0;FIELDS.forEach(function(f){var e=pbuffs(p)[f.key];if(e&&isFilled(f,e.v))n++;});return n;}
+function fieldsFor(p){return FIELDS.filter(function(f){return !f.func||f.func===p.func;});}
+function fFilled(p,f){var e=pbuffs(p)[f.key]||{};if(f.type==='proof')return !!e.img;return isFilled(f,e.v);}
+function buffCount(p){var n=0;fieldsFor(p).forEach(function(f){if(fFilled(p,f))n++;});return n;}
 function nameOptions(sel){
   var seen={},names=[];
   roster.forEach(function(p){if(p.name&&!seen[p.name]){seen[p.name]=1;names.push(p.name);}});
@@ -33,14 +35,15 @@ function nameOptions(sel){
 function sideLbl(s){return s==='strong'?'Strong':s==='off'?'Off':s==='lifestone'?'Lifestone':s==='support'?'Support':'\u2014';}
 // ---- readiness + buffs ----
 var rosterDirty=false;
+var openCards={};
 function rdirtyNote(){var n=el('rdirty');if(n)n.textContent=rosterDirty?'Unsaved changes \u2014 tap Save to share with the team.':'';}
 function markDirty(){rosterDirty=true;var b=document.querySelectorAll('#playerlist .save');for(var i=0;i<b.length;i++){b[i].className='save dirty';b[i].textContent='Save*';}rdirtyNote();}
 function clearDirty(){rosterDirty=false;var b=document.querySelectorAll('#playerlist .save');for(var i=0;i<b.length;i++){b[i].className='save';b[i].textContent='Save';}rdirtyNote();}
 function commitRoster(){saveRoster();clearDirty();renderMap('blue');renderMap('yellow');renderRallies();renderStaff();renderSides();renderMapInfo();renderLife();renderReady();}
-function readyBadge(p){var n=buffCount(p),t=FIELDS.length;var cls=n>=t?'rdy full':(n>0?'rdy part':'rdy none');return '<span class="'+cls+'">'+n+'/'+t+'</span>';}
+function readyBadge(p){var n=buffCount(p),t=fieldsFor(p).length;var cls=n>=t?'rdy full':(n>0?'rdy part':'rdy none');return '<span class="'+cls+'">'+n+'/'+t+'</span>';}
 function buffList(i,p){
   var h='';
-  FIELDS.forEach(function(f){
+  fieldsFor(p).forEach(function(f){
     var e=pbuffs(p)[f.key]||{},v=e.v;
     h+='<div class="buf"><span class="blbl">'+esc(f.label)+'</span>';
     if(f.type==='check'){
@@ -51,12 +54,14 @@ function buffList(i,p){
       h+='<span class="bmc">';
       f.opts.forEach(function(o){var on=v&&typeof v==='object'&&v[o];h+='<label class="bmcw"><input type="checkbox" class="bmck" data-i="'+i+'" data-k="'+f.key+'" data-o="'+esc(o)+'"'+(on?' checked':'')+'> '+esc(o)+'</label>';});
       h+='</span>';
+    }else if(f.type==='proof'){
+      h+='<span class="blbl" style="flex:0"></span>';
     }else{
       h+='<select class="bsel" data-i="'+i+'" data-k="'+f.key+'"><option value="">\u2014</option>';
       f.opts.forEach(function(o){h+='<option'+(v===o?' selected':'')+'>'+esc(o)+'</option>';});
       h+='</select>';
     }
-    if(e.img) h+='<a class="shotimg" href="'+esc(e.img)+'" target="_blank" rel="noopener"><img src="'+esc(e.img)+'" alt="proof"></a>';
+    if(e.img) h+='<img class="shotimg" src="'+esc(e.img)+'" alt="proof" data-full="'+esc(e.img)+'">';
     h+='<label class="shotbtn">'+(e.img?'Replace':'\uD83D\uDCF7')+'<input type="file" accept="image/*" class="bfile" data-i="'+i+'" data-k="'+f.key+'"></label></div>';
   });
   return h;
@@ -68,8 +73,8 @@ function playerCard(i){
   var d=rosterDirty?' dirty':'',t=rosterDirty?'Save*':'Save';
   var legs=p.legions||['','','','',''];
   var assignH='';for(var li=0;li<5;li++){assignH+='<div class="lrow"><span class="llbl">Legion '+(li+1)+'</span><select class="pleg" data-i="'+i+'" data-l="'+li+'">'+legionOpts(legs[li]||'')+'</select></div>';}
-  return '<div class="pcard" data-i="'+i+'"><div class="phead">'
-   +'<button class="exp">\u25B8</button>'
+  return '<div class="pcard'+(openCards[i]?' open':'')+'" data-i="'+i+'"><div class="phead">'
+   +'<button class="exp" data-i="'+i+'">'+(openCards[i]?'\u25BE':'\u25B8')+'</button>'
    +'<input class="pn" data-i="'+i+'" value="'+esc(p.name)+'">'
    +'<select class="pside" data-i="'+i+'"><option value="strong"'+(p.side==='strong'?' selected':'')+'>Strong</option><option value="off"'+(p.side==='off'?' selected':'')+'>Off</option><option value=""'+(!p.side?' selected':'')+'>\u2014</option></select>'
    +'<select class="psub" data-i="'+i+'"><option value="main"'+(!p.sub?' selected':'')+'>Main</option><option value="sub"'+(p.sub?' selected':'')+'>Sub</option></select>'
@@ -98,11 +103,12 @@ function renderPlayers(){
   });
   c.innerHTML=h;rdirtyNote();
   function each(sel,fn){var n=c.querySelectorAll(sel);for(var i=0;i<n.length;i++)fn(n[i]);}
-  each('.exp',function(x){x.onclick=function(e){var card=e.target.parentNode.parentNode;var open=card.className.indexOf('open')<0;card.className=open?'pcard open':'pcard';e.target.textContent=open?'\u25BE':'\u25B8';};});
+  each('.exp',function(x){x.onclick=function(e){var i=+e.target.getAttribute('data-i');openCards[i]=!openCards[i];var card=e.target.parentNode.parentNode;card.className=openCards[i]?'pcard open':'pcard';e.target.textContent=openCards[i]?'\u25BE':'\u25B8';};});
   each('.pn',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].name=e.target.value;saveLocal();markDirty();};});
   each('.pside',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].side=e.target.value;saveLocal();markDirty();renderPlayers();renderSides();renderMapInfo();};});
   each('.psub',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].sub=(e.target.value==='sub');saveLocal();markDirty();renderPlayers();renderSides();renderMapInfo();};});
-  each('.pfunc',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].func=e.target.value;saveLocal();markDirty();renderMapInfo();};});
+  each('.pfunc',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].func=e.target.value;saveLocal();markDirty();renderMapInfo();renderPlayers();};});
+  each('.shotimg',function(x){x.onclick=function(e){openImg(e.target.getAttribute('data-full'));};});
   each('.pleg',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i'),l=+e.target.getAttribute('data-l');if(!roster[i].legions)roster[i].legions=['','','','',''];roster[i].legions[l]=e.target.value;saveLocal();markDirty();renderRallies();renderStaff();renderLife();renderMapInfo();};});
   each('.save',function(x){x.onclick=function(){commitRoster();renderPlayers();};});
   each('.rm',function(x){x.onclick=function(e){roster.splice(+e.target.getAttribute('data-i'),1);saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();};});
@@ -207,3 +213,11 @@ function mapInfoHTML(){
   return '<div class="minfo"><div class="minfo-tp">'+tp+'</div><div class="minfo-gp">'+gp+'</div></div>';
 }
 function renderMapInfo(){var h=mapInfoHTML();var a=el('mapinfo-blue'),b=el('mapinfo-yellow');if(a)a.innerHTML=h;if(b)b.innerHTML=h;}
+// ---- Image modal (lightbox) for any uploaded proof ----
+function openImg(url){
+  if(!url)return;
+  var m=document.getElementById('imgmodal');
+  if(!m){m=document.createElement('div');m.id='imgmodal';m.className='imgmodal';m.innerHTML='<span class="imgmodal-x">\u00d7</span><img id="imgmodal-img" src="" alt="proof">';document.body.appendChild(m);m.onclick=function(){m.className='imgmodal';};}
+  var im=document.getElementById('imgmodal-img');if(im)im.src=url;
+  m.className='imgmodal show';
+}
