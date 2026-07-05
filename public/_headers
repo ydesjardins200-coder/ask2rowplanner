@@ -1,0 +1,7 @@
+# Placeholder only. For Git-based Netlify deploys, scripts/inject-secrets.sh
+# rewrites this file at build time from the SITE_PASSWORD env var, so the real
+# password is NEVER committed. For manual drag-and-drop deploys, replace
+# __SITE_PASSWORD__ below with your real password locally before dragging in.
+/*
+  Basic-Auth: btx:__SITE_PASSWORD__
+  X-Robots-Tag: noindex, nofollow

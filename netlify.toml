@@ -1,0 +1,10 @@
+[build]
+  publish = "public"
+  # Injects secrets from Netlify env vars at build time (see scripts/inject-secrets.sh).
+  command = "sh scripts/inject-secrets.sh"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Referrer-Policy = "no-referrer"
