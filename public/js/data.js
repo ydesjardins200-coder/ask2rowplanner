@@ -6,7 +6,13 @@ var REG_STRONG=["Midjet Shiso","Esvipe","Ping (DEMON)","T1Faker THE GOAT","Flexi
 var REG_OFF=["DARK","BaBaDemouz","Chemona","Northwolfs","Erotic Sushi","krasivaya eva","WIZARD","Garius","Daenerys","Joker7even","Yvel","Ash","RomolusRemus"];
 var REG_SUB=[];
 var EXTRA_LEADERS=["Fraedrake","Warby"];
-var BUFFS=["Technology","Honorary Membership","Faction","Alliance Title","Building","City Theme"];
+var FIELDS=[
+ {key:"decoration",label:"Decoration",type:"select",opts:["1","2","3","4","5","6","7","8","9"]},
+ {key:"svip",label:"SVIP",type:"check"},
+ {key:"faction",label:"Faction",type:"select",opts:["Human","OrcWilderberg","Wood Elf"]},
+ {key:"title",label:"Alliance Title",type:"select",opts:["none","Chief Warden","Spymaster","King"]},
+ {key:"legendary",label:"Legendary cities",type:"select",opts:["1","2","3","4","5"]}
+];
 
 // ---- Rally grouping (the "grouping" the Rallies tab renders). Many-to-many. ----
 var GROUPS=[

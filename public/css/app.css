@@ -59,7 +59,9 @@ table.t tr:nth-child(even) td{background:#131f2e}
 .asg{font-size:11px;color:#bcd0e2;background:#0f2036;border-radius:6px;padding:6px 9px;margin-bottom:8px}
 .bufs{display:flex;flex-direction:column;gap:5px}
 .buf{display:flex;align-items:center;gap:8px;font-size:12px}
-.buf label{display:flex;align-items:center;gap:6px;flex:1;min-width:0}
+.buf .blbl{flex:1;min-width:0}
+.buf .bchkw{flex:0 0 auto;display:flex;align-items:center;gap:5px}
+.buf .bsel{flex:0 0 auto;min-width:130px;font-size:12px;background:#0f2036;color:#fff;border:1px solid #2f5680;border-radius:6px;padding:4px}
 .buf input[type=checkbox]{width:16px;height:16px;flex:0 0 auto}
 .shotbtn{position:relative;overflow:hidden;background:#24425f;color:#fff;border:1px solid #3d6a96;border-radius:6px;padding:4px 9px;font-size:11px;font-weight:bold;cursor:pointer;flex:0 0 auto}
 .shotbtn input[type=file]{position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;cursor:pointer}

@@ -7,7 +7,9 @@ function initRoster(){
 }
 function initGroups(){groups=GROUPS.map(function(g){return {code:g.code,leader:g.leader,side:g.side,troop:g.troop,members:g.members.slice()};});}
 function pbuffs(p){if(!p.buffs)p.buffs={};return p.buffs;}
-function buffCount(p){var b=pbuffs(p),n=0;BUFFS.forEach(function(k){if(b[k]&&b[k].ok)n++;});return n;}
+function fEntry(p,k){var b=pbuffs(p);if(!b[k])b[k]={};return b[k];}
+function isFilled(f,v){if(f.type==='check')return v===true;return v!==undefined&&v!==null&&v!=='';}
+function buffCount(p){var n=0;FIELDS.forEach(function(f){var e=pbuffs(p)[f.key];if(e&&isFilled(f,e.v))n++;});return n;}
 function nameOptions(sel){
   var seen={},names=[];
   roster.forEach(function(p){if(p.name&&!seen[p.name]){seen[p.name]=1;names.push(p.name);}});
@@ -25,14 +27,21 @@ function rdirtyNote(){var n=el('rdirty');if(n)n.textContent=rosterDirty?'Unsaved
 function markDirty(){rosterDirty=true;var b=document.querySelectorAll('#playerlist .save');for(var i=0;i<b.length;i++){b[i].className='save dirty';b[i].textContent='Save*';}rdirtyNote();}
 function clearDirty(){rosterDirty=false;var b=document.querySelectorAll('#playerlist .save');for(var i=0;i<b.length;i++){b[i].className='save';b[i].textContent='Save';}rdirtyNote();}
 function commitRoster(){saveRoster();clearDirty();renderMap('blue');renderMap('yellow');renderRallies();renderStaff();renderSides();renderLife();renderReady();}
-function readyBadge(p){var n=buffCount(p),t=BUFFS.length;var cls=n>=t?'rdy full':(n>0?'rdy part':'rdy none');return '<span class="'+cls+'">'+n+'/'+t+'</span>';}
+function readyBadge(p){var n=buffCount(p),t=FIELDS.length;var cls=n>=t?'rdy full':(n>0?'rdy part':'rdy none');return '<span class="'+cls+'">'+n+'/'+t+'</span>';}
 function buffList(i,p){
-  var b=pbuffs(p),h='';
-  BUFFS.forEach(function(k){
-    var v=b[k]||{},ok=!!v.ok;
-    h+='<div class="buf"><label><input type="checkbox" class="bchk" data-i="'+i+'" data-k="'+esc(k)+'"'+(ok?' checked':'')+'> '+esc(k)+'</label>';
-    if(v.img) h+='<a class="shotimg" href="'+esc(v.img)+'" target="_blank" rel="noopener"><img src="'+esc(v.img)+'" alt="proof"></a>';
-    h+='<label class="shotbtn">'+(v.img?'Replace':'\uD83D\uDCF7 Proof')+'<input type="file" accept="image/*" class="bfile" data-i="'+i+'" data-k="'+esc(k)+'"></label></div>';
+  var h='';
+  FIELDS.forEach(function(f){
+    var e=pbuffs(p)[f.key]||{},v=e.v;
+    h+='<div class="buf"><span class="blbl">'+esc(f.label)+'</span>';
+    if(f.type==='check'){
+      h+='<label class="bchkw"><input type="checkbox" class="bchk" data-i="'+i+'" data-k="'+f.key+'"'+(v===true?' checked':'')+'> yes</label>';
+    }else{
+      h+='<select class="bsel" data-i="'+i+'" data-k="'+f.key+'"><option value="">\u2014</option>';
+      f.opts.forEach(function(o){h+='<option'+(v===o?' selected':'')+'>'+esc(o)+'</option>';});
+      h+='</select>';
+    }
+    if(e.img) h+='<a class="shotimg" href="'+esc(e.img)+'" target="_blank" rel="noopener"><img src="'+esc(e.img)+'" alt="proof"></a>';
+    h+='<label class="shotbtn">'+(e.img?'Replace':'\uD83D\uDCF7')+'<input type="file" accept="image/*" class="bfile" data-i="'+i+'" data-k="'+f.key+'"></label></div>';
   });
   return h;
 }
@@ -74,7 +83,8 @@ function renderPlayers(){
   each('.psub',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].sub=(e.target.value==='sub');saveLocal();markDirty();renderPlayers();renderSides();};});
   each('.save',function(x){x.onclick=function(){commitRoster();renderPlayers();};});
   each('.rm',function(x){x.onclick=function(e){roster.splice(+e.target.getAttribute('data-i'),1);saveRoster();renderPlayers();renderSides();renderRallies();};});
-  each('.bchk',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i'),k=e.target.getAttribute('data-k');var b=pbuffs(roster[i]);b[k]=b[k]||{};b[k].ok=e.target.checked;saveLocal();markDirty();updateBadge(i);renderReady();};});
+  each('.bchk',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i');fEntry(roster[i],e.target.getAttribute('data-k')).v=e.target.checked;saveLocal();markDirty();updateBadge(i);renderReady();};});
+  each('.bsel',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i');fEntry(roster[i],e.target.getAttribute('data-k')).v=e.target.value;saveLocal();markDirty();updateBadge(i);renderReady();};});
   each('.bfile',function(x){x.onchange=function(e){uploadBuff(+e.target.getAttribute('data-i'),e.target.getAttribute('data-k'),e.target.files[0]);};});
 }
 function updateBadge(i){var card=document.querySelector('.pcard[data-i="'+i+'"]');if(!card)return;var old=card.querySelector('.rdy');if(!old)return;var t=document.createElement('div');t.innerHTML=readyBadge(roster[i]);old.parentNode.replaceChild(t.firstChild,old);}
@@ -89,7 +99,7 @@ function uploadBuff(i,k,file){
       if(res&&res.error){flash('Upload failed');alert('Upload failed \u2014 make sure the "buffs" storage bucket exists (see setup).');return;}
       var pub=SB.storage.from('buffs').getPublicUrl(path);
       var url=(pub&&pub.data&&pub.data.publicUrl)?pub.data.publicUrl:'';
-      var b=pbuffs(roster[i]);b[k]={ok:true,img:url};saveRoster();renderPlayers();
+      var b=pbuffs(roster[i]);b[k]=b[k]||{};b[k].img=url;saveRoster();renderPlayers();
     },function(){flash('Upload failed');});
   }catch(e){flash('Upload failed');}
 }
@@ -137,12 +147,12 @@ function renderReady(){
   var c=el('readytbl');if(!c)return;
   var rows=roster.map(function(p){return {p:p,n:buffCount(p)};});
   rows.sort(function(a,b){return a.n-b.n||(a.p.name.toLowerCase()<b.p.name.toLowerCase()?-1:1);});
-  var full=0;roster.forEach(function(p){if(buffCount(p)>=BUFFS.length)full++;});
-  var h='<div class="sub"><b>'+full+'/'+roster.length+'</b> fully buffed \u2014 least ready first.</div><table class="t stat"><tr><th>Player</th><th>Side</th><th>Buffs</th><th>Missing</th></tr>';
+  var full=0;roster.forEach(function(p){if(buffCount(p)>=FIELDS.length)full++;});
+  var h='<div class="sub"><b>'+full+'/'+roster.length+'</b> fully filled \u2014 least ready first.</div><table class="t stat"><tr><th>Player</th><th>Side</th><th>Fields</th><th>Missing</th></tr>';
   rows.forEach(function(r){
-    var p=r.p,b=pbuffs(p),miss=[];BUFFS.forEach(function(k){if(!(b[k]&&b[k].ok))miss.push(k);});
-    var cls=r.n>=BUFFS.length?'ok':(r.n>0?'over':'bad');
-    h+='<tr><td>'+esc(p.name)+(p.sub?' <span style="color:#8aa0b6">(sub)</span>':'')+'</td><td>'+sideLbl(p.side)+'</td><td class="'+cls+'">'+r.n+'/'+BUFFS.length+'</td><td style="font-size:10px;color:#d3a9b8">'+(miss.length?esc(miss.join(', ')):'\u2014')+'</td></tr>';
+    var p=r.p,miss=[];FIELDS.forEach(function(f){var e=pbuffs(p)[f.key];if(!(e&&isFilled(f,e.v)))miss.push(f.label);});
+    var cls=r.n>=FIELDS.length?'ok':(r.n>0?'over':'bad');
+    h+='<tr><td>'+esc(p.name)+(p.sub?' <span style="color:#8aa0b6">(sub)</span>':'')+'</td><td>'+sideLbl(p.side)+'</td><td class="'+cls+'">'+r.n+'/'+FIELDS.length+'</td><td style="font-size:10px;color:#d3a9b8">'+(miss.length?esc(miss.join(', ')):'\u2014')+'</td></tr>';
   });
   c.innerHTML=h+'</table>';
 }
