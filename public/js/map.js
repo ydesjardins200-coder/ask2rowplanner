@@ -5,9 +5,10 @@ var CLR={strong:'#e06fb5',off:'#5b9bd5',center:'#2fb3a4',support:'#c8952a'};
 // Divide line per map. Blue is the accurate reference. Yellow is the same
 // angle/length, mirrored to the parallel position on the far side of the map
 // center so the (flipped) strong lane sits on the Lucia side. Tune freely.
-var DIVIDE={blue:{l:26,t:30,w:74,r:34},yellow:{l:31,t:8.5,w:84,r:33}};
+var DIVIDE={blue:{l:33,t:30,w:59,r:34},yellow:{l:31,t:1.5,w:73,r:33}};
+var ZONES={blue:{strong:[76.5,39.9],off:[10.5,66.5]},yellow:{strong:[34.1,54.4],off:[73.9,21.4]}};
 function renderMap(color){
- var wrap=el('wrap-'+color);var strong=(color==='blue')?[70,34]:[6,62];var off=(color==='blue')?[6,62]:[70,34];
+ var wrap=el('wrap-'+color);var zn=ZONES[color];var strong=zn.strong;var off=zn.off;
  var youBase=(color==='blue')?LUC:YAE;var youName=(color==='blue')?'Lucia':'Yaen';
  var dv=DIVIDE[color];var h='<div class="divide" style="left:'+dv.l+'%;top:'+dv.t+'%;width:'+dv.w+'%;transform:rotate('+dv.r+'deg)"></div>';
  h+='<div class="zone" style="color:#f4a6d7;left:'+strong[0]+'%;top:'+strong[1]+'%">STRONG</div>';
