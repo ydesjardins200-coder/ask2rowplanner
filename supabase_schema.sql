@@ -66,6 +66,27 @@ $$;
 revoke all on function public.save_plan(text, jsonb, text) from public;
 grant execute on function public.save_plan(text, jsonb, text) to anon, authenticated;
 
+-- ---- Roster self-service: any player may save NAMES (no key needed) -----
+-- Updates only data->'r' (the roster), leaving data->'a' (the map plan)
+-- untouched, so players can manage their own names but cannot change the
+-- leadership-controlled battle plan.
+create or replace function public.save_roster(p_roster jsonb)
+returns boolean
+language plpgsql
+security definer
+set search_path = public, extensions
+as $$
+begin
+  update public.plan
+     set data = jsonb_set(coalesce(data, '{}'::jsonb), '{r}', p_roster, true),
+         updated_at = now()
+   where id = 'btx';
+  return true;
+end;
+$$;
+revoke all on function public.save_roster(jsonb) from public;
+grant execute on function public.save_roster(jsonb) to anon, authenticated;
+
 -- ---- One-time: set / change the leadership write key --------------------
 -- Run this ONCE in the SQL Editor (which runs as the owner, not anon):
 --     select public.set_plan_secret('YOUR-LEADERSHIP-WRITE-KEY');
