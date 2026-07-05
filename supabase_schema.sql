@@ -87,4 +87,16 @@ revoke all on function public.set_plan_secret(text) from public;
 -- (No grant to anon: only the SQL Editor / service role can run it.)
 
 -- ---- Realtime so everyone sees live updates on read ---------------------
-alter publication supabase_realtime add table public.plan;
+-- Idempotent: only add the table if it isn't already in the publication,
+-- so re-running this whole file never errors.
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'plan'
+  ) then
+    alter publication supabase_realtime add table public.plan;
+  end if;
+end $$;
