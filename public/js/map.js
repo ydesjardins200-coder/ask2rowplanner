@@ -5,7 +5,7 @@ var CLR={strong:'#e06fb5',off:'#5b9bd5',center:'#2fb3a4',support:'#c8952a'};
 // Divide line per map. Blue is the accurate reference. Yellow is the same
 // angle/length, mirrored to the parallel position on the far side of the map
 // center so the (flipped) strong lane sits on the Lucia side. Tune freely.
-var DIVIDE={blue:{l:26,t:30,w:74,r:34},yellow:{l:7,t:8.5,w:74,r:34}};
+var DIVIDE={blue:{l:26,t:30,w:74,r:34},yellow:{l:31,t:8.5,w:84,r:33}};
 function renderMap(color){
  var wrap=el('wrap-'+color);var strong=(color==='blue')?[70,34]:[6,62];var off=(color==='blue')?[6,62]:[70,34];
  var youBase=(color==='blue')?LUC:YAE;var youName=(color==='blue')?'Lucia':'Yaen';
