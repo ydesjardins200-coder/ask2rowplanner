@@ -2,10 +2,14 @@
 function leaderOptions(sel){var names=["— none —"];roster.forEach(function(p){if(p.name&&names.indexOf(p.name)<0)names.push(p.name);});EXTRA_LEADERS.forEach(function(x){if(names.indexOf(x)<0)names.push(x);});return names.map(function(n){var v=(n==='— none —')?'':n;return '<option value="'+esc(v)+'"'+(((sel||'')===v)?' selected':'')+'>'+esc(n)+'</option>';}).join('');}
 function sideFor(b,color){if(color==='blue')return b.side;if(b.side==='strong')return 'off';if(b.side==='off')return 'strong';return b.side;}
 var CLR={strong:'#e06fb5',off:'#5b9bd5',center:'#2fb3a4',support:'#c8952a'};
+// Divide line per map. Blue is the accurate reference. Yellow is the same
+// angle/length, mirrored to the parallel position on the far side of the map
+// center so the (flipped) strong lane sits on the Lucia side. Tune freely.
+var DIVIDE={blue:{l:26,t:30,w:74,r:34},yellow:{l:12.6,t:8.5,w:74,r:34}};
 function renderMap(color){
  var wrap=el('wrap-'+color);var strong=(color==='blue')?[70,34]:[6,62];var off=(color==='blue')?[6,62]:[70,34];
  var youBase=(color==='blue')?LUC:YAE;var youName=(color==='blue')?'Lucia':'Yaen';
- var h='<div class="divide" style="left:26%;top:30%;width:74%;transform:rotate(34deg)"></div>';
+ var dv=DIVIDE[color];var h='<div class="divide" style="left:'+dv.l+'%;top:'+dv.t+'%;width:'+dv.w+'%;transform:rotate('+dv.r+'deg)"></div>';
  h+='<div class="zone" style="color:#f4a6d7;left:'+strong[0]+'%;top:'+strong[1]+'%">STRONG</div>';
  h+='<div class="zone" style="color:#8fc0f0;left:'+off[0]+'%;top:'+off[1]+'%">OFF</div>';
  h+='<div class="base" style="left:'+LUC[0]+'%;top:'+LUC[1]+'%;color:#9fe0ff">Lucia</div>';
