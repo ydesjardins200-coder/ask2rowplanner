@@ -7,6 +7,16 @@ var CLR={strong:'#e06fb5',off:'#5b9bd5',center:'#2fb3a4',support:'#c8952a'};
 // center so the (flipped) strong lane sits on the Lucia side. Tune freely.
 var DIVIDE={blue:{l:33,t:30,w:59,r:34},yellow:{l:31,t:1.5,w:73,r:33}};
 var ZONES={blue:{strong:[76.5,39.9],off:[10.5,66.5]},yellow:{strong:[34.1,54.4],off:[73.9,21.4]}};
+// Cross-side equivalence: on the YELLOW map each role sits at its mirror tower.
+// (Blue is the reference; assignments stay tied to the role and follow it.)
+var MIRROR={H1:"H4",H4:"H1",H2:"H3",H3:"H2",T1:"T2",T2:"T1",TH1:"TH2",TH2:"TH1",O1:"O3",O3:"O1",O2:"O4",O4:"O2"};
+var MCENTER=[52.5,42];
+function bpos(b,color){
+  if(color!=='yellow')return [b.x,b.y];
+  var m=MIRROR[b.code];
+  if(m){for(var i=0;i<BUILD.length;i++)if(BUILD[i].code===m)return [BUILD[i].x,BUILD[i].y];}
+  return [Math.round((2*MCENTER[0]-b.x)*10)/10,Math.round((2*MCENTER[1]-b.y)*10)/10];
+}
 function renderMap(color){
  var wrap=el('wrap-'+color);var zn=ZONES[color];var strong=zn.strong;var off=zn.off;
  var youBase=(color==='blue')?LUC:YAE;var youName=(color==='blue')?'Lucia':'Yaen';
@@ -17,8 +27,8 @@ function renderMap(color){
  h+='<div class="base" style="left:'+YAE[0]+'%;top:'+YAE[1]+'%;color:#ffce7a">Yaen</div>';
  h+='<div class="you" style="left:'+youBase[0]+'%;top:'+(youBase[1]+7)+'%">YOU</div>';
  h+='<div class="life" style="left:'+LIFE[0]+'%;top:'+LIFE[1]+'%"></div>';
- BUILD.forEach(function(b){var ld=(b.code in assign)?assign[b.code]:b.leader;var sd=sideFor(b,color);
-  h+='<div class="b'+(ld?'':' un')+'" style="left:'+b.x+'%;top:'+b.y+'%;border-color:'+CLR[sd]+'"><span class="code" style="color:'+CLR[sd]+'">'+b.code+'</span><select data-code="'+b.code+'">'+leaderOptions(ld)+'</select></div>';});
+ BUILD.forEach(function(b){var ld=(b.code in assign)?assign[b.code]:b.leader;var sd=sideFor(b,color);var bp=bpos(b,color);
+  h+='<div class="b'+(ld?'':' un')+'" style="left:'+bp[0]+'%;top:'+bp[1]+'%;border-color:'+CLR[sd]+'"><span class="code" style="color:'+CLR[sd]+'">'+b.code+'</span><select data-code="'+b.code+'">'+leaderOptions(ld)+'</select></div>';});
  wrap.innerHTML=h;
  var sels=wrap.querySelectorAll('select');for(var i=0;i<sels.length;i++){sels[i].onchange=function(e){assign[e.target.getAttribute('data-code')]=e.target.value;save();renderMap('blue');renderMap('yellow');};}
 }
