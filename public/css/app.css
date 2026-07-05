@@ -64,3 +64,17 @@ table.t tr:nth-child(even) td{background:#131f2e}
 .shotbtn{position:relative;overflow:hidden;background:#24425f;color:#fff;border:1px solid #3d6a96;border-radius:6px;padding:4px 9px;font-size:11px;font-weight:bold;cursor:pointer;flex:0 0 auto}
 .shotbtn input[type=file]{position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;cursor:pointer}
 .shotimg img{height:30px;border-radius:4px;border:1px solid #3d6a96;vertical-align:middle}
+.phead .pside,.phead .psub{flex:0 0 auto;font-size:11px;border-radius:6px;padding:3px;background:#1b3350;color:#fff;border:1px solid #2f5680}
+.grp{border:1px solid #24425f;border-left-width:4px;border-radius:8px;padding:6px 8px;margin-bottom:8px;background:#111d2c}
+.grp.gs-strong{border-left-color:#e06fb5}
+.grp.gs-off{border-left-color:#5b9bd5}
+.grp.gs-support{border-left-color:#c8952a}
+.grp.gs-lifestone{border-left-color:#2fb3a4}
+.grphd{font-size:13px;margin-bottom:4px}
+.grphd .gtag{font-size:11px;color:#8aa0b6;font-weight:normal;margin-left:4px}
+.grow{display:flex;align-items:center;gap:6px;margin:3px 0}
+.grow .glbl{flex:0 0 auto;width:34px;font-size:11px;color:#9fb3c6;font-weight:bold;text-align:right}
+.grow select{flex:1;min-width:0;font-size:12px;border-radius:6px;padding:4px;background:#0f2036;color:#fff;border:1px solid #2f5680}
+.grow .glead{background:#16283f}
+.grow .gdel{flex:0 0 auto;background:#5a2530;border:1px solid #8a3a48;color:#fff;border-radius:6px;padding:3px 9px;font-weight:bold;cursor:pointer}
+.grow .gadd{background:#24425f;border:1px solid #3d6a96;color:#fff;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:bold;cursor:pointer;margin-left:34px}

@@ -1,8 +1,32 @@
 // data.js — constants & shared mutable state
 var IMG_W=1004,IMG_H=570;
 var BUILD=[{"code": "H1", "leader": "Humble MAD", "x": 77.0, "y": 3.9, "side": "strong"}, {"code": "T1", "leader": "iiiiiiiii", "x": 62.9, "y": 6.5, "side": "strong"}, {"code": "H2", "leader": "Jalalz", "x": 53.6, "y": 20.7, "side": "strong"}, {"code": "TH1", "leader": "IONZ", "x": 84.2, "y": 41.2, "side": "strong"}, {"code": "H3", "leader": "SugarWoogy", "x": 52.1, "y": 36.3, "side": "center"}, {"code": "TH2", "leader": "Yvel", "x": 19.9, "y": 33.9, "side": "off"}, {"code": "T2", "leader": "Joker7Even", "x": 35.3, "y": 76.5, "side": "off"}, {"code": "H4", "leader": "Northwolfs", "x": 14.4, "y": 74.0, "side": "off"}, {"code": "O1", "leader": "Fraedrake", "x": 26.2, "y": 5.3, "side": "support"}, {"code": "O2", "leader": "Fraedrake", "x": 33.5, "y": 34.4, "side": "support"}, {"code": "O3", "leader": "Fraedrake", "x": 86.0, "y": 78.1, "side": "support"}, {"code": "O4", "leader": "Fraedrake", "x": 48.9, "y": 58.6, "side": "support"}, {"code": "BM", "leader": "", "x": 69.8, "y": 33.5, "side": "strong"}],LUC=[40.0, 37.0],YAE=[65.0, 47.0],LIFE=[50.0, 44.0];
-var DEF_PLAYERS=["BoatyMcBoatFace", "Flexie", "Flexie/Warby", "SOREN", "Ping (DEMON)", "Midjet Shiso", "Esvipe", "Just Scary", "Humble MAD", "SugarWoogy", "Humble Soju", "Humble Shiso", "iiiiiiiii", "Ionz / IONZ", "Garius", "Eva", "Joker7Even", "RomolusRemus", "Yvel", "WIZARD", "BaBaDemouz", "DARK", "Erotic Sushi", "Northwolfs", "Daenerys", "Lastomania", "Ash", "T1Faker THE GOAT", "Chemona", "Humble HVN", "Taattaat", "FaceOfBlade", "Jalalz", "BeastMaster"],PRIMARY={"BoatyMcBoatFace": "H1", "Flexie": "H1", "Midjet Shiso": "H1", "Humble MAD": "H1", "SOREN": "H2", "Just Scary": "H2", "Jalalz": "H2", "SugarWoogy": "H3", "Humble Soju": "H3", "Esvipe": "H3", "Ionz / IONZ": "TH1", "Humble Shiso": "TH1", "iiiiiiiii": "TH1", "Garius": "H4", "Eva": "H4", "Northwolfs": "H4", "Yvel": "TH2", "BaBaDemouz": "TH2", "Erotic Sushi": "TH2", "Joker7Even": "T2", "DARK": "T2", "WIZARD": "T2", "Daenerys": "Ghost Cavalry", "Lastomania": "Ghost Cavalry", "T1Faker THE GOAT": "Ghost Cavalry", "Chemona": "Ghost Cavalry", "Taattaat": "Ghost Cavalry", "Flexie/Warby": "Lifestone", "Ping (DEMON)": "Lifestone", "Ash": "Lifestone", "Humble HVN": "Lifestone", "RomolusRemus": "Lifestone", "FaceOfBlade": "Fraedrake", "BeastMaster": "Beastmaster"},RALLY_ORDER=["H1", "H2", "H3", "H4", "TH1", "TH2", "T1", "T2", "Ghost Cavalry", "Fraedrake", "Lifestone", "Beastmaster"],TARGETS={"H1": 4, "H2": 3, "H3": 3, "H4": 3, "TH1": 3, "TH2": 3, "T1": 0, "T2": 3, "Ghost Cavalry": 5, "Fraedrake": 1, "Lifestone": 5, "Beastmaster": 1};
-var EXTRA_LEADERS=["Fraedrake"];
+// ---- Registered team (from the master "Rally Leaders & Team" chart) ----
+var REG_STRONG=["Midjet Shiso","Esvipe","Ping (DEMON)","T1Faker THE GOAT","Flexie","Just Scary","SOREN","SugarWoogy","Humble Soju","Jalalz","iiiiiiiii","FaceOfBlade","Humble HVN","Ionz","Taattaat","Lastomania","Humble MAD"];
+var REG_OFF=["DARK","BaBaDemouz","Chemona","Northwolfs","Erotic Sushi","krasivaya eva","WIZARD","Garius","Daenerys","Joker7even","Yvel","Ash","RomolusRemus"];
+var REG_SUB=[];
+var EXTRA_LEADERS=["Fraedrake","Warby"];
 var BUFFS=["Technology","Honorary Membership","Faction","Alliance Title","Building","City Theme"];
-var TROOP={"H1":"Infantry","H2":"Inf (BLINK)","H3":"Infantry","TH1":"Tower","T1":"Tower","H4":"Cavalry","TH2":"Inf/Tower","T2":"Infantry","Ghost Cavalry":"Cavalry","Fraedrake":"Garrison","Lifestone":"Cav+sup","Beastmaster":"Behemoth"};
-var assign={}, roster=[];
+
+// ---- Rally grouping (the "grouping" the Rallies tab renders). Many-to-many. ----
+var GROUPS=[
+ {code:"H1", leader:"Humble MAD", side:"strong", troop:"Infantry",   members:["BoatyMcBoatFace","Flexie","SOREN","Ping (DEMON)","Midjet Shiso","Esvipe"]},
+ {code:"H2", leader:"Jalalz",     side:"strong", troop:"Inf (BLINK)", members:["SOREN","Just Scary","Esvipe","Humble MAD","SugarWoogy"]},
+ {code:"H3", leader:"SugarWoogy", side:"strong", troop:"Infantry",   members:["Humble Soju","Flexie","Midjet Shiso","Ping (DEMON)","Esvipe","Just Scary"]},
+ {code:"TH1",leader:"Ionz",       side:"strong", troop:"Tower",       members:["Humble Shiso","iiiiiiiii","Just Scary","Esvipe","Ping (DEMON)"]},
+ {code:"T1", leader:"Ionz",       side:"strong", troop:"Tower",       members:["Ping (DEMON)","Humble MAD","Esvipe","Ionz","SOREN"]},
+ {code:"H4", leader:"Northwolfs", side:"off",    troop:"Cavalry",     members:["Garius","krasivaya eva","Joker7even","RomolusRemus","Yvel","WIZARD"]},
+ {code:"TH2",leader:"Yvel",       side:"off",    troop:"Inf/Tower",   members:["krasivaya eva","BaBaDemouz","RomolusRemus","DARK","WIZARD","Erotic Sushi"]},
+ {code:"T2", leader:"Joker7even", side:"off",    troop:"Infantry",    members:["DARK","Northwolfs","Erotic Sushi","BaBaDemouz","Garius","WIZARD"]},
+ {code:"Fraedrake", leader:"Garrison", side:"support", troop:"Garrison", members:["Daenerys","FaceOfBlade","WIZARD","Chemona","Erotic Sushi"]},
+ {code:"Ghost Cavalry", leader:"(mobile)", side:"support", troop:"Cavalry", members:["Daenerys","Lastomania","Ash","T1Faker THE GOAT","Chemona","Humble HVN","Taattaat","FaceOfBlade"]},
+ {code:"Lifestone", leader:"Flexie/Warby", side:"lifestone", troop:"Cav+sup", members:["Flexie/Warby","Ping (DEMON)","Ionz","Yvel"]},
+ {code:"Lifestone Support", leader:"", side:"lifestone", troop:"Support", members:["RomolusRemus","Humble HVN","Ash","Garius","Joker7even"]},
+ {code:"Beastmaster", leader:"BeastMaster", side:"support", troop:"Behemoth", members:["BeastMaster"]}
+];
+var RALLY_ORDER=GROUPS.map(function(g){return g.code;});
+var TARGETS={};   GROUPS.forEach(function(g){TARGETS[g.code]=g.members.length;});
+var TROOP={};     GROUPS.forEach(function(g){TROOP[g.code]=g.troop;});
+var GSIDE={};     GROUPS.forEach(function(g){GSIDE[g.code]=g.side;});
+
+var assign={}, roster=[], groups=[];
