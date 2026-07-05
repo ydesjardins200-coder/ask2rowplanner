@@ -104,3 +104,13 @@ table.t tr:nth-child(even) td{background:#131f2e}
 .imgmodal-x{position:fixed;top:12px;right:20px;color:#fff;font-size:34px;font-weight:bold;cursor:pointer;line-height:1}
 .shotimg{cursor:zoom-in}
 .imgmodal-x{cursor:pointer}
+/* --- polished player-card field layout --- */
+.pbody{padding:6px 8px 12px 30px}
+.bufs{display:flex;flex-direction:column}
+.buf{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:7px 2px;border-bottom:1px solid #14202e;font-size:12px}
+.buf:last-child{border-bottom:none}
+.buf .blbl{flex:0 0 132px;min-width:0;color:#c9d4de}
+.buf .bctl{flex:0 1 auto;display:flex;align-items:center;gap:6px 14px;flex-wrap:wrap;min-width:0}
+.buf .bproof{margin-left:auto;display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.buf .bsel,.buf .btxt{width:150px;max-width:100%}
+.buf .bmcw{white-space:nowrap}

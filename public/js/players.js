@@ -45,24 +45,21 @@ function buffList(i,p){
   var h='';
   fieldsFor(p).forEach(function(f){
     var e=pbuffs(p)[f.key]||{},v=e.v;
-    h+='<div class="buf"><span class="blbl">'+esc(f.label)+'</span>';
+    h+='<div class="buf"><span class="blbl">'+esc(f.label)+'</span><span class="bctl">';
     if(f.type==='check'){
       h+='<label class="bchkw"><input type="checkbox" class="bchk" data-i="'+i+'" data-k="'+f.key+'"'+(v===true?' checked':'')+'> yes</label>';
     }else if(f.type==='text'){
       h+='<input type="text" class="btxt" data-i="'+i+'" data-k="'+f.key+'" value="'+esc(v||'')+'" placeholder="value">';
     }else if(f.type==='multicheck'){
-      h+='<span class="bmc">';
       f.opts.forEach(function(o){var on=v&&typeof v==='object'&&v[o];h+='<label class="bmcw"><input type="checkbox" class="bmck" data-i="'+i+'" data-k="'+f.key+'" data-o="'+esc(o)+'"'+(on?' checked':'')+'> '+esc(o)+'</label>';});
-      h+='</span>';
-    }else if(f.type==='proof'){
-      h+='<span class="blbl" style="flex:0"></span>';
-    }else{
+    }else if(f.type!=='proof'){
       h+='<select class="bsel" data-i="'+i+'" data-k="'+f.key+'"><option value="">\u2014</option>';
       f.opts.forEach(function(o){h+='<option'+(v===o?' selected':'')+'>'+esc(o)+'</option>';});
       h+='</select>';
     }
+    h+='</span><span class="bproof">';
     if(e.img) h+='<img class="shotimg" src="'+esc(e.img)+'" alt="proof" data-full="'+esc(e.img)+'">';
-    h+='<label class="shotbtn">'+(e.img?'Replace':'\uD83D\uDCF7')+'<input type="file" accept="image/*" class="bfile" data-i="'+i+'" data-k="'+f.key+'"></label></div>';
+    h+='<label class="shotbtn">'+(e.img?'Replace':'\uD83D\uDCF7')+'<input type="file" accept="image/*" class="bfile" data-i="'+i+'" data-k="'+f.key+'"></label></span></div>';
   });
   return h;
 }
