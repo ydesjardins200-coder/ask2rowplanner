@@ -24,7 +24,7 @@ var rosterDirty=false;
 function rdirtyNote(){var n=el('rdirty');if(n)n.textContent=rosterDirty?'Unsaved changes \u2014 tap Save to share with the team.':'';}
 function markDirty(){rosterDirty=true;var b=document.querySelectorAll('#playerlist .save');for(var i=0;i<b.length;i++){b[i].className='save dirty';b[i].textContent='Save*';}rdirtyNote();}
 function clearDirty(){rosterDirty=false;var b=document.querySelectorAll('#playerlist .save');for(var i=0;i<b.length;i++){b[i].className='save';b[i].textContent='Save';}rdirtyNote();}
-function commitRoster(){saveRoster();clearDirty();renderMap('blue');renderMap('yellow');renderRallies();renderStaff();renderSides();}
+function commitRoster(){saveRoster();clearDirty();renderMap('blue');renderMap('yellow');renderRallies();renderStaff();renderSides();renderLife();renderReady();}
 function readyBadge(p){var n=buffCount(p),t=BUFFS.length;var cls=n>=t?'rdy full':(n>0?'rdy part':'rdy none');return '<span class="'+cls+'">'+n+'/'+t+'</span>';}
 function buffList(i,p){
   var b=pbuffs(p),h='';
@@ -74,7 +74,7 @@ function renderPlayers(){
   each('.psub',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].sub=(e.target.value==='sub');saveLocal();markDirty();renderPlayers();renderSides();};});
   each('.save',function(x){x.onclick=function(){commitRoster();renderPlayers();};});
   each('.rm',function(x){x.onclick=function(e){roster.splice(+e.target.getAttribute('data-i'),1);saveRoster();renderPlayers();renderSides();renderRallies();};});
-  each('.bchk',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i'),k=e.target.getAttribute('data-k');var b=pbuffs(roster[i]);b[k]=b[k]||{};b[k].ok=e.target.checked;saveLocal();markDirty();updateBadge(i);};});
+  each('.bchk',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i'),k=e.target.getAttribute('data-k');var b=pbuffs(roster[i]);b[k]=b[k]||{};b[k].ok=e.target.checked;saveLocal();markDirty();updateBadge(i);renderReady();};});
   each('.bfile',function(x){x.onchange=function(e){uploadBuff(+e.target.getAttribute('data-i'),e.target.getAttribute('data-k'),e.target.files[0]);};});
 }
 function updateBadge(i){var card=document.querySelector('.pcard[data-i="'+i+'"]');if(!card)return;var old=card.querySelector('.rdy');if(!old)return;var t=document.createElement('div');t.innerHTML=readyBadge(roster[i]);old.parentNode.replaceChild(t.firstChild,old);}
@@ -109,10 +109,10 @@ function renderRallies(){
   });
   c.innerHTML=h;
   function each(sel,fn){var n=c.querySelectorAll(sel);for(var i=0;i<n.length;i++)fn(n[i]);}
-  each('.glead',function(x){x.onchange=function(e){groups[+e.target.getAttribute('data-g')].leader=e.target.value;save();renderRallies();renderPlayers();};});
-  each('.gmem',function(x){x.onchange=function(e){groups[+e.target.getAttribute('data-g')].members[+e.target.getAttribute('data-m')]=e.target.value;save();renderRallies();renderStaff();renderPlayers();};});
-  each('.gdel',function(x){x.onclick=function(e){groups[+e.target.getAttribute('data-g')].members.splice(+e.target.getAttribute('data-m'),1);save();renderRallies();renderStaff();renderPlayers();};});
-  each('.gadd',function(x){x.onclick=function(e){groups[+e.target.getAttribute('data-g')].members.push('');save();renderRallies();renderStaff();};});
+  each('.glead',function(x){x.onchange=function(e){groups[+e.target.getAttribute('data-g')].leader=e.target.value;save();renderRallies();renderLife();renderPlayers();};});
+  each('.gmem',function(x){x.onchange=function(e){groups[+e.target.getAttribute('data-g')].members[+e.target.getAttribute('data-m')]=e.target.value;save();renderRallies();renderLife();renderStaff();renderPlayers();};});
+  each('.gdel',function(x){x.onclick=function(e){groups[+e.target.getAttribute('data-g')].members.splice(+e.target.getAttribute('data-m'),1);save();renderRallies();renderLife();renderStaff();renderPlayers();};});
+  each('.gadd',function(x){x.onclick=function(e){groups[+e.target.getAttribute('data-g')].members.push('');save();renderRallies();renderLife();renderStaff();};});
 }
 // ---- Sides tab: registered Strong/Off, derived from roster ----
 function renderSides(){
@@ -120,5 +120,29 @@ function renderSides(){
   var st=[],of=[];roster.forEach(function(p){if(p.sub)return;if(p.side==='strong')st.push(p.name);else if(p.side==='off')of.push(p.name);});
   var n=Math.max(st.length,of.length),h='<table class="t"><tr><th>#</th><th style="color:#e06fb5">Strong ('+st.length+')</th><th>#</th><th style="color:#5b9bd5">Off ('+of.length+')</th></tr>';
   for(var i=0;i<n;i++){h+='<tr><td>'+(st[i]?(i+1):'')+'</td><td>'+(st[i]?esc(st[i]):'')+'</td><td>'+(of[i]?(i+1):'')+'</td><td>'+(of[i]?esc(of[i]):'')+'</td></tr>';}
+  c.innerHTML=h+'</table>';
+}
+// ---- Lifestone tab: derived from the Lifestone / Support / Beastmaster groups ----
+function renderLife(){
+  var c=el('lifetbl');if(!c)return;
+  var order=['Lifestone','Lifestone Support','Beastmaster'],h='';
+  order.forEach(function(code){
+    var g=null;groups.forEach(function(x){if(x.code===code)g=x;});if(!g)return;
+    h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b>'+(g.leader?' <span class="gtag">lead: '+esc(g.leader)+'</span>':'')+'</div><div class="asg">'+(g.members.length?esc(g.members.join(', ')):'\u2014')+'</div></div>';
+  });
+  c.innerHTML=h;
+}
+// ---- Buff readiness overview (leadership: who's not ready) ----
+function renderReady(){
+  var c=el('readytbl');if(!c)return;
+  var rows=roster.map(function(p){return {p:p,n:buffCount(p)};});
+  rows.sort(function(a,b){return a.n-b.n||(a.p.name.toLowerCase()<b.p.name.toLowerCase()?-1:1);});
+  var full=0;roster.forEach(function(p){if(buffCount(p)>=BUFFS.length)full++;});
+  var h='<div class="sub"><b>'+full+'/'+roster.length+'</b> fully buffed \u2014 least ready first.</div><table class="t stat"><tr><th>Player</th><th>Side</th><th>Buffs</th><th>Missing</th></tr>';
+  rows.forEach(function(r){
+    var p=r.p,b=pbuffs(p),miss=[];BUFFS.forEach(function(k){if(!(b[k]&&b[k].ok))miss.push(k);});
+    var cls=r.n>=BUFFS.length?'ok':(r.n>0?'over':'bad');
+    h+='<tr><td>'+esc(p.name)+(p.sub?' <span style="color:#8aa0b6">(sub)</span>':'')+'</td><td>'+sideLbl(p.side)+'</td><td class="'+cls+'">'+r.n+'/'+BUFFS.length+'</td><td style="font-size:10px;color:#d3a9b8">'+(miss.length?esc(miss.join(', ')):'\u2014')+'</td></tr>';
+  });
   c.innerHTML=h+'</table>';
 }
