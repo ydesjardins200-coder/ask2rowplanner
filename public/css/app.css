@@ -42,3 +42,25 @@ table.t tr:nth-child(even) td{background:#131f2e}
 .pl select.pr{max-width:110px}
 .pl button.save{flex:0 0 auto;background:#1c86ff;border:1px solid #1c86ff;color:#fff;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:bold}
 .pl button.save.dirty{background:#e0a52a;border-color:#e0a52a;color:#1a1200}
+.pcard{border-bottom:1px solid #1c2a3a}
+.phead{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:5px 6px}
+.phead .pn{flex:1;min-width:0;font-size:12px;padding:5px 6px;border-radius:6px;border:1px solid #2f5680;background:#0f2036;color:#fff}
+.phead .pr{flex:0 0 auto;max-width:108px;font-size:11px;border-radius:6px;padding:3px;background:#1b3350;color:#fff;border:1px solid #2f5680}
+.exp{flex:0 0 auto;background:#24425f;color:#fff;border:1px solid #3d6a96;border-radius:6px;width:26px;padding:3px 0;font-weight:bold;cursor:pointer}
+.rdy{flex:0 0 auto;font-size:11px;font-weight:bold;border-radius:10px;padding:2px 8px}
+.rdy.full{background:#183a26;color:#8ff0b0}
+.rdy.part{background:#3a2f18;color:#f3d08a}
+.rdy.none{background:#3a1d1d;color:#f2b8b8}
+.phead .save{flex:0 0 auto;background:#1c86ff;border:1px solid #1c86ff;color:#fff;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:bold}
+.phead .save.dirty{background:#e0a52a;border-color:#e0a52a;color:#1a1200}
+.phead .rm{flex:0 0 auto;background:#5a2530;border:1px solid #8a3a48;color:#fff;border-radius:6px;padding:3px 9px;font-weight:bold}
+.pbody{display:none;padding:2px 8px 12px 34px}
+.pcard.open .pbody{display:block}
+.asg{font-size:11px;color:#bcd0e2;background:#0f2036;border-radius:6px;padding:6px 9px;margin-bottom:8px}
+.bufs{display:flex;flex-direction:column;gap:5px}
+.buf{display:flex;align-items:center;gap:8px;font-size:12px}
+.buf label{display:flex;align-items:center;gap:6px;flex:1;min-width:0}
+.buf input[type=checkbox]{width:16px;height:16px;flex:0 0 auto}
+.shotbtn{position:relative;overflow:hidden;background:#24425f;color:#fff;border:1px solid #3d6a96;border-radius:6px;padding:4px 9px;font-size:11px;font-weight:bold;cursor:pointer;flex:0 0 auto}
+.shotbtn input[type=file]{position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.shotimg img{height:30px;border-radius:4px;border:1px solid #3d6a96;vertical-align:middle}
