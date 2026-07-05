@@ -91,7 +91,7 @@ function renderPlayers(){
   each('.pn',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].name=e.target.value;saveLocal();markDirty();};});
   each('.pside',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].side=e.target.value;saveLocal();markDirty();renderPlayers();renderSides();renderMapInfo();};});
   each('.psub',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].sub=(e.target.value==='sub');saveLocal();markDirty();renderPlayers();renderSides();renderMapInfo();};});
-  each('.pfunc',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].func=e.target.value;saveLocal();markDirty();};});
+  each('.pfunc',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].func=e.target.value;saveLocal();markDirty();renderMapInfo();};});
   each('.pleg',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i'),l=+e.target.getAttribute('data-l');if(!roster[i].legions)roster[i].legions=['','','','',''];roster[i].legions[l]=e.target.value;saveLocal();markDirty();renderRallies();renderStaff();renderLife();renderMapInfo();};});
   each('.save',function(x){x.onclick=function(){commitRoster();renderPlayers();};});
   each('.rm',function(x){x.onclick=function(e){roster.splice(+e.target.getAttribute('data-i'),1);saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();};});
@@ -163,14 +163,30 @@ function renderReady(){
   });
   c.innerHTML=h+'</table>';
 }
+// Teleport order: garrison first (nearest their objective), strong next,
+// off side last so they never take the first spots. Ties keep list order.
+function funcRank(p){
+  if(p.func==='GARRISON LEAD')return 0;
+  if(p.func==='GARRISON FILL')return 1;
+  if(p.side==='strong')return 2;
+  if(p.side==='off')return 4;
+  return 3;
+}
+function teleportOrder(){
+  var mains=[];roster.forEach(function(p,i){if(!p.sub)mains.push({p:p,i:i});});
+  mains.sort(function(a,b){var d=funcRank(a.p)-funcRank(b.p);return d!==0?d:a.i-b.i;});
+  return mains.map(function(x){return x.p;});
+}
 // ---- Below-map command panel: teleport order + live grouping ----
 function mapInfoHTML(){
-  var st=[],of=[],subs=[];
-  roster.forEach(function(p){if(p.sub){subs.push(p.name);return;}if(p.side==='strong')st.push(p.name);else if(p.side==='off')of.push(p.name);});
-  var n=Math.max(st.length,of.length);
-  var h='<div class="rolehdr"><span>Teleport order <span class="cnt">'+st.length+' strong \u00b7 '+of.length+' off</span></span></div>';
-  h+='<table class="t"><tr><th>#</th><th style="color:#e06fb5">Strong</th><th>#</th><th style="color:#5b9bd5">Off</th></tr>';
-  for(var i=0;i<n;i++){h+='<tr><td>'+(st[i]?(i+1):'')+'</td><td>'+(st[i]?esc(st[i]):'')+'</td><td>'+(of[i]?(i+1):'')+'</td><td>'+(of[i]?esc(of[i]):'')+'</td></tr>';}
+  var subs=[];roster.forEach(function(p){if(p.sub)subs.push(p.name);});
+  var ord=teleportOrder();
+  var h='<div class="rolehdr"><span>Teleport order <span class="cnt">garrison \u2192 strong \u2192 off</span></span></div>';
+  h+='<table class="t"><tr><th>#</th><th>Player</th><th>Side</th><th>Function</th></tr>';
+  ord.forEach(function(p,i){
+    var sc=p.side==='strong'?'#e06fb5':(p.side==='off'?'#5b9bd5':'#8aa0b6');
+    h+='<tr><td>'+(i+1)+'</td><td>'+esc(p.name)+'</td><td style="color:'+sc+';font-weight:bold">'+sideLbl(p.side)+'</td><td style="font-size:10px;color:#9fb3c6">'+esc(p.func||'\u2014')+'</td></tr>';
+  });
   h+='</table>';
   if(subs.length)h+='<div class="sub"><b>Subs:</b> '+esc(subs.join(', '))+'</div>';
   h+='<div class="rolehdr"><span>Grouping</span></div>';
