@@ -31,7 +31,7 @@ var rosterDirty=false;
 function rdirtyNote(){var n=el('rdirty');if(n)n.textContent=rosterDirty?'Unsaved changes \u2014 tap Save to share with the team.':'';}
 function markDirty(){rosterDirty=true;var b=document.querySelectorAll('#playerlist .save');for(var i=0;i<b.length;i++){b[i].className='save dirty';b[i].textContent='Save*';}rdirtyNote();}
 function clearDirty(){rosterDirty=false;var b=document.querySelectorAll('#playerlist .save');for(var i=0;i<b.length;i++){b[i].className='save';b[i].textContent='Save';}rdirtyNote();}
-function commitRoster(){saveRoster();clearDirty();renderMap('blue');renderMap('yellow');renderRallies();renderStaff();renderSides();renderLife();renderReady();}
+function commitRoster(){saveRoster();clearDirty();renderMap('blue');renderMap('yellow');renderRallies();renderStaff();renderSides();renderMapInfo();renderLife();renderReady();}
 function readyBadge(p){var n=buffCount(p),t=FIELDS.length;var cls=n>=t?'rdy full':(n>0?'rdy part':'rdy none');return '<span class="'+cls+'">'+n+'/'+t+'</span>';}
 function buffList(i,p){
   var h='';
@@ -89,12 +89,12 @@ function renderPlayers(){
   function each(sel,fn){var n=c.querySelectorAll(sel);for(var i=0;i<n.length;i++)fn(n[i]);}
   each('.exp',function(x){x.onclick=function(e){var card=e.target.parentNode.parentNode;var open=card.className.indexOf('open')<0;card.className=open?'pcard open':'pcard';e.target.textContent=open?'\u25BE':'\u25B8';};});
   each('.pn',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].name=e.target.value;saveLocal();markDirty();};});
-  each('.pside',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].side=e.target.value;saveLocal();markDirty();renderPlayers();renderSides();};});
-  each('.psub',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].sub=(e.target.value==='sub');saveLocal();markDirty();renderPlayers();renderSides();};});
+  each('.pside',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].side=e.target.value;saveLocal();markDirty();renderPlayers();renderSides();renderMapInfo();};});
+  each('.psub',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].sub=(e.target.value==='sub');saveLocal();markDirty();renderPlayers();renderSides();renderMapInfo();};});
   each('.pfunc',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].func=e.target.value;saveLocal();markDirty();};});
-  each('.pleg',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i'),l=+e.target.getAttribute('data-l');if(!roster[i].legions)roster[i].legions=['','','','',''];roster[i].legions[l]=e.target.value;saveLocal();markDirty();renderRallies();renderStaff();renderLife();};});
+  each('.pleg',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i'),l=+e.target.getAttribute('data-l');if(!roster[i].legions)roster[i].legions=['','','','',''];roster[i].legions[l]=e.target.value;saveLocal();markDirty();renderRallies();renderStaff();renderLife();renderMapInfo();};});
   each('.save',function(x){x.onclick=function(){commitRoster();renderPlayers();};});
-  each('.rm',function(x){x.onclick=function(e){roster.splice(+e.target.getAttribute('data-i'),1);saveRoster();renderPlayers();renderSides();renderRallies();};});
+  each('.rm',function(x){x.onclick=function(e){roster.splice(+e.target.getAttribute('data-i'),1);saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();};});
   each('.bchk',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i');fEntry(roster[i],e.target.getAttribute('data-k')).v=e.target.checked;saveLocal();markDirty();updateBadge(i);renderReady();};});
   each('.bsel',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i');fEntry(roster[i],e.target.getAttribute('data-k')).v=e.target.value;saveLocal();markDirty();updateBadge(i);renderReady();};});
   each('.bfile',function(x){x.onchange=function(e){uploadBuff(+e.target.getAttribute('data-i'),e.target.getAttribute('data-k'),e.target.files[0]);};});
@@ -116,7 +116,7 @@ function uploadBuff(i,k,file){
   }catch(e){flash('Upload failed');}
 }
 function addPlayer(){roster.push({name:'New player',side:'',sub:true,buffs:{}});saveLocal();markDirty();renderPlayers();}
-function resetPlayers(){initRoster();saveRoster();renderPlayers();renderSides();renderRallies();}
+function resetPlayers(){initRoster();saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();}
 // ---- Rallies tab: the grouping (editable; member dropdowns from registered list) ----
 function renderRallies(){
   var c=el('rallytbl');if(!c)return;
@@ -128,7 +128,7 @@ function renderRallies(){
     h+='<div class="asg">'+(mem.length?esc(mem.join(', ')):'<span style="color:#7a8a99">no legions assigned yet</span>')+'</div></div>';
   });
   c.innerHTML=h;
-  var n=c.querySelectorAll('.glead');for(var i=0;i<n.length;i++){n[i].onchange=function(e){groups[+e.target.getAttribute('data-g')].leader=e.target.value;save();renderRallies();renderLife();};}
+  var n=c.querySelectorAll('.glead');for(var i=0;i<n.length;i++){n[i].onchange=function(e){groups[+e.target.getAttribute('data-g')].leader=e.target.value;save();renderRallies();renderLife();renderMapInfo();};}
 }
 // ---- Sides tab: registered Strong/Off, derived from roster ----
 function renderSides(){
@@ -163,3 +163,18 @@ function renderReady(){
   });
   c.innerHTML=h+'</table>';
 }
+// ---- Below-map command panel: teleport order + live grouping ----
+function mapInfoHTML(){
+  var st=[],of=[],subs=[];
+  roster.forEach(function(p){if(p.sub){subs.push(p.name);return;}if(p.side==='strong')st.push(p.name);else if(p.side==='off')of.push(p.name);});
+  var n=Math.max(st.length,of.length);
+  var h='<div class="rolehdr"><span>Teleport order <span class="cnt">'+st.length+' strong \u00b7 '+of.length+' off</span></span></div>';
+  h+='<table class="t"><tr><th>#</th><th style="color:#e06fb5">Strong</th><th>#</th><th style="color:#5b9bd5">Off</th></tr>';
+  for(var i=0;i<n;i++){h+='<tr><td>'+(st[i]?(i+1):'')+'</td><td>'+(st[i]?esc(st[i]):'')+'</td><td>'+(of[i]?(i+1):'')+'</td><td>'+(of[i]?esc(of[i]):'')+'</td></tr>';}
+  h+='</table>';
+  if(subs.length)h+='<div class="sub"><b>Subs:</b> '+esc(subs.join(', '))+'</div>';
+  h+='<div class="rolehdr"><span>Grouping</span></div>';
+  groups.forEach(function(g){var mem=membersOf(g.code);h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+(g.leader?'lead: '+esc(g.leader)+' \u00b7 ':'')+legionCount(g.code)+' legions</span></div><div class="asg">'+(mem.length?esc(mem.join(', ')):'<span style="color:#7a8a99">\u2014</span>')+'</div></div>';});
+  return h;
+}
+function renderMapInfo(){var h=mapInfoHTML();var a=el('mapinfo-blue'),b=el('mapinfo-yellow');if(a)a.innerHTML=h;if(b)b.innerHTML=h;}
