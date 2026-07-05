@@ -43,7 +43,7 @@ create or replace function public.save_plan(p_id text, p_data jsonb, p_secret te
 returns boolean
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare stored text;
 begin
@@ -75,7 +75,7 @@ create or replace function public.set_plan_secret(p_secret text)
 returns void
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 begin
   insert into public.app_secret (id, secret_hash)
