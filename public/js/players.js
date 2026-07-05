@@ -1,11 +1,16 @@
 // players.js — registered roster HUB (main/subs + buffs) + Rallies grouping.
+function seedLegions(n){var legs=[];GROUPS.forEach(function(g){if(g.members.indexOf(n)>=0&&legs.length<5)legs.push(g.code);});while(legs.length<5)legs.push('');return legs;}
 function initRoster(){
   roster=[];
-  REG_STRONG.forEach(function(n){roster.push({name:n,side:'strong',sub:false,buffs:{}});});
-  REG_OFF.forEach(function(n){roster.push({name:n,side:'off',sub:false,buffs:{}});});
-  REG_SUB.forEach(function(n){roster.push({name:n,side:'',sub:true,buffs:{}});});
+  REG_STRONG.forEach(function(n){roster.push({name:n,side:'strong',sub:false,func:'',legions:seedLegions(n),buffs:{}});});
+  REG_OFF.forEach(function(n){roster.push({name:n,side:'off',sub:false,func:'',legions:seedLegions(n),buffs:{}});});
+  REG_SUB.forEach(function(n){roster.push({name:n,side:'',sub:true,func:'',legions:['','','','',''],buffs:{}});});
 }
-function initGroups(){groups=GROUPS.map(function(g){return {code:g.code,leader:g.leader,side:g.side,troop:g.troop,members:g.members.slice()};});}
+function initGroups(){groups=GROUPS.map(function(g){return {code:g.code,leader:g.leader,side:g.side,troop:g.troop};});}
+function legionOpts(sel){var o='<option value="">\u2014</option>';RALLY_ORDER.forEach(function(r){o+='<option'+(sel===r?' selected':'')+'>'+esc(r)+'</option>';});return o;}
+function funcOpts(sel){var o='<option value="">\u2014 pick \u2014</option>';FUNCTIONS.forEach(function(r){o+='<option'+(sel===r?' selected':'')+'>'+esc(r)+'</option>';});return o;}
+function membersOf(code){var out=[],seen={};roster.forEach(function(p){if(p.legions&&p.legions.indexOf(code)>=0&&!seen[p.name]){seen[p.name]=1;out.push(p.name);}});return out;}
+function legionCount(code){var n=0;roster.forEach(function(p){if(p.legions)p.legions.forEach(function(c){if(c===code)n++;});});return n;}
 function pbuffs(p){if(!p.buffs)p.buffs={};return p.buffs;}
 function fEntry(p,k){var b=pbuffs(p);if(!b[k])b[k]={};return b[k];}
 function isFilled(f,v){if(f.type==='check')return v===true;return v!==undefined&&v!==null&&v!=='';}
@@ -48,9 +53,10 @@ function buffList(i,p){
 // ---- derived: which groups a player leads / is in ----
 function playerGroups(name){var leads=[],inn=[];groups.forEach(function(g){if(g.leader===name)leads.push(g.code);if(g.members.indexOf(name)>=0)inn.push(g.code);});return {leads:leads,inn:inn};}
 function playerCard(i){
-  var p=roster[i],pg=playerGroups(p.name);
-  var asg='<b>Leads:</b> '+(pg.leads.length?esc(pg.leads.join(', ')):'\u2014')+' &nbsp;\u00b7&nbsp; <b>In rallies:</b> '+(pg.inn.length?esc(pg.inn.join(', ')):'\u2014');
+  var p=roster[i];
   var d=rosterDirty?' dirty':'',t=rosterDirty?'Save*':'Save';
+  var legs=p.legions||['','','','',''];
+  var assignH='';for(var li=0;li<5;li++){assignH+='<div class="lrow"><span class="llbl">Legion '+(li+1)+'</span><select class="pleg" data-i="'+i+'" data-l="'+li+'">'+legionOpts(legs[li]||'')+'</select></div>';}
   return '<div class="pcard" data-i="'+i+'"><div class="phead">'
    +'<button class="exp">\u25B8</button>'
    +'<input class="pn" data-i="'+i+'" value="'+esc(p.name)+'">'
@@ -59,7 +65,11 @@ function playerCard(i){
    +readyBadge(p)
    +'<button class="save'+d+'" data-i="'+i+'">'+t+'</button>'
    +'<button class="rm" data-i="'+i+'">\u00d7</button>'
-   +'</div><div class="pbody"><div class="asg">'+asg+'</div><div class="bufs">'+buffList(i,p)+'</div></div></div>';
+   +'</div><div class="pbody">'
+   +'<div class="fbox"><div class="fbox-h">Main function</div><select class="pfunc" data-i="'+i+'">'+funcOpts(p.func||'')+'</select></div>'
+   +'<div class="fbox"><div class="fbox-h">Assignment \u2014 5 legions \u2192 rally roles</div>'+assignH+'</div>'
+   +'<div class="fbox"><div class="fbox-h">General info</div><div class="bufs">'+buffList(i,p)+'</div></div>'
+   +'</div></div>';
 }
 function renderPlayers(){
   var c=el('playerlist');if(!c)return;
@@ -81,6 +91,8 @@ function renderPlayers(){
   each('.pn',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].name=e.target.value;saveLocal();markDirty();};});
   each('.pside',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].side=e.target.value;saveLocal();markDirty();renderPlayers();renderSides();};});
   each('.psub',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].sub=(e.target.value==='sub');saveLocal();markDirty();renderPlayers();renderSides();};});
+  each('.pfunc',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].func=e.target.value;saveLocal();markDirty();};});
+  each('.pleg',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i'),l=+e.target.getAttribute('data-l');if(!roster[i].legions)roster[i].legions=['','','','',''];roster[i].legions[l]=e.target.value;saveLocal();markDirty();renderRallies();renderStaff();renderLife();};});
   each('.save',function(x){x.onclick=function(){commitRoster();renderPlayers();};});
   each('.rm',function(x){x.onclick=function(e){roster.splice(+e.target.getAttribute('data-i'),1);saveRoster();renderPlayers();renderSides();renderRallies();};});
   each('.bchk',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i');fEntry(roster[i],e.target.getAttribute('data-k')).v=e.target.checked;saveLocal();markDirty();updateBadge(i);renderReady();};});
@@ -108,21 +120,15 @@ function resetPlayers(){initRoster();saveRoster();renderPlayers();renderSides();
 // ---- Rallies tab: the grouping (editable; member dropdowns from registered list) ----
 function renderRallies(){
   var c=el('rallytbl');if(!c)return;
-  var h='<div class="sub">The grouping \u2014 every member is a dropdown from the registered players. Editing needs the leadership Write key (set it on the Blue map tab).</div>';
+  var h='<div class="sub">Members are built from each player\u2019s 5 legion assignments (Players tab). The Leader is set here (needs the Write key).</div>';
   groups.forEach(function(g,gi){
-    h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+sideLbl(g.side)+' \u00b7 '+esc(g.troop)+' \u00b7 '+g.members.length+'</span></div>';
+    var mem=membersOf(g.code),lc=legionCount(g.code);
+    h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+sideLbl(g.side)+' \u00b7 '+esc(g.troop)+' \u00b7 '+lc+' legions</span></div>';
     h+='<div class="grow"><span class="glbl">Lead</span><select class="glead" data-g="'+gi+'">'+nameOptions(g.leader)+'</select></div>';
-    g.members.forEach(function(m,mi){
-      h+='<div class="grow"><span class="glbl">'+(mi+1)+'</span><select class="gmem" data-g="'+gi+'" data-m="'+mi+'">'+nameOptions(m)+'</select><button class="gdel" data-g="'+gi+'" data-m="'+mi+'">\u00d7</button></div>';
-    });
-    h+='<div class="grow"><button class="gadd" data-g="'+gi+'">+ member</button></div></div>';
+    h+='<div class="asg">'+(mem.length?esc(mem.join(', ')):'<span style="color:#7a8a99">no legions assigned yet</span>')+'</div></div>';
   });
   c.innerHTML=h;
-  function each(sel,fn){var n=c.querySelectorAll(sel);for(var i=0;i<n.length;i++)fn(n[i]);}
-  each('.glead',function(x){x.onchange=function(e){groups[+e.target.getAttribute('data-g')].leader=e.target.value;save();renderRallies();renderLife();renderPlayers();};});
-  each('.gmem',function(x){x.onchange=function(e){groups[+e.target.getAttribute('data-g')].members[+e.target.getAttribute('data-m')]=e.target.value;save();renderRallies();renderLife();renderStaff();renderPlayers();};});
-  each('.gdel',function(x){x.onclick=function(e){groups[+e.target.getAttribute('data-g')].members.splice(+e.target.getAttribute('data-m'),1);save();renderRallies();renderLife();renderStaff();renderPlayers();};});
-  each('.gadd',function(x){x.onclick=function(e){groups[+e.target.getAttribute('data-g')].members.push('');save();renderRallies();renderLife();renderStaff();};});
+  var n=c.querySelectorAll('.glead');for(var i=0;i<n.length;i++){n[i].onchange=function(e){groups[+e.target.getAttribute('data-g')].leader=e.target.value;save();renderRallies();renderLife();};}
 }
 // ---- Sides tab: registered Strong/Off, derived from roster ----
 function renderSides(){
@@ -138,7 +144,8 @@ function renderLife(){
   var order=['Lifestone','Lifestone Support','Beastmaster'],h='';
   order.forEach(function(code){
     var g=null;groups.forEach(function(x){if(x.code===code)g=x;});if(!g)return;
-    h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b>'+(g.leader?' <span class="gtag">lead: '+esc(g.leader)+'</span>':'')+'</div><div class="asg">'+(g.members.length?esc(g.members.join(', ')):'\u2014')+'</div></div>';
+    var mem=membersOf(g.code);
+    h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b>'+(g.leader?' <span class="gtag">lead: '+esc(g.leader)+'</span>':'')+'</div><div class="asg">'+(mem.length?esc(mem.join(', ')):'\u2014')+'</div></div>';
   });
   c.innerHTML=h;
 }

@@ -80,3 +80,9 @@ table.t tr:nth-child(even) td{background:#131f2e}
 .grow .glead{background:#16283f}
 .grow .gdel{flex:0 0 auto;background:#5a2530;border:1px solid #8a3a48;color:#fff;border-radius:6px;padding:3px 9px;font-weight:bold;cursor:pointer}
 .grow .gadd{background:#24425f;border:1px solid #3d6a96;color:#fff;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:bold;cursor:pointer;margin-left:34px}
+.fbox{border:1px solid #1c3049;border-radius:8px;padding:7px 9px;margin-bottom:8px;background:#0d1826}
+.fbox-h{font-size:11px;font-weight:bold;color:#9fb3c6;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.pfunc{width:100%;font-size:12px;background:#0f2036;color:#fff;border:1px solid #2f5680;border-radius:6px;padding:5px}
+.lrow{display:flex;align-items:center;gap:8px;margin:3px 0}
+.lrow .llbl{flex:0 0 auto;width:66px;font-size:11px;color:#9fb3c6}
+.lrow .pleg{flex:1;min-width:0;font-size:12px;background:#0f2036;color:#fff;border:1px solid #2f5680;border-radius:6px;padding:4px}

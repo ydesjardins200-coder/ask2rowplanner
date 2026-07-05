@@ -1,9 +1,9 @@
 // staffing.js — members per rally group vs plan size (from the grouping)
 function renderStaff(){
   var c=el('stafftbl');if(!c)return;
-  var h='<table class="t stat"><tr><th>Rally</th><th>Members</th><th>Plan</th><th>Status</th></tr>';var tot=0,ttot=0;
+  var h='<table class="t stat"><tr><th>Rally</th><th>Legions</th><th>Plan</th><th>Status</th></tr>';var tot=0,ttot=0;
   groups.forEach(function(g){
-    var n=0;g.members.forEach(function(m){if(m)n++;});var t=TARGETS[g.code]||0;tot+=n;ttot+=t;
+    var n=legionCount(g.code);var t=TARGETS[g.code]||0;tot+=n;ttot+=t;
     var cls='ok',lbl='OK';if(n===0){cls='bad';lbl='EMPTY';}else if(n<t){cls='bad';lbl='UNDER';}else if(n>t){cls='over';lbl='OVER';}
     h+='<tr><td><b>'+esc(g.code)+'</b></td><td>'+n+'</td><td>'+t+'</td><td class="'+cls+'">'+lbl+'</td></tr>';
   });

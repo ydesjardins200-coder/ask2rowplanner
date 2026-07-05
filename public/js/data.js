@@ -31,6 +31,7 @@ var GROUPS=[
  {code:"Beastmaster", leader:"BeastMaster", side:"support", troop:"Behemoth", members:["BeastMaster"]}
 ];
 var RALLY_ORDER=GROUPS.map(function(g){return g.code;});
+var FUNCTIONS=["GARRISON LEAD","GARRISON FILL","GHOST CAV","FAEDRAKE","LIFESTONE","TOWERS"];
 var TARGETS={};   GROUPS.forEach(function(g){TARGETS[g.code]=g.members.length;});
 var TROOP={};     GROUPS.forEach(function(g){TROOP[g.code]=g.troop;});
 var GSIDE={};     GROUPS.forEach(function(g){GSIDE[g.code]=g.side;});
