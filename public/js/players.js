@@ -181,16 +181,16 @@ function teleportOrder(){
 function mapInfoHTML(){
   var subs=[];roster.forEach(function(p){if(p.sub)subs.push(p.name);});
   var ord=teleportOrder();
-  var h='<div class="rolehdr"><span>Teleport order <span class="cnt">garrison \u2192 strong \u2192 off</span></span></div>';
-  h+='<table class="t"><tr><th>#</th><th>Player</th><th>Side</th><th>Function</th></tr>';
+  var tp='<div class="rolehdr"><span>Teleport</span></div><table class="t tp"><tr><th>#</th><th>Player</th></tr>';
   ord.forEach(function(p,i){
-    var sc=p.side==='strong'?'#e06fb5':(p.side==='off'?'#5b9bd5':'#8aa0b6');
-    h+='<tr><td>'+(i+1)+'</td><td>'+esc(p.name)+'</td><td style="color:'+sc+';font-weight:bold">'+sideLbl(p.side)+'</td><td style="font-size:10px;color:#9fb3c6">'+esc(p.func||'\u2014')+'</td></tr>';
+    var sc=p.side==='strong'?'#f4a6d7':(p.side==='off'?'#8fc0f0':'#c9d4de');
+    tp+='<tr><td>'+(i+1)+'</td><td style="color:'+sc+'">'+esc(p.name)+'</td></tr>';
   });
-  h+='</table>';
-  if(subs.length)h+='<div class="sub"><b>Subs:</b> '+esc(subs.join(', '))+'</div>';
-  h+='<div class="rolehdr"><span>Grouping</span></div>';
-  groups.forEach(function(g){var mem=membersOf(g.code);h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+(g.leader?'lead: '+esc(g.leader)+' \u00b7 ':'')+legionCount(g.code)+' legions</span></div><div class="asg">'+(mem.length?esc(mem.join(', ')):'<span style="color:#7a8a99">\u2014</span>')+'</div></div>';});
-  return h;
+  tp+='</table>';
+  if(subs.length)tp+='<div class="sub" style="font-size:10px"><b>Subs:</b> '+esc(subs.join(', '))+'</div>';
+  var gp='<div class="rolehdr"><span>Grouping</span></div><div class="gpgrid">';
+  groups.forEach(function(g){var mem=membersOf(g.code);gp+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+(g.leader?'lead: '+esc(g.leader)+' \u00b7 ':'')+legionCount(g.code)+' leg</span></div><div class="asg">'+(mem.length?esc(mem.join(', ')):'<span style="color:#7a8a99">\u2014</span>')+'</div></div>';});
+  gp+='</div>';
+  return '<div class="minfo"><div class="minfo-tp">'+tp+'</div><div class="minfo-gp">'+gp+'</div></div>';
 }
 function renderMapInfo(){var h=mapInfoHTML();var a=el('mapinfo-blue'),b=el('mapinfo-yellow');if(a)a.innerHTML=h;if(b)b.innerHTML=h;}

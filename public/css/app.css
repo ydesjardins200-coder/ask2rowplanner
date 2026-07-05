@@ -86,3 +86,11 @@ table.t tr:nth-child(even) td{background:#131f2e}
 .lrow{display:flex;align-items:center;gap:8px;margin:3px 0}
 .lrow .llbl{flex:0 0 auto;width:66px;font-size:11px;color:#9fb3c6}
 .lrow .pleg{flex:1;min-width:0;font-size:12px;background:#0f2036;color:#fff;border:1px solid #2f5680;border-radius:6px;padding:4px}
+.minfo{display:flex;gap:12px;align-items:flex-start;margin-top:10px}
+.minfo-tp{flex:0 0 20%;min-width:0}
+.minfo-gp{flex:1 1 0;min-width:0}
+.minfo .tp{font-size:11px}
+.minfo .tp td,.minfo .tp th{padding:2px 5px}
+.gpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:7px}
+.gpgrid .grp{margin-bottom:0}
+@media(max-width:620px){.minfo{flex-direction:column}.minfo-tp{flex-basis:auto;width:100%}}
