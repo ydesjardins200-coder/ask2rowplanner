@@ -94,3 +94,7 @@ table.t tr:nth-child(even) td{background:#131f2e}
 .gpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:7px}
 .gpgrid .grp{margin-bottom:0}
 @media(max-width:620px){.minfo{flex-direction:column}.minfo-tp{flex-basis:auto;width:100%}}
+.buf{flex-wrap:wrap}
+.buf .btxt{flex:0 0 auto;width:150px;font-size:12px;background:#0f2036;color:#fff;border:1px solid #2f5680;border-radius:6px;padding:4px}
+.buf .bmc{flex:1 1 auto;display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:flex-end}
+.buf .bmcw{display:flex;align-items:center;gap:4px;font-size:11px;white-space:nowrap}

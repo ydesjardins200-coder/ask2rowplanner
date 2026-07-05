@@ -13,7 +13,12 @@ function membersOf(code){var out=[],seen={};roster.forEach(function(p){if(p.legi
 function legionCount(code){var n=0;roster.forEach(function(p){if(p.legions)p.legions.forEach(function(c){if(c===code)n++;});});return n;}
 function pbuffs(p){if(!p.buffs)p.buffs={};return p.buffs;}
 function fEntry(p,k){var b=pbuffs(p);if(!b[k])b[k]={};return b[k];}
-function isFilled(f,v){if(f.type==='check')return v===true;return v!==undefined&&v!==null&&v!=='';}
+function isFilled(f,v){
+  if(f.type==='check')return v===true;
+  if(f.type==='text')return v!==undefined&&v!==null&&(''+v).trim()!=='';
+  if(f.type==='multicheck'){if(!v||typeof v!=='object')return false;for(var k in v){if(v[k])return true;}return false;}
+  return v!==undefined&&v!==null&&v!=='';
+}
 function buffCount(p){var n=0;FIELDS.forEach(function(f){var e=pbuffs(p)[f.key];if(e&&isFilled(f,e.v))n++;});return n;}
 function nameOptions(sel){
   var seen={},names=[];
@@ -40,6 +45,12 @@ function buffList(i,p){
     h+='<div class="buf"><span class="blbl">'+esc(f.label)+'</span>';
     if(f.type==='check'){
       h+='<label class="bchkw"><input type="checkbox" class="bchk" data-i="'+i+'" data-k="'+f.key+'"'+(v===true?' checked':'')+'> yes</label>';
+    }else if(f.type==='text'){
+      h+='<input type="text" class="btxt" data-i="'+i+'" data-k="'+f.key+'" value="'+esc(v||'')+'" placeholder="value">';
+    }else if(f.type==='multicheck'){
+      h+='<span class="bmc">';
+      f.opts.forEach(function(o){var on=v&&typeof v==='object'&&v[o];h+='<label class="bmcw"><input type="checkbox" class="bmck" data-i="'+i+'" data-k="'+f.key+'" data-o="'+esc(o)+'"'+(on?' checked':'')+'> '+esc(o)+'</label>';});
+      h+='</span>';
     }else{
       h+='<select class="bsel" data-i="'+i+'" data-k="'+f.key+'"><option value="">\u2014</option>';
       f.opts.forEach(function(o){h+='<option'+(v===o?' selected':'')+'>'+esc(o)+'</option>';});
@@ -97,6 +108,8 @@ function renderPlayers(){
   each('.rm',function(x){x.onclick=function(e){roster.splice(+e.target.getAttribute('data-i'),1);saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();};});
   each('.bchk',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i');fEntry(roster[i],e.target.getAttribute('data-k')).v=e.target.checked;saveLocal();markDirty();updateBadge(i);renderReady();};});
   each('.bsel',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i');fEntry(roster[i],e.target.getAttribute('data-k')).v=e.target.value;saveLocal();markDirty();updateBadge(i);renderReady();};});
+  each('.btxt',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i');fEntry(roster[i],e.target.getAttribute('data-k')).v=e.target.value;saveLocal();markDirty();updateBadge(i);renderReady();};});
+  each('.bmck',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i'),ent=fEntry(roster[i],e.target.getAttribute('data-k'));if(!ent.v||typeof ent.v!=='object')ent.v={};ent.v[e.target.getAttribute('data-o')]=e.target.checked;saveLocal();markDirty();updateBadge(i);renderReady();};});
   each('.bfile',function(x){x.onchange=function(e){uploadBuff(+e.target.getAttribute('data-i'),e.target.getAttribute('data-k'),e.target.files[0]);};});
 }
 function updateBadge(i){var card=document.querySelector('.pcard[data-i="'+i+'"]');if(!card)return;var old=card.querySelector('.rdy');if(!old)return;var t=document.createElement('div');t.innerHTML=readyBadge(roster[i]);old.parentNode.replaceChild(t.firstChild,old);}

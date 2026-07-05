@@ -11,7 +11,10 @@ var FIELDS=[
  {key:"svip",label:"SVIP",type:"check"},
  {key:"faction",label:"Faction",type:"select",opts:["Human","OrcWilderberg","Wood Elf"]},
  {key:"title",label:"Alliance Title",type:"select",opts:["none","Chief Warden","Spymaster","King"]},
- {key:"legendary",label:"Legendary cities",type:"select",opts:["1","2","3","4","5"]}
+ {key:"legendary",label:"Legendary cities",type:"select",opts:["1","2","3","4","5"]},
+ {key:"power",label:"Total power",type:"text"},
+ {key:"maxed",label:"Maxed unit type",type:"multicheck",opts:["Infantry","Mage","Cavalry","Archer"]},
+ {key:"exemplar",label:"Exemplar artefact",type:"check"}
 ];
 
 // ---- Rally grouping (the "grouping" the Rallies tab renders). Many-to-many. ----
