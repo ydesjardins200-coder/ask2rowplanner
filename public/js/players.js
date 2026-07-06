@@ -244,8 +244,14 @@ function mainRoleLbl(p){
   if(p.side==='off')return t('s_off');
   return '\u2014';
 }
-// How many of a player's 5 legion slots are filled.
-function legAssignedCount(p){var n=0;if(p.legions)for(var i=0;i<p.legions.length;i++){if(p.legions[i])n++;}return n;}
+// How many groups a player is committed to: their filled legion slots PLUS any
+// group they lead (leading = you must be there), counted once per group.
+function legAssignedCount(p){
+  var seen={},n=0;
+  if(p.legions)for(var i=0;i<p.legions.length;i++){var c=p.legions[i];if(c&&!seen[c]){seen[c]=1;n++;}}
+  for(var gi=0;gi<groups.length;gi++){var g=groups[gi];var lead=(g.code in assign)?assign[g.code]:g.leader;if(lead&&lead===p.name&&!seen[g.code]){seen[g.code]=1;n++;}}
+  return n;
+}
 function mapInfoHTML(){
   var subs=[];roster.forEach(function(p){if(p.sub)subs.push(p.name);});
   var ord=teleportOrder();
