@@ -1,29 +1,109 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>S2AK Roots of War</title>
-<link rel="stylesheet" href="css/app.css">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>S2AK — Roots of War Command Sheet</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
-</head><body>
-<h1>S2AK — Roots of War Command Sheet</h1>
-<div class="tabs" id="tabs"></div>
-<section id="map-blue" class="on"><div class="sub">YOU = BLUE (Lucia). Strong side points at Yaen. Tap a picker to set a building's leader.</div>
- <div class="bar"><button onclick="resetPlan()">Reset to plan</button><button onclick="clearAll()">Clear all</button><button onclick="setLeadKey()" id="keybtn">Write key</button><span id="st" class="sub"></span></div>
- <div class="wrap" id="wrap-blue"></div>
- <div class="legend"><span class="dot" style="background:#e06fb5"></span>Strong<span class="dot" style="background:#5b9bd5"></span>Off<span class="dot" style="background:#2fb3a4"></span>Center<span class="dot" style="background:#c8952a"></span>Fraedrake</div><div id="mapinfo-blue"></div></section>
-<section id="map-yellow"><div class="sub">YOU = YELLOW (Yaen). Strong side FLIPS to point at Lucia — same leaders, mirrored zones.</div>
- <div class="wrap" id="wrap-yellow"></div>
- <div class="legend"><span class="dot" style="background:#e06fb5"></span>Strong<span class="dot" style="background:#5b9bd5"></span>Off<span class="dot" style="background:#2fb3a4"></span>Center<span class="dot" style="background:#c8952a"></span>Fraedrake</div><div id="mapinfo-yellow"></div></section>
-<section id="phases"><div class="phhdr p1">PHASE 1 — OPENING (0-10 min)</div><table class="t"><tr><th>Group</th><th>Leader</th><th>Side</th><th>Objective</th></tr><tr><td><b>Lifestone Squad</b></td><td>Flexie/Warby</td><td style="color:#2fb3a4;font-weight:bold">LIFE</td><td>PRE-POSITION on the CENTER spawn — be first on it at gates open.</td></tr><tr><td><b>Ghost Cavalry</b></td><td>Daenerys/Ash</td><td style="color:#c8952a;font-weight:bold">SUP</td><td>Rush-tag central + key buildings (first occupation). Screen Lifestone.</td></tr><tr><td><b>Strong Side Inf</b></td><td>H1/H2/H3</td><td style="color:#e06fb5;font-weight:bold">STRONG</td><td>H2 BLINK to forward center. H1+H3 push strong-side buildings.</td></tr><tr><td><b>Towers</b></td><td>TH1/T1</td><td style="color:#e06fb5;font-weight:bold">STRONG</td><td>Garrison captured towers on the strong side.</td></tr><tr><td><b>Off Side (Cav)</b></td><td>H4 Northwolfs</td><td style="color:#5b9bd5;font-weight:bold">OFF</td><td>Cav sweep off-side buildings — tag &amp; hold.</td></tr><tr><td><b>Fraedrake</b></td><td>Fraedrake</td><td style="color:#c8952a;font-weight:bold">SUP</td><td>Anchor the flank; prep forward team for O3/O4.</td></tr></table><div class="phhdr p2">PHASE 2 — CENTER FIGHT / LIFESTONE</div><table class="t"><tr><th>Group</th><th>Leader</th><th>Side</th><th>Objective</th></tr><tr><td><b>Lifestone Squad</b></td><td>Flexie/Warby</td><td style="color:#2fb3a4;font-weight:bold">LIFE</td><td>TOP PRIORITY: grab, escort, DELIVER to a safe building, repeat.</td></tr><tr><td><b>Ghost Cavalry</b></td><td>Daenerys/Ash</td><td style="color:#c8952a;font-weight:bold">SUP</td><td>Clear the carrier&#x27;s path. Intercept enemy carriers, wipe rallies.</td></tr><tr><td><b>Beastmaster</b></td><td>BeastMaster</td><td style="color:#8bb84a;font-weight:bold">RNG</td><td>Behemoth into the DECISIVE center fight + officer skills.</td></tr><tr><td><b>Strong Side</b></td><td>H1/H2/H3</td><td style="color:#e06fb5;font-weight:bold">STRONG</td><td>Collapse on center, win the Lifestone ground.</td></tr><tr><td><b>Towers</b></td><td>TH1/T1/TH2/T2</td><td style="color:#e06fb5;font-weight:bold">STRONG</td><td>Hold towers, feed rallies, don&#x27;t abandon for kills.</td></tr><tr><td><b>Off Side</b></td><td>H4 Northwolfs</td><td style="color:#5b9bd5;font-weight:bold">OFF</td><td>Press enemy underside (O3/O4), split their attention.</td></tr></table><div class="phhdr p3">PHASE 3 — LOCKDOWN</div><table class="t"><tr><th>Group</th><th>Leader</th><th>Side</th><th>Objective</th></tr><tr><td><b>Lifestone Squad</b></td><td>Flexie/Warby</td><td style="color:#2fb3a4;font-weight:bold">LIFE</td><td>CAMP center, deny pickups, keep delivering.</td></tr><tr><td><b>Ghost Cavalry</b></td><td>Daenerys/Ash</td><td style="color:#c8952a;font-weight:bold">SUP</td><td>Roam, punish overextensions, protect carriers.</td></tr><tr><td><b>Strong Side</b></td><td>H1/H2/H3</td><td style="color:#e06fb5;font-weight:bold">STRONG</td><td>Flex into garrison; hold every building. Rotate subs.</td></tr><tr><td><b>Off Side</b></td><td>H4 Northwolfs</td><td style="color:#5b9bd5;font-weight:bold">OFF</td><td>Hold off-side buildings, keep the flank shut.</td></tr><tr><td><b>Fraedrake</b></td><td>Fraedrake</td><td style="color:#c8952a;font-weight:bold">SUP</td><td>Lock O3/O4 and the flank.</td></tr></table></section>
-<section id="life"><div class="note">LIFESTONE = PRIORITY #1. Spawns center; deliveries compound.</div><div id="lifetbl"></div></section>
-<section id="rallies"><div class="sub">Grouped live from the Players tab — edit players there and this reflects it.</div><div id="rallytbl"></div></section>
-<section id="players"><div class="sub">Set each player's primary rally. Feeds the Staffing tab live.</div><div id="playerlist"></div></section>
-<section id="staffing"><div class="sub">Primary players per rally vs target (from Players tab).</div><div id="stafftbl"></div><div class="rolehdr"><span>Buff readiness</span></div><div id="readytbl"></div></section>
-<section id="sides"><div class="sub">Registered Strong / Off — derived from the Players tab (mains only).</div><div id="sidestbl"></div></section>
-<script src="js/data.js"></script>
-<script src="js/util.js"></script>
-<script src="js/store.js"></script>
-<script src="js/map.js"></script>
-<script src="js/players.js"></script>
-<script src="js/staffing.js"></script>
-<script src="js/main.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#0a1420;color:#e8eef4;line-height:1.5}
+.bg{background:radial-gradient(1200px 500px at 70% -10%,#16324f 0%,#0a1420 60%);min-height:100vh}
+.wrap{max-width:1000px;margin:0 auto;padding:34px 20px 50px}
+.brand{font-size:13px;letter-spacing:2px;color:#7fb2e6;font-weight:bold;text-transform:uppercase}
+h1{font-size:32px;margin:6px 0 4px}
+.tag{color:#9fb3c6;font-size:15px;margin-bottom:26px}
+.grid{display:flex;gap:30px;align-items:flex-start;flex-wrap:wrap}
+.info{flex:1 1 380px;min-width:0}
+.feat{display:flex;gap:11px;align-items:flex-start;margin:13px 0}
+.feat .dot{flex:0 0 auto;width:22px;height:22px;border-radius:6px;background:#1c86ff33;border:1px solid #1c86ff;color:#7fb2e6;font-weight:bold;font-size:13px;text-align:center;line-height:21px}
+.feat b{color:#eaf1f8}
+.feat span{color:#9fb3c6;font-size:13px}
+.card{flex:0 0 330px;background:#0e1c2c;border:1px solid #24425f;border-radius:14px;padding:22px;box-shadow:0 10px 40px #0007}
+.seg{display:flex;background:#0a1622;border:1px solid #24425f;border-radius:9px;padding:3px;margin-bottom:16px}
+.seg button{flex:1;background:none;border:none;color:#9fb3c6;font-weight:bold;font-size:13px;padding:8px;border-radius:7px;cursor:pointer}
+.seg button.on{background:#1c86ff;color:#fff}
+label.f{display:block;font-size:12px;color:#9fb3c6;margin:12px 0 4px}
+input.f{width:100%;background:#0a1622;border:1px solid #2f5680;border-radius:8px;color:#fff;padding:10px;font-size:14px}
+input.f:focus{outline:none;border-color:#1c86ff}
+.go{width:100%;margin-top:18px;background:#1c86ff;border:none;color:#fff;font-weight:bold;font-size:15px;padding:11px;border-radius:9px;cursor:pointer}
+.go:hover{background:#3a97ff}
+.go:disabled{opacity:.6;cursor:default}
+.msg{margin-top:12px;font-size:12px;min-height:16px}
+.msg.err{color:#ff9b9b}
+.msg.ok{color:#8ff0b0}
+.note{margin-top:14px;font-size:11px;color:#6f8296;text-align:center}
+footer{margin-top:34px;font-size:11px;color:#5f7286}
+</style>
+</head>
+<body><div class="bg"><div class="wrap">
+  <div class="brand">S2AK Alliance</div>
+  <h1>Roots of War — Command Sheet</h1>
+  <div class="tag">The live battle planner for our 30v30. Maps, rosters, rallies and readiness — in one place, in real time.</div>
+
+  <div class="grid">
+    <div class="info">
+      <div class="feat"><span class="dot">1</span><div><b>Interactive maps</b><br><span>Blue &amp; Yellow layouts with per-building leaders, auto-mirrored when we flip sides, plus teleport order below.</span></div></div>
+      <div class="feat"><span class="dot">2</span><div><b>Registered roster</b><br><span>Strong / Off mains &amp; subs, each with buffs, account fields and screenshot proof.</span></div></div>
+      <div class="feat"><span class="dot">3</span><div><b>Legion grouping</b><br><span>Everyone assigns their 5 legions to rally roles; the Rallies, Sides and Staffing views build themselves from it.</span></div></div>
+      <div class="feat"><span class="dot">4</span><div><b>Readiness at a glance</b><br><span>Leadership sees who's fully prepped and who still has fields or proof missing.</span></div></div>
+    </div>
+
+    <div class="card">
+      <div class="seg"><button id="tabLogin" class="on">Log in</button><button id="tabSignup">Sign up</button></div>
+      <label class="f" for="email">Email</label>
+      <input class="f" id="email" type="email" autocomplete="email" placeholder="you@example.com">
+      <label class="f" for="pass">Password</label>
+      <input class="f" id="pass" type="password" autocomplete="current-password" placeholder="••••••••">
+      <button class="go" id="go">Log in</button>
+      <div class="msg" id="msg"></div>
+      <div class="note">Members only. Ask leadership if you need access.</div>
+    </div>
+  </div>
+
+  <footer>Private alliance tool · not affiliated with the game publisher.</footer>
+</div></div>
+
+<script>
+(function(){
+  var msg=document.getElementById('msg'),go=document.getElementById('go'),
+      tL=document.getElementById('tabLogin'),tS=document.getElementById('tabSignup'),
+      email=document.getElementById('email'),pass=document.getElementById('pass');
+  var SB=null, ready=false;
+  if(window.supabase&&window.SUPA&&String(window.SUPA.key).indexOf('PASTE')<0){
+    SB=window.supabase.createClient(window.SUPA.url,window.SUPA.key);
+    ready=true;
+    SB.auth.getSession().then(function(r){if(r&&r.data&&r.data.session)location.replace('app.html');});
+  }else{
+    show('Sign-in isn\u2019t configured yet (Supabase key missing).',true);go.disabled=true;
+  }
+  var mode='login';
+  function setMode(m){mode=m;
+    tL.className=m==='login'?'on':'';tS.className=m==='signup'?'on':'';
+    go.textContent=m==='login'?'Log in':'Create account';
+    pass.setAttribute('autocomplete',m==='login'?'current-password':'new-password');
+    show('');
+  }
+  tL.onclick=function(){setMode('login');};tS.onclick=function(){setMode('signup');};
+  function show(t,err){msg.textContent=t;msg.className='msg'+(t?(err?' err':' ok'):'');}
+  function submit(){
+    if(!ready)return;
+    var e=email.value.trim(),p=pass.value;
+    if(!e||!p){show('Enter your email and password.',true);return;}
+    go.disabled=true;show('Working\u2026');
+    var done=function(){go.disabled=false;};
+    if(mode==='login'){
+      SB.auth.signInWithPassword({email:e,password:p}).then(function(r){
+        if(r.error){show(r.error.message,true);done();}else location.replace('app.html');
+      });
+    }else{
+      SB.auth.signUp({email:e,password:p}).then(function(r){
+        if(r.error){show(r.error.message,true);done();}
+        else if(r.data&&r.data.session)location.replace('app.html');
+        else{show('Account created \u2014 check your email to confirm, then log in.',false);setMode('login');done();}
+      });
+    }
+  }
+  go.onclick=submit;
+  pass.addEventListener('keydown',function(ev){if(ev.key==='Enter')submit();});
+})();
+</script>
 </body></html>
