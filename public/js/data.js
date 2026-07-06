@@ -1,6 +1,6 @@
 // data.js — constants & shared mutable state
-var IMG_W=1004,IMG_H=570;
-var BUILD=[{"code": "H1", "leader": "Humble MAD", "x": 77.0, "y": 3.9, "side": "strong"}, {"code": "T1", "leader": "iiiiiiiii", "x": 62.9, "y": 6.5, "side": "strong"}, {"code": "H2", "leader": "Jalalz", "x": 53.6, "y": 20.7, "side": "strong"}, {"code": "TH1", "leader": "IONZ", "x": 84.2, "y": 41.2, "side": "strong"}, {"code": "H3", "leader": "SugarWoogy", "x": 52.1, "y": 36.3, "side": "center"}, {"code": "TH2", "leader": "Yvel", "x": 19.9, "y": 33.9, "side": "off"}, {"code": "T2", "leader": "Joker7Even", "x": 35.3, "y": 76.5, "side": "off"}, {"code": "H4", "leader": "Northwolfs", "x": 14.4, "y": 74.0, "side": "off"}, {"code": "O1", "leader": "Fraedrake", "x": 26.2, "y": 5.3, "side": "support"}, {"code": "O2", "leader": "Fraedrake", "x": 33.5, "y": 34.4, "side": "support"}, {"code": "O3", "leader": "Fraedrake", "x": 86.0, "y": 78.1, "side": "support"}, {"code": "O4", "leader": "Fraedrake", "x": 48.9, "y": 58.6, "side": "support"}, {"code": "BM", "leader": "", "x": 69.8, "y": 33.5, "side": "strong"}],LUC=[40.0, 37.0],YAE=[65.0, 47.0],LIFE=[50.0, 44.0];
+var IMG_W=954,IMG_H=996;
+var BUILD=[{"code": "H1", "leader": "Humble MAD", "x": 81.6, "y": 15.6, "side": "strong"}, {"code": "T1", "leader": "iiiiiiiii", "x": 60.2, "y": 10.2, "side": "strong"}, {"code": "H2", "leader": "Jalalz", "x": 52.0, "y": 22.8, "side": "strong"}, {"code": "TH1", "leader": "IONZ", "x": 82.9, "y": 37.6, "side": "strong"}, {"code": "H3", "leader": "SugarWoogy", "x": 45.7, "y": 46.4, "side": "center"}, {"code": "TH2", "leader": "Yvel", "x": 8.2, "y": 54.2, "side": "off"}, {"code": "T2", "leader": "Joker7Even", "x": 31.4, "y": 85.4, "side": "off"}, {"code": "H4", "leader": "Northwolfs", "x": 8.8, "y": 78.5, "side": "off"}, {"code": "O1", "leader": "Fraedrake", "x": 25.1, "y": 17.3, "side": "support"}, {"code": "O2", "leader": "Fraedrake", "x": 9.9, "y": 18.9, "side": "support"}, {"code": "O3", "leader": "Fraedrake", "x": 83.1, "y": 76.3, "side": "support"}, {"code": "O4", "leader": "Fraedrake", "x": 89.3, "y": 87.0, "side": "support"}, {"code": "BM", "leader": "", "x": 70.1, "y": 78.9, "side": "strong"}],LUC=[34.8, 33.4],YAE=[56.8, 65.6],LIFE=[46.0, 49.0];
 // ---- Registered team (from the master "Rally Leaders & Team" chart) ----
 var REG_STRONG=["Midjet Shiso","Esvipe","Ping (DEMON)","T1Faker THE GOAT","Flexie","Just Scary","SOREN","SugarWoogy","Humble Soju","Jalalz","iiiiiiiii","FaceOfBlade","Humble HVN","Ionz","Taattaat","Lastomania","Humble MAD"];
 var REG_OFF=["DARK","BaBaDemouz","Chemona","Northwolfs","Erotic Sushi","krasivaya eva","WIZARD","Garius","Daenerys","Joker7even","Yvel","Ash","RomolusRemus"];
@@ -15,7 +15,7 @@ var FIELDS=[
  {key:"legendary",label:"# Of Legendary skin",type:"select",opts:["1","2","3","4","5"]},
  {key:"maxed",label:"Maxed unit type",type:"multicheck",opts:["Infantry","Mage","Cavalry","Archer"]},
  {key:"exemplar",label:"Exemplar artefact",type:"check"},
- {key:"maxpet",label:"Max pet",type:"proof",func:"GARRISON LEAD"}
+ {key:"maxpet",label:"Maxed pets",type:"proof"}
 ];
 
 // ---- Rally grouping (the "grouping" the Rallies tab renders). Many-to-many. ----

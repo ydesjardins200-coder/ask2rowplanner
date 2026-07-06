@@ -10,7 +10,8 @@ window.showOnboarding=function(client,uid){
     {k:"faction",l:"Faction",t:"sel",o:["Human","OrcWilderberg","Wood Elf"]},
     {k:"legendary",l:"# Of Legendary skin",t:"sel",o:["1","2","3","4","5"],proof:true},
     {k:"maxed",l:"Maxed unit type",t:"multi",o:["Infantry","Mage","Cavalry","Archer"]},
-    {k:"exemplar",l:"Exemplar artefact",t:"chk"}
+    {k:"exemplar",l:"Exemplar artefact",t:"chk"},
+    {k:"maxpet",l:"Maxed pets",t:"proof",proof:true}
   ];
   function esc(s){return (''+(s==null?'':s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   function row(lbl,inner){return '<div class="obrow"><label>'+esc(lbl)+'</label>'+inner+'</div>';}
@@ -51,7 +52,7 @@ window.showOnboarding=function(client,uid){
     var name=gv('ob_name').trim();
     if(!name){msg.style.color='#ff9b9b';msg.textContent='Please enter your in-game name.';return;}
     var maxed={},mm=document.querySelectorAll('.ob_maxed');for(var i=0;i<mm.length;i++){if(mm[i].checked)maxed[mm[i].getAttribute('data-o')]=true;}
-    var buffs={uuid:{v:gv('ob_uuid')},power:{v:gv('ob_power')},decoration:{v:gv('ob_decoration')},svip:{v:gc('ob_svip')},faction:{v:gv('ob_faction')},legendary:{v:gv('ob_legendary')},maxed:{v:maxed},exemplar:{v:gc('ob_exemplar')}};
+    var buffs={uuid:{v:gv('ob_uuid')},power:{v:gv('ob_power')},decoration:{v:gv('ob_decoration')},svip:{v:gc('ob_svip')},faction:{v:gv('ob_faction')},legendary:{v:gv('ob_legendary')},maxed:{v:maxed},exemplar:{v:gc('ob_exemplar')},maxpet:{}};
     for(var kk in imgs){if(buffs[kk])buffs[kk].img=imgs[kk];}
     var entry={name:name,side:'',sub:true,func:'',legions:['','','','',''],buffs:buffs};
     msg.style.color='#9fb3c6';msg.textContent='Submitting\u2026';btn.disabled=true;
