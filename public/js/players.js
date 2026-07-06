@@ -181,7 +181,7 @@ function renderRallies(){
     var curLead=(g.code in assign)?assign[g.code]:g.leader;
     if(!g.roles)g.roles={};
     h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+sideLbl(g.side)+' \u00b7 '+esc(g.troop)+' \u00b7 '+lc+' '+esc(t('legions'))+'</span></div>';
-    h+='<div class="grow"><span class="glbl">'+esc(leadLabel(g.code))+'</span><select class="glead" data-g="'+gi+'">'+nameOptions(curLead)+'</select></div>';
+    h+='<div class="grow"><span class="glbl">'+esc(leadLabel(g.code))+(function(){var ll=curLead?legsOfName(curLead,g.code):0;return ll>1?'<span class="lgx">\u00d7'+ll+'</span>':'';})()+'</span><select class="glead" data-g="'+gi+'">'+nameOptions(curLead)+'</select></div>';
     mem.forEach(function(mnm){
       var lg=legsOfName(mnm,g.code),mult=lg>1?'<span class="lgx">\u00d7'+lg+'</span>':'';
       h+='<div class="grow"><span class="glbl mname">'+esc(mnm)+mult+'</span><select class="mrole" data-g="'+gi+'" data-n="'+esc(mnm)+'">'+roleOptions(g.roles[mnm],g.code)+'</select><button class="mdel" data-c="'+esc(g.code)+'" data-n="'+esc(mnm)+'" title="'+esc(t('remove_rally'))+'">\u00d7</button></div>';
@@ -285,7 +285,9 @@ function mapInfoHTML(){
     var rows=rallyRows(g);
     var lead=(g.code in assign)?assign[g.code]:g.leader;
     var special=(g.code==='Ghost Cavalry'||g.code==='Lifestone');
-    var head=special?('<div class="gmrow" style="border-bottom:1px solid #2f5680"><span class="gmn" style="color:#c9d4de;font-weight:bold">'+esc(leadLabel(g.code))+'</span><span class="grole" style="color:'+leadCardColor(g.code)+';font-weight:bold">'+esc(lead||'\u2014')+'</span></div>'):'';
+    var leadLegs=lead?legsOfName(lead,g.code):0;
+    var leadMult=leadLegs>1?'<span class="lgx">\u00d7'+leadLegs+'</span>':'';
+    var head=special?('<div class="gmrow" style="border-bottom:1px solid #2f5680"><span class="gmn" style="color:#c9d4de;font-weight:bold">'+esc(leadLabel(g.code))+'</span><span class="grole" style="color:'+leadCardColor(g.code)+';font-weight:bold">'+esc(lead||'\u2014')+leadMult+'</span></div>'):'';
     var body=rows.filter(function(r){return !(special&&r.name===lead);}).map(function(r){
       var col=roleColor(r.role);
       var mult=r.legs>1?'<span class="lgx">\u00d7'+r.legs+'</span>':'';
