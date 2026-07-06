@@ -121,17 +121,17 @@ function updateBadge(i){var card=document.querySelector('.pcard[data-i="'+i+'"]'
 function uploadBuff(i,k,file){
   if(!file)return;var p=roster[i];
   if(!SB){alert('Screenshot proof needs the site connected to Supabase with a "buffs" storage bucket. Checkmarks work without it.');return;}
-  flash('Uploading\u2026');
+  flash(t('fl_uploading'));
   var safe=(p.name||'p').replace(/[^a-zA-Z0-9]/g,'_').slice(0,24);
   var path=safe+'/'+k.replace(/[^a-zA-Z0-9]/g,'_')+'_'+Date.now()+'.jpg';
   try{
     SB.storage.from('buffs').upload(path,file,{upsert:true,contentType:(file.type||'image/jpeg')}).then(function(res){
-      if(res&&res.error){flash('Upload failed');alert('Upload failed \u2014 make sure the "buffs" storage bucket exists (see setup).');return;}
+      if(res&&res.error){flash(t('fl_uploadfail'));alert('Upload failed \u2014 make sure the "buffs" storage bucket exists (see setup).');return;}
       var pub=SB.storage.from('buffs').getPublicUrl(path);
       var url=(pub&&pub.data&&pub.data.publicUrl)?pub.data.publicUrl:'';
       var b=pbuffs(roster[i]);b[k]=b[k]||{};b[k].img=url;saveRoster();renderPlayers();
-    },function(){flash('Upload failed');});
-  }catch(e){flash('Upload failed');}
+    },function(){flash(t('fl_uploadfail'));});
+  }catch(e){flash(t('fl_uploadfail'));}
 }
 function addPlayer(){roster.push({name:'New player',side:'',sub:false,func:'',legions:['','','','',''],buffs:{}});saveLocal();markDirty();renderPlayers();}
 function resetPlayers(){initRoster();saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();}
@@ -203,7 +203,7 @@ function renderLife(){
   order.forEach(function(code){
     var g=null;groups.forEach(function(x){if(x.code===code)g=x;});if(!g)return;
     var mem=membersOf(g.code);
-    h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b>'+(g.leader?' <span class="gtag">lead: '+esc(g.leader)+'</span>':'')+'</div><div class="asg">'+(mem.length?esc(mem.join(', ')):'\u2014')+'</div></div>';
+    h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b>'+(g.leader?' <span class="gtag">'+esc(t('lead_short'))+': '+esc(g.leader)+'</span>':'')+'</div><div class="asg">'+(mem.length?esc(mem.join(', ')):'\u2014')+'</div></div>';
   });
   c.innerHTML=h;
 }
