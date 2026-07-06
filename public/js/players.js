@@ -45,9 +45,9 @@ function buffList(i,p){
   var h='';
   fieldsFor(p).forEach(function(f){
     var e=pbuffs(p)[f.key]||{},v=e.v;
-    h+='<div class="buf"><span class="blbl">'+esc(f.label)+'</span><span class="bctl">';
+    h+='<div class="buf"><span class="blbl">'+esc(t('f_'+f.key,f.label))+'</span><span class="bctl">';
     if(f.type==='check'){
-      h+='<label class="bchkw"><input type="checkbox" class="bchk" data-i="'+i+'" data-k="'+f.key+'"'+(v===true?' checked':'')+'> yes</label>';
+      h+='<label class="bchkw"><input type="checkbox" class="bchk" data-i="'+i+'" data-k="'+f.key+'"'+(v===true?' checked':'')+'> '+esc(t('yes'))+'</label>';
     }else if(f.type==='text'){
       h+='<input type="text" class="btxt" data-i="'+i+'" data-k="'+f.key+'" value="'+esc(v||'')+'" placeholder="value">';
     }else if(f.type==='multicheck'){
@@ -58,8 +58,8 @@ function buffList(i,p){
       h+='</select>';
     }
     h+='</span><span class="bproof">';
-    if(e.img) h+='<a class="viewshot" href="#" data-full="'+esc(e.img)+'">View screenshot</a>';
-    h+='<label class="shotbtn">'+(e.img?'Replace':'\uD83D\uDCF7')+'<input type="file" accept="image/*" class="bfile" data-i="'+i+'" data-k="'+f.key+'"></label></span></div>';
+    if(e.img) h+='<a class="viewshot" href="#" data-full="'+esc(e.img)+'">'+esc(t('view_shot'))+'</a>';
+    h+='<label class="shotbtn">'+(e.img?esc(t('replace')):'\uD83D\uDCF7')+'<input type="file" accept="image/*" class="bfile" data-i="'+i+'" data-k="'+f.key+'"></label></span></div>';
   });
   return h;
 }
@@ -67,31 +67,31 @@ function buffList(i,p){
 function playerGroups(name){var leads=[],inn=[];groups.forEach(function(g){if(g.leader===name)leads.push(g.code);if(g.members.indexOf(name)>=0)inn.push(g.code);});return {leads:leads,inn:inn};}
 function playerCard(i){
   var p=roster[i];
-  var d=rosterDirty?' dirty':'',t=rosterDirty?'Save*':'Save';
+  var d=rosterDirty?' dirty':'',tt=rosterDirty?(t('save')+'*'):t('save');
   var legs=p.legions||['','','','',''];
-  var assignH='';for(var li=0;li<5;li++){assignH+='<div class="lrow"><span class="llbl">Legion '+(li+1)+'</span><select class="pleg" data-i="'+i+'" data-l="'+li+'">'+legionOpts(legs[li]||'')+'</select></div>';}
+  var assignH='';for(var li=0;li<5;li++){assignH+='<div class="lrow"><span class="llbl">'+esc(t('legion'))+' '+(li+1)+'</span><select class="pleg" data-i="'+i+'" data-l="'+li+'">'+legionOpts(legs[li]||'')+'</select></div>';}
   return '<div class="pcard'+(openCards[i]?' open':'')+'" data-i="'+i+'"><div class="phead">'
    +'<button class="exp" data-i="'+i+'">'+(openCards[i]?'\u25BE':'\u25B8')+'</button>'
    +'<input class="pn" data-i="'+i+'" value="'+esc(p.name)+'">'
-   +'<select class="pside" data-i="'+i+'"><option value="strong"'+(p.side==='strong'?' selected':'')+'>Strong</option><option value="off"'+(p.side==='off'?' selected':'')+'>Off</option><option value=""'+(!p.side?' selected':'')+'>\u2014</option></select>'
-   +'<select class="psub" data-i="'+i+'"><option value="main"'+(!p.sub?' selected':'')+'>Main</option><option value="sub"'+(p.sub?' selected':'')+'>Sub</option></select>'
+   +'<select class="pside" data-i="'+i+'"><option value="strong"'+(p.side==='strong'?' selected':'')+''+esc(t('s_strong'))+'</option><option value="off"'+(p.side==='off'?' selected':'')+''+esc(t('s_off'))+'</option><option value=""'+(!p.side?' selected':'')+'>\u2014</option></select>'
+   +'<select class="psub" data-i="'+i+'"><option value="main"'+(!p.sub?' selected':'')+'>'+esc(t('m_main'))+'</option><option value="sub"'+(p.sub?' selected':'')+'>'+esc(t('m_sub'))+'</option></select>'
    +readyBadge(p)
-   +'<button class="save'+d+'" data-i="'+i+'">'+t+'</button>'
+   +'<button class="save'+d+'" data-i="'+i+'">'+tt+'</button>'
    +'<button class="rm" data-i="'+i+'">\u00d7</button>'
    +'</div><div class="pbody">'
-   +'<div class="fbox"><div class="fbox-h">Main function</div><select class="pfunc" data-i="'+i+'">'+funcOpts(p.func||'')+'</select></div>'
-   +'<div class="fbox"><div class="fbox-h">Assignment \u2014 5 legions \u2192 rally roles</div>'+assignH+'</div>'
-   +'<div class="fbox"><div class="fbox-h">General info</div><div class="bufs">'+buffList(i,p)+'</div></div>'
+   +'<div class="fbox"><div class="fbox-h">'+esc(t('main_function'))+'</div><select class="pfunc" data-i="'+i+'">'+funcOpts(p.func||'')+'</select></div>'
+   +'<div class="fbox"><div class="fbox-h">'+esc(t('assignment'))+'</div>'+assignH+'</div>'
+   +'<div class="fbox"><div class="fbox-h">'+esc(t('general_info'))+'</div><div class="bufs">'+buffList(i,p)+'</div></div>'
    +'</div></div>';
 }
 function renderPlayers(){
   var c=el('playerlist');if(!c)return;
-  var secs=[['Strong Side \u2014 Main',function(p){return !p.sub&&p.side==='strong';}],
-            ['Off Side \u2014 Main',function(p){return !p.sub&&p.side==='off';}],
-            ['Unassigned',function(p){return !p.sub&&p.side!=='strong'&&p.side!=='off';}],
-            ['Substitutes',function(p){return p.sub;}]];
+  var secs=[[t('sec_strong'),function(p){return !p.sub&&p.side==='strong';}],
+            [t('sec_off'),function(p){return !p.sub&&p.side==='off';}],
+            [t('sec_unassigned'),function(p){return !p.sub&&p.side!=='strong'&&p.side!=='off';}],
+            [t('sec_subs'),function(p){return p.sub;}]];
   var nMain=0,nSub=0;roster.forEach(function(p){if(p.sub)nSub++;else nMain++;});
-  var h='<div class="bar"><span class="sub">Registered team \u2014 <b>'+nMain+' main + '+nSub+' subs</b>. Set side &amp; Main/Sub, tick buffs, add proof. The Rallies tab pulls names from here. Tap \u25B8 to expand.</span></div><div class="sub" id="rdirty" style="color:#e0a52a"></div><div class="bar"><button class="adminonly" onclick="addPlayer()">+ Add player</button></div>'+((!IS_ADMIN&&!MYNAME)?'<div class="linkme"><b>Which player are you?</b> pick your name to edit your own card: <select id="linkmesel"><option value="">\u2014 select \u2014</option>'+roster.map(function(pp){return '<option>'+esc(pp.name)+'</option>';}).join('')+'</select></div>':'');
+  var h='<div class="bar"><span class="sub">Registered team \u2014 <b>'+nMain+' main + '+nSub+' subs</b>. Set side &amp; Main/Sub, tick buffs, add proof. The Rallies tab pulls names from here. Tap \u25B8 to expand.</span></div><div class="sub" id="rdirty" style="color:#e0a52a"></div><div class="bar"><button class="adminonly" onclick="addPlayer()">'+esc(t('add_player'))+'</button></div>'+((!IS_ADMIN&&!MYNAME)?'<div class="linkme"><b>'+esc(t('which_player'))+'</b> '+esc(t('pick_name'))+': <select id="linkmesel"><option value="">\u2014 select \u2014</option>'+roster.map(function(pp){return '<option>'+esc(pp.name)+'</option>';}).join('')+'</select></div>':'');
   secs.forEach(function(s){
     var idxs=[];roster.forEach(function(p,i){if(s[1](p))idxs.push(i);});
     if(idxs.length===0)return;
