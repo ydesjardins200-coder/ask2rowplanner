@@ -30,7 +30,7 @@ function renderMap(color){
  BUILD.forEach(function(b){var ld=(b.code in assign)?assign[b.code]:b.leader;var sd=sideFor(b,color);var bp=bpos(b,color);
   h+='<div class="b'+(ld?'':' un')+'" style="left:'+bp[0]+'%;top:'+bp[1]+'%;border-color:'+CLR[sd]+'"><span class="code" style="color:'+CLR[sd]+'">'+b.code+'</span><select data-code="'+b.code+'">'+leaderOptions(ld)+'</select></div>';});
  wrap.innerHTML=h;
- var sels=wrap.querySelectorAll('select');for(var i=0;i<sels.length;i++){sels[i].onchange=function(e){assign[e.target.getAttribute('data-code')]=e.target.value;save();renderMap('blue');renderMap('yellow');};}
+ var sels=wrap.querySelectorAll('select');for(var i=0;i<sels.length;i++){sels[i].onchange=function(e){var code=e.target.getAttribute('data-code');assign[code]=e.target.value;for(var k=0;k<groups.length;k++){if(groups[k].code===code)groups[k].leader=e.target.value;}save();renderMap('blue');renderMap('yellow');if(typeof renderRallies==='function')renderRallies();if(typeof renderMapInfo==='function')renderMapInfo();};}
   if(typeof enforceRole==='function')enforceRole();
 }
 function resetPlan(){assign={};BUILD.forEach(function(b){assign[b.code]=b.leader;});save();renderMap('blue');renderMap('yellow');}

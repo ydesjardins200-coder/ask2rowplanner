@@ -136,17 +136,28 @@ function uploadBuff(i,k,file){
 function addPlayer(){roster.push({name:'New player',side:'',sub:false,func:'',legions:['','','','',''],buffs:{}});saveLocal();markDirty();renderPlayers();}
 function resetPlayers(){initRoster();saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();}
 // ---- Rallies tab: the grouping (editable; member dropdowns from registered list) ----
+function roleOptions(sel){var R=["","Backup garrison","FILL","Phase 1 - FIRST TAKE"];return R.map(function(r){return '<option value="'+esc(r)+'"'+((sel||'')===r?' selected':'')+'>'+esc(r||'\u2014 role \u2014')+'</option>';}).join('');}
 function renderRallies(){
   var c=el('rallytbl');if(!c)return;
-  var h='<div class="sub">Members are built from each player\u2019s 5 legion assignments (Players tab). The Leader is set here (needs the Write key).</div>';
+  var h='<div class="sub">Lead = the building\u2019s main garrison \u2014 setting it here shows it on both maps. Members come from each player\u2019s 5 legion assignments (Players tab); give each a role.</div>';
   groups.forEach(function(g,gi){
     var mem=membersOf(g.code),lc=legionCount(g.code);
+    var curLead=(g.code in assign)?assign[g.code]:g.leader;
+    if(!g.roles)g.roles={};
     h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+sideLbl(g.side)+' \u00b7 '+esc(g.troop)+' \u00b7 '+lc+' legions</span></div>';
-    h+='<div class="grow"><span class="glbl">Lead</span><select class="glead" data-g="'+gi+'">'+nameOptions(g.leader)+'</select></div>';
-    h+='<div class="asg">'+(mem.length?esc(mem.join(', ')):'<span style="color:#7a8a99">no legions assigned yet</span>')+'</div></div>';
+    h+='<div class="grow"><span class="glbl">Lead \u00b7 Main garrison</span><select class="glead" data-g="'+gi+'">'+nameOptions(curLead)+'</select></div>';
+    if(mem.length){
+      mem.forEach(function(mnm){
+        h+='<div class="grow"><span class="glbl mname">'+esc(mnm)+'</span><select class="mrole" data-g="'+gi+'" data-n="'+esc(mnm)+'">'+roleOptions(g.roles[mnm])+'</select></div>';
+      });
+    }else{
+      h+='<div class="asg"><span style="color:#7a8a99">no legions assigned yet</span></div>';
+    }
+    h+='</div>';
   });
   c.innerHTML=h;
-  var n=c.querySelectorAll('.glead');for(var i=0;i<n.length;i++){n[i].onchange=function(e){groups[+e.target.getAttribute('data-g')].leader=e.target.value;save();renderRallies();renderLife();renderMapInfo();};}
+  var gl=c.querySelectorAll('.glead');for(var i=0;i<gl.length;i++){gl[i].onchange=function(e){var gi=+e.target.getAttribute('data-g');assign[groups[gi].code]=e.target.value;groups[gi].leader=e.target.value;save();renderRallies();renderLife();renderMapInfo();renderMap('blue');renderMap('yellow');};}
+  var mr=c.querySelectorAll('.mrole');for(var k=0;k<mr.length;k++){mr[k].onchange=function(e){var gi=+e.target.getAttribute('data-g'),nm=e.target.getAttribute('data-n');if(!groups[gi].roles)groups[gi].roles={};groups[gi].roles[nm]=e.target.value;save();};}
   if(typeof enforceRole==='function')enforceRole();
 }
 // ---- Sides tab: registered Strong/Off, derived from roster ----
