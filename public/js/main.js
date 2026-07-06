@@ -18,7 +18,7 @@ function enforceRole(){
 function renderAll(){renderMap('blue');renderMap('yellow');renderPlayers();renderStaff();renderRallies();renderSides();renderMapInfo();renderLife();renderReady();}
 function applyRole(){renderAll();enforceRole();}
 // Called by the guard once the signed-in user's role/player is known.
-window.setRole=function(isAdmin,myName){IS_ADMIN=!!isAdmin;MYNAME=myName||'';applyRole();};
+window.setRole=function(isAdmin,myName){IS_ADMIN=!!isAdmin;MYNAME=myName||'';var rb=document.getElementById('rolebadge');if(rb){rb.textContent=IS_ADMIN?'Admin':('Member'+(MYNAME?' \u00b7 '+MYNAME:''));rb.className=IS_ADMIN?'rolebadge admin':'rolebadge member';}applyRole();};
 window.linkMe=function(name){MYNAME=name||'';if(window.saveMyPlayer)window.saveMyPlayer(name);applyRole();};
 initRoster();initGroups();buildTabs();renderAll();enforceRole();
 if(window.__role&&window.setRole)window.setRole(window.__role.admin,window.__role.name);
