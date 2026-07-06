@@ -136,7 +136,7 @@ function uploadBuff(i,k,file){
 function addPlayer(){roster.push({name:'New player',side:'',sub:false,func:'',legions:['','','','',''],buffs:{}});saveLocal();markDirty();renderPlayers();}
 function resetPlayers(){initRoster();saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();}
 // ---- Rallies tab: the grouping (editable; member dropdowns from registered list) ----
-function roleColor(role){if(role==='FILL')return '#f4c430';if(role==='Backup garrison'||role==='Phase 1 - FIRST TAKE'||role==='Main garrison')return '#5fd08a';return '#9fb3c6';}
+function roleColor(role){if(role==='FILL')return '#f4c430';if(role==='Phase 1 - FIRST TAKE')return '#5fa8ff';if(role==='Backup garrison'||role==='Main garrison')return '#5fd08a';return '#9fb3c6';}
 function rallyRows(g){
   var lead=(g.code in assign)?assign[g.code]:g.leader;
   var mem=membersOf(g.code),roles=g.roles||{},rows=[],seen={};
@@ -243,7 +243,7 @@ function mapInfoHTML(){
   });
   tp+='</table>';
   if(subs.length)tp+='<div class="sub" style="font-size:10px"><b>Subs:</b> '+esc(subs.join(', '))+'</div>';
-  var gp='<div class="rolehdr"><span>Grouping</span> <span class="rolekey"><i class="rk-g"></i> take / hold &nbsp; <i class="rk-y"></i> fill</span></div><div class="gpgrid">';
+  var gp='<div class="rolehdr"><span>Grouping</span> <span class="rolekey"><i class="rk-b"></i> 1st take <i class="rk-g"></i> take / hold &nbsp; <i class="rk-y"></i> fillnbsp; <i class="rk-g"></i> garrison <i class="rk-g"></i> take / hold &nbsp; <i class="rk-y"></i> fillnbsp; <i class="rk-y"></i> fill</span></div><div class="gpgrid">';
   groups.forEach(function(g){
     var rows=rallyRows(g);
     var body=rows.map(function(r){var col=roleColor(r.role);return '<div class="gmrow"><span style="color:'+col+'">'+esc(r.name)+'</span><span class="grole" style="color:'+col+'">'+esc(r.role||'\u2014')+'</span></div>';}).join('');

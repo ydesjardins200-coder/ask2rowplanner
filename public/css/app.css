@@ -145,3 +145,4 @@ body.is-member #logoutbtn{background:#24425f;border-color:#3d6a96}
 .gmrow{display:flex;justify-content:space-between;gap:8px;font-size:11px;padding:2px 4px;border-bottom:1px solid #0f1a28}
 .gmrow:last-child{border-bottom:none}
 .gmrow .grole{font-size:10px;opacity:.9;white-space:nowrap}
+.rolekey .rk-b{background:#5fa8ff}
