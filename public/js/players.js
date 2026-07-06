@@ -233,12 +233,16 @@ function renderMembers(){
     rows.sort(function(a,b){return (a.approved?1:0)-(b.approved?1:0)||((a.email||'')<(b.email||'')?-1:1);});
     var opts=roster.map(function(p){return p.name;});
     var h='<div class="sub"><b>'+rows.length+'</b> account'+(rows.length===1?'':'s')+' \u00b7 '+rows.filter(function(m){return !m.approved;}).length+' pending</div>';
-    h+='<table class="t"><tr><th>Email</th><th>Approved</th><th>Role</th><th>Player (team)</th></tr>';
+    h+='<table class="t"><tr><th>Email</th><th>Approved</th><th>Role</th><th>Player (team)</th><th>UUID</th><th>Power</th><th>Main troop</th></tr>';
     rows.forEach(function(m){
+      var pl=null;roster.forEach(function(x){if(x.name===m.player)pl=x;});
+      var bv=function(k){var e=pl&&pl.buffs&&pl.buffs[k];return (e&&e.v!=null&&e.v!=='')?e.v:'\u2014';};
+      var troop=function(){var e=pl&&pl.buffs&&pl.buffs.maxed,v=e&&e.v;if(!v||typeof v!=='object')return '\u2014';var a=[];for(var k in v){if(v[k])a.push(k);}return a.length?a.join(', '):'\u2014';};
       h+='<tr'+(m.approved?'':' style="background:#3a2f18"')+'><td>'+esc(m.email||'')+'</td>'
        +'<td style="text-align:center"><input type="checkbox" class="mapp" data-id="'+m.id+'"'+(m.approved?' checked':'')+'></td>'
        +'<td><select class="mrole" data-id="'+m.id+'"><option value="member"'+(m.role!=='admin'?' selected':'')+'>member</option><option value="admin"'+(m.role==='admin'?' selected':'')+'>admin</option></select></td>'
-       +'<td><select class="mplayer" data-id="'+m.id+'"><option value="">\u2014 unassigned \u2014</option>'+opts.map(function(n){return '<option'+(m.player===n?' selected':'')+'>'+esc(n)+'</option>';}).join('')+'</select></td></tr>';
+       +'<td><select class="mplayer" data-id="'+m.id+'"><option value="">\u2014 unassigned \u2014</option>'+opts.map(function(n){return '<option'+(m.player===n?' selected':'')+'>'+esc(n)+'</option>';}).join('')+'</select></td>'
+       +'<td>'+esc(bv('uuid'))+'</td><td>'+esc(bv('power'))+'</td><td style="font-size:11px">'+esc(troop())+'</td></tr>';
     });
     c.innerHTML=h+'</table>';
     function upd(id,patch,ok){SB.from('profiles').update(patch).eq('id',id).then(function(r){if(r&&!r.error&&ok)ok();},function(){});}
