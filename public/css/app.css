@@ -137,3 +137,4 @@ body.is-member #logoutbtn{background:#24425f;border-color:#3d6a96}
 .mdel{background:#5a2530;border:1px solid #8a3a48;color:#fff;border-radius:5px;width:24px;padding:2px 0;cursor:pointer;font-weight:bold;margin-left:5px;flex:0 0 auto}
 .mmerge{background:#24425f;border:1px solid #3d6a96;color:#fff;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:bold;cursor:pointer;margin-left:8px}
 #refreshbtn{background:#1c86ff;border:none;color:#fff;border-radius:8px;padding:2px 11px;font-size:15px;font-weight:bold;cursor:pointer;margin-left:8px;line-height:1.4}
+#keybtn{display:none}
