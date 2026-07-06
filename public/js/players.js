@@ -88,8 +88,8 @@ function renderPlayers(){
   var c=el('playerlist');if(!c)return;
   var secs=[['Strong Side \u2014 Main',function(p){return !p.sub&&p.side==='strong';}],
             ['Off Side \u2014 Main',function(p){return !p.sub&&p.side==='off';}],
-            ['Substitutes',function(p){return p.sub;}],
-            ['Unassigned',function(p){return !p.sub&&p.side!=='strong'&&p.side!=='off';}]];
+            ['Unassigned',function(p){return !p.sub&&p.side!=='strong'&&p.side!=='off';}],
+            ['Substitutes',function(p){return p.sub;}]];
   var nMain=0,nSub=0;roster.forEach(function(p){if(p.sub)nSub++;else nMain++;});
   var h='<div class="bar"><span class="sub">Registered team \u2014 <b>'+nMain+' main + '+nSub+' subs</b>. Set side &amp; Main/Sub, tick buffs, add proof. The Rallies tab pulls names from here. Tap \u25B8 to expand.</span></div><div class="sub" id="rdirty" style="color:#e0a52a"></div><div class="bar"><button class="adminonly" onclick="addPlayer()">+ Add player</button></div>'+((!IS_ADMIN&&!MYNAME)?'<div class="linkme"><b>Which player are you?</b> pick your name to edit your own card: <select id="linkmesel"><option value="">\u2014 select \u2014</option>'+roster.map(function(pp){return '<option>'+esc(pp.name)+'</option>';}).join('')+'</select></div>':'');
   secs.forEach(function(s){
@@ -133,7 +133,7 @@ function uploadBuff(i,k,file){
     },function(){flash('Upload failed');});
   }catch(e){flash('Upload failed');}
 }
-function addPlayer(){roster.push({name:'New player',side:'',sub:true,buffs:{}});saveLocal();markDirty();renderPlayers();}
+function addPlayer(){roster.push({name:'New player',side:'',sub:false,func:'',legions:['','','','',''],buffs:{}});saveLocal();markDirty();renderPlayers();}
 function resetPlayers(){initRoster();saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();}
 // ---- Rallies tab: the grouping (editable; member dropdowns from registered list) ----
 function renderRallies(){

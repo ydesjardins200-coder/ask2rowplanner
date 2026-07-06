@@ -54,7 +54,7 @@ window.showOnboarding=function(client,uid){
     var maxed={},mm=document.querySelectorAll('.ob_maxed');for(var i=0;i<mm.length;i++){if(mm[i].checked)maxed[mm[i].getAttribute('data-o')]=true;}
     var buffs={uuid:{v:gv('ob_uuid')},power:{v:gv('ob_power')},decoration:{v:gv('ob_decoration')},svip:{v:gc('ob_svip')},faction:{v:gv('ob_faction')},legendary:{v:gv('ob_legendary')},maxed:{v:maxed},exemplar:{v:gc('ob_exemplar')},maxpet:{}};
     for(var kk in imgs){if(buffs[kk])buffs[kk].img=imgs[kk];}
-    var entry={name:name,side:'',sub:true,func:'',legions:['','','','',''],buffs:buffs};
+    var entry={name:name,side:'',sub:false,func:'',legions:['','','','',''],buffs:buffs};
     msg.style.color='#9fb3c6';msg.textContent='Submitting\u2026';btn.disabled=true;
     var fail=function(t){msg.style.color='#ff9b9b';msg.textContent=t||'Could not submit \u2014 please try again.';btn.disabled=false;};
     client.from('plan').select('data').eq('id','btx').single().then(function(r){
