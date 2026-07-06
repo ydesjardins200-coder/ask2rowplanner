@@ -58,7 +58,7 @@ function buffList(i,p){
       h+='</select>';
     }
     h+='</span><span class="bproof">';
-    if(e.img) h+='<img class="shotimg" src="'+esc(e.img)+'" alt="proof" data-full="'+esc(e.img)+'">';
+    if(e.img) h+='<a class="viewshot" href="#" data-full="'+esc(e.img)+'">View screenshot</a>';
     h+='<label class="shotbtn">'+(e.img?'Replace':'\uD83D\uDCF7')+'<input type="file" accept="image/*" class="bfile" data-i="'+i+'" data-k="'+f.key+'"></label></span></div>';
   });
   return h;
@@ -105,7 +105,7 @@ function renderPlayers(){
   each('.pside',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].side=e.target.value;saveLocal();markDirty();renderPlayers();renderSides();renderMapInfo();};});
   each('.psub',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].sub=(e.target.value==='sub');saveLocal();markDirty();renderPlayers();renderSides();renderMapInfo();};});
   each('.pfunc',function(x){x.onchange=function(e){roster[+e.target.getAttribute('data-i')].func=e.target.value;saveLocal();markDirty();renderMapInfo();renderPlayers();};});
-  each('.shotimg',function(x){x.onclick=function(e){openImg(e.target.getAttribute('data-full'));};});
+  each('.viewshot',function(x){x.onclick=function(e){e.preventDefault();openImg(e.target.getAttribute('data-full'));};});
   each('.pleg',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i'),l=+e.target.getAttribute('data-l');if(!roster[i].legions)roster[i].legions=['','','','',''];roster[i].legions[l]=e.target.value;saveLocal();markDirty();renderRallies();renderStaff();renderLife();renderMapInfo();};});
   each('.save',function(x){x.onclick=function(){commitRoster();renderPlayers();};});
   each('.rm',function(x){x.onclick=function(e){roster.splice(+e.target.getAttribute('data-i'),1);saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();};});
