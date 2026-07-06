@@ -169,7 +169,7 @@ function renderRallies(){
     var curLead=(g.code in assign)?assign[g.code]:g.leader;
     if(!g.roles)g.roles={};
     h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+sideLbl(g.side)+' \u00b7 '+esc(g.troop)+' \u00b7 '+lc+' legions</span></div>';
-    h+='<div class="grow"><span class="glbl">Lead \u00b7 Main garrison</span><select class="glead" data-g="'+gi+'">'+nameOptions(curLead)+'</select></div>';
+    h+='<div class="grow"><span class="glbl">'+(g.code==='Ghost Cavalry'?'Ghost cavalry leader (SUN)':'Lead \u00b7 Main garrison')+'</span><select class="glead" data-g="'+gi+'">'+nameOptions(curLead)+'</select></div>';
     mem.forEach(function(mnm){
       h+='<div class="grow"><span class="glbl mname">'+esc(mnm)+'</span><select class="mrole" data-g="'+gi+'" data-n="'+esc(mnm)+'">'+roleOptions(g.roles[mnm],g.code)+'</select><button class="mdel" data-c="'+esc(g.code)+'" data-n="'+esc(mnm)+'" title="Remove from rally">\u00d7</button></div>';
     });
