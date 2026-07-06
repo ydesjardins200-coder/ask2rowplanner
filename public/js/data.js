@@ -7,12 +7,13 @@ var REG_OFF=["DARK","BaBaDemouz","Chemona","Northwolfs","Erotic Sushi","krasivay
 var REG_SUB=[];
 var EXTRA_LEADERS=["Fraedrake","Warby"];
 var FIELDS=[
+ {key:"uuid",label:"UUID (player ID)",type:"text"},
+ {key:"power",label:"Total power",type:"text"},
  {key:"decoration",label:"Decoration",type:"select",opts:["1","2","3","4","5","6","7","8","9"]},
  {key:"svip",label:"SVIP",type:"check"},
  {key:"faction",label:"Faction",type:"select",opts:["Human","OrcWilderberg","Wood Elf"]},
  {key:"title",label:"Alliance Title",type:"select",opts:["none","Chief Warden","Spymaster","King"]},
  {key:"legendary",label:"Legendary cities",type:"select",opts:["1","2","3","4","5"]},
- {key:"power",label:"Total power",type:"text"},
  {key:"maxed",label:"Maxed unit type",type:"multicheck",opts:["Infantry","Mage","Cavalry","Archer"]},
  {key:"exemplar",label:"Exemplar artefact",type:"check"},
  {key:"maxpet",label:"Max pet",type:"proof",func:"GARRISON LEAD"}
