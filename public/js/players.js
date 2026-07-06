@@ -280,6 +280,6 @@ function renderMembers(){
       }else{upd(id,{approved:false},renderMembers);}
     };});
     each('.mrole',function(x){x.onchange=function(e){upd(e.target.getAttribute('data-id'),{role:e.target.value});};});
-    each('.mplayer',function(x){x.onchange=function(e){upd(e.target.getAttribute('data-id'),{player:e.target.value});};});
+    each('.mplayer',function(x){x.onchange=function(e){upd(e.target.getAttribute('data-id'),{player:e.target.value},renderMembers);};});
   },function(){c.innerHTML='<div class="sub">Could not load members.</div>';});
 }
