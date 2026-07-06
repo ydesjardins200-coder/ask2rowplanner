@@ -136,7 +136,7 @@ function uploadBuff(i,k,file){
 function addPlayer(){roster.push({name:'New player',side:'',sub:false,func:'',legions:['','','','',''],buffs:{}});saveLocal();markDirty();renderPlayers();}
 function resetPlayers(){initRoster();saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();}
 // ---- Rallies tab: the grouping (editable; member dropdowns from registered list) ----
-function roleOptions(sel,code){var R=(code==='Ghost Cavalry')?["CAVS"]:["","Backup garrison","FILL","Phase 1 - FIRST TAKE"];return R.map(function(r){return '<option value="'+esc(r)+'"'+((sel||'')===r?' selected':'')+'>'+esc(r||'\u2014 role \u2014')+'</option>';}).join('');}
+function roleOptions(sel,code){var R=(code==='Ghost Cavalry'||code==='Fraedrake')?["CAVS"]:["","Backup garrison","FILL","Phase 1 - FIRST TAKE"];return R.map(function(r){return '<option value="'+esc(r)+'"'+((sel||'')===r?' selected':'')+'>'+esc(r||'\u2014 role \u2014')+'</option>';}).join('');}
 function rallyPersist(){saveLocal();if(typeof saveRoster==='function')saveRoster();renderRallies();renderPlayers();renderMapInfo();renderStaff();renderLife();renderSides();}
 function addToRally(code,name){
   if(!name)return;var p=null;roster.forEach(function(x){if(x.name===name)p=x;});if(!p)return;
