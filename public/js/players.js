@@ -8,7 +8,7 @@ function initRoster(){
 }
 function initGroups(){groups=GROUPS.map(function(g){return {code:g.code,leader:g.leader,side:g.side,troop:g.troop};});}
 function legionOpts(sel){var o='<option value="">\u2014</option>';RALLY_ORDER.forEach(function(r){o+='<option'+(sel===r?' selected':'')+'>'+esc(r)+'</option>';});return o;}
-function funcOpts(sel){var o='<option value="">\u2014 pick \u2014</option>';FUNCTIONS.forEach(function(r){o+='<option'+(sel===r?' selected':'')+'>'+esc(r)+'</option>';});return o;}
+function funcOpts(sel){var o='<option value="">'+esc(t('pick'))+'</option>';FUNCTIONS.forEach(function(r){o+='<option'+(sel===r?' selected':'')+'>'+esc(r)+'</option>';});return o;}
 function membersOf(code){var out=[],seen={};roster.forEach(function(p){if(p.legions&&p.legions.indexOf(code)>=0&&!seen[p.name]){seen[p.name]=1;out.push(p.name);}});return out;}
 function legionCount(code){var n=0;roster.forEach(function(p){if(p.legions)p.legions.forEach(function(c){if(c===code)n++;});});return n;}
 function pbuffs(p){if(!p.buffs)p.buffs={};return p.buffs;}
@@ -51,7 +51,7 @@ function buffList(i,p){
     }else if(f.type==='text'){
       h+='<input type="text" class="btxt" data-i="'+i+'" data-k="'+f.key+'" value="'+esc(v||'')+'" placeholder="value">';
     }else if(f.type==='multicheck'){
-      f.opts.forEach(function(o){var on=v&&typeof v==='object'&&v[o];h+='<label class="bmcw"><input type="checkbox" class="bmck" data-i="'+i+'" data-k="'+f.key+'" data-o="'+esc(o)+'"'+(on?' checked':'')+'> '+esc(o)+'</label>';});
+      f.opts.forEach(function(o){var on=v&&typeof v==='object'&&v[o];h+='<label class="bmcw"><input type="checkbox" class="bmck" data-i="'+i+'" data-k="'+f.key+'" data-o="'+esc(o)+'"'+(on?' checked':'')+'> '+esc(t('u_'+o,o))+'</label>';});
     }else if(f.type!=='proof'){
       h+='<select class="bsel" data-i="'+i+'" data-k="'+f.key+'"><option value="">\u2014</option>';
       f.opts.forEach(function(o){h+='<option'+(v===o?' selected':'')+'>'+esc(o)+'</option>';});
@@ -91,7 +91,7 @@ function renderPlayers(){
             [t('sec_unassigned'),function(p){return !p.sub&&p.side!=='strong'&&p.side!=='off';}],
             [t('sec_subs'),function(p){return p.sub;}]];
   var nMain=0,nSub=0;roster.forEach(function(p){if(p.sub)nSub++;else nMain++;});
-  var h='<div class="bar"><span class="sub">Registered team \u2014 <b>'+nMain+' main + '+nSub+' subs</b>. Set side &amp; Main/Sub, tick buffs, add proof. The Rallies tab pulls names from here. Tap \u25B8 to expand.</span></div><div class="sub" id="rdirty" style="color:#e0a52a"></div><div class="bar"><button class="adminonly" onclick="addPlayer()">'+esc(t('add_player'))+'</button></div>'+((!IS_ADMIN&&!MYNAME)?'<div class="linkme"><b>'+esc(t('which_player'))+'</b> '+esc(t('pick_name'))+': <select id="linkmesel"><option value="">\u2014 select \u2014</option>'+roster.map(function(pp){return '<option>'+esc(pp.name)+'</option>';}).join('')+'</select></div>':'');
+  var h='<div class="bar"><span class="sub">'+esc(t('players_intro'))+' <b>'+nMain+' + '+nSub+'</b></span></div><div class="sub" id="rdirty" style="color:#e0a52a"></div><div class="bar"><button class="adminonly" onclick="addPlayer()">'+esc(t('add_player'))+'</button></div>'+((!IS_ADMIN&&!MYNAME)?'<div class="linkme"><b>'+esc(t('which_player'))+'</b> '+esc(t('pick_name'))+': <select id="linkmesel"><option value="">\u2014 select \u2014</option>'+roster.map(function(pp){return '<option>'+esc(pp.name)+'</option>';}).join('')+'</select></div>':'');
   secs.forEach(function(s){
     var idxs=[];roster.forEach(function(p,i){if(s[1](p))idxs.push(i);});
     if(idxs.length===0)return;
@@ -137,7 +137,7 @@ function addPlayer(){roster.push({name:'New player',side:'',sub:false,func:'',le
 function resetPlayers(){initRoster();saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();}
 // ---- Rallies tab: the grouping (editable; member dropdowns from registered list) ----
 function roleColor(role){if(role==='FILL')return '#f4c430';if(role==='Phase 1 - FIRST TAKE')return '#5fa8ff';if(role==='CAVS')return '#ff6b6b';if(role==='Backup garrison'||role==='Main garrison')return '#5fd08a';return '#9fb3c6';}
-function leadLabel(code){if(code==='Ghost Cavalry')return 'Ghost cavalry leader (SUN)';if(code==='Lifestone')return 'Lifestone leader';return 'Lead \u00b7 Main garrison';}
+function leadLabel(code){if(code==='Ghost Cavalry')return 'Ghost cavalry leader (SUN)';if(code==='Lifestone')return 'Lifestone leader';return t('lead_main');}
 function leadCardColor(code){if(code==='Ghost Cavalry')return '#ff6b6b';if(code==='Lifestone')return '#2fb3a4';return '#5fd08a';}
 function rallyRows(g){
   var lead=(g.code in assign)?assign[g.code]:g.leader;
@@ -148,7 +148,7 @@ function rallyRows(g){
   return rows;
 }
 function rallyLegions(g){return rallyRows(g).length;}
-function roleOptions(sel,code){var R=(code==='Ghost Cavalry'||code==='Fraedrake')?["CAVS"]:["","Backup garrison","FILL","Phase 1 - FIRST TAKE"];return R.map(function(r){return '<option value="'+esc(r)+'"'+((sel||'')===r?' selected':'')+'>'+esc(r||'\u2014 role \u2014')+'</option>';}).join('');}
+function roleOptions(sel,code){var R=(code==='Ghost Cavalry'||code==='Fraedrake')?["CAVS"]:["","Backup garrison","FILL","Phase 1 - FIRST TAKE"];return R.map(function(r){return '<option value="'+esc(r)+'"'+((sel||'')===r?' selected':'')+'>'+esc(roleLabel(r))+'</option>';}).join('');}
 function rallyPersist(){saveLocal();if(typeof saveRoster==='function')saveRoster();renderRallies();renderPlayers();renderMapInfo();renderStaff();renderLife();renderSides();}
 function addToRally(code,name){
   if(!name)return;var p=null;roster.forEach(function(x){if(x.name===name)p=x;});if(!p)return;
@@ -164,20 +164,20 @@ function removeFromRally(code,name){
 }
 function renderRallies(){
   var c=el('rallytbl');if(!c)return;
-  var h='<div class="sub">Lead = the building\u2019s main garrison \u2014 setting it here shows it on both maps. Members come from each player\u2019s 5 legions; add or remove players here and it updates the Players tab. Give each a role.</div>';
+  var h='<div class="sub">'+esc(t('rallies_intro'))+'</div>';
   h+='<div class="rgrid">';
   groups.forEach(function(g,gi){
     var mem=membersOf(g.code),lc=rallyLegions(g);
     var curLead=(g.code in assign)?assign[g.code]:g.leader;
     if(!g.roles)g.roles={};
-    h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+sideLbl(g.side)+' \u00b7 '+esc(g.troop)+' \u00b7 '+lc+' legions</span></div>';
+    h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+sideLbl(g.side)+' \u00b7 '+esc(g.troop)+' \u00b7 '+lc+' '+esc(t('legions'))+'</span></div>';
     h+='<div class="grow"><span class="glbl">'+esc(leadLabel(g.code))+'</span><select class="glead" data-g="'+gi+'">'+nameOptions(curLead)+'</select></div>';
     mem.forEach(function(mnm){
       h+='<div class="grow"><span class="glbl mname">'+esc(mnm)+'</span><select class="mrole" data-g="'+gi+'" data-n="'+esc(mnm)+'">'+roleOptions(g.roles[mnm],g.code)+'</select><button class="mdel" data-c="'+esc(g.code)+'" data-n="'+esc(mnm)+'" title="Remove from rally">\u00d7</button></div>';
     });
-    if(!mem.length)h+='<div class="asg"><span style="color:#7a8a99">no legions assigned yet</span></div>';
+    if(!mem.length)h+='<div class="asg"><span style="color:#7a8a99">'+esc(t('no_legions'))+'</span></div>';
     var avail=roster.filter(function(p){return p.name&&mem.indexOf(p.name)<0;});
-    h+='<div class="grow"><span class="glbl">+ Add player</span><select class="gadd" data-c="'+esc(g.code)+'"><option value="">\u2014 pick \u2014</option>'+avail.map(function(p){return '<option>'+esc(p.name)+'</option>';}).join('')+'</select></div>';
+    h+='<div class="grow"><span class="glbl">'+esc(t('add_player'))+'</span><select class="gadd" data-c="'+esc(g.code)+'"><option value="">'+esc(t('pick'))+'</option>'+avail.map(function(p){return '<option>'+esc(p.name)+'</option>';}).join('')+'</select></div>';
     h+='</div>';
   });
   h+='</div>';
@@ -192,7 +192,7 @@ function renderRallies(){
 function renderSides(){
   var c=el('sidestbl');if(!c)return;
   var st=[],of=[];roster.forEach(function(p){if(p.sub)return;if(p.side==='strong')st.push(p.name);else if(p.side==='off')of.push(p.name);});
-  var n=Math.max(st.length,of.length),h='<table class="t"><tr><th>#</th><th style="color:#e06fb5">Strong ('+st.length+')</th><th>#</th><th style="color:#5b9bd5">Off ('+of.length+')</th></tr>';
+  var n=Math.max(st.length,of.length),h='<table class="t"><tr><th>#</th><th style="color:#e06fb5">'+esc(t('s_strong'))+' ('+st.length+')</th><th>#</th><th style="color:#5b9bd5">'+esc(t('s_off'))+' ('+of.length+')</th></tr>';
   for(var i=0;i<n;i++){h+='<tr><td>'+(st[i]?(i+1):'')+'</td><td>'+(st[i]?esc(st[i]):'')+'</td><td>'+(of[i]?(i+1):'')+'</td><td>'+(of[i]?esc(of[i]):'')+'</td></tr>';}
   c.innerHTML=h+'</table>';
 }
@@ -239,24 +239,24 @@ function teleportOrder(){
 function mapInfoHTML(){
   var subs=[];roster.forEach(function(p){if(p.sub)subs.push(p.name);});
   var ord=teleportOrder();
-  var tp='<div class="rolehdr"><span>Teleport</span></div><table class="t tp"><tr><th>#</th><th>Player</th></tr>';
+  var tp='<div class="rolehdr"><span>'+esc(t('teleport'))+'</span></div><table class="t tp"><tr><th>#</th><th>Player</th></tr>';
   ord.forEach(function(p,i){
     var sc=p.side==='strong'?'#f4a6d7':(p.side==='off'?'#8fc0f0':'#c9d4de');
     tp+='<tr><td>'+(i+1)+'</td><td style="color:'+sc+'">'+esc(p.name)+'</td></tr>';
   });
   tp+='</table>';
-  if(subs.length)tp+='<div class="sub" style="font-size:10px"><b>Subs:</b> '+esc(subs.join(', '))+'</div>';
-  var gp='<div class="rolehdr"><span>Grouping</span> <span class="rolekey"><i class="rk-b"></i> 1st take <i class="rk-g"></i> take / hold &nbsp; <i class="rk-y"></i> fillnbsp; <i class="rk-g"></i> garrison <i class="rk-g"></i> take / hold &nbsp; <i class="rk-y"></i> fillnbsp; <i class="rk-y"></i> fill</span></div><div class="gpgrid">';
+  if(subs.length)tp+='<div class="sub" style="font-size:10px"><b>'+esc(t('subs'))+':</b> '+esc(subs.join(', '))+'</div>';
+  var gp='<div class="rolehdr"><span>'+esc(t('grouping'))+'</span> <span class="rolekey"><i class="rk-b"></i> 1st take <i class="rk-g"></i> take / hold &nbsp; <i class="rk-y"></i> fillnbsp; <i class="rk-g"></i> garrison <i class="rk-g"></i> take / hold &nbsp; <i class="rk-y"></i> fillnbsp; <i class="rk-y"></i> fill</span></div><div class="gpgrid">';
   groups.forEach(function(g){
     var rows=rallyRows(g),body;
     if(g.code==='Ghost Cavalry'||g.code==='Lifestone'){
       var gcl=(g.code in assign)?assign[g.code]:g.leader;
       var lbl='<div class="gmrow" style="border-bottom:1px solid #2f5680"><span style="color:#c9d4de;font-weight:bold">'+esc(leadLabel(g.code))+'</span><span class="grole" style="color:'+leadCardColor(g.code)+';font-weight:bold">'+esc(gcl||'\u2014')+'</span></div>';
-      body=lbl+rows.filter(function(r){return r.name!==gcl;}).map(function(r){var col=roleColor(r.role);return '<div class="gmrow"><span style="color:'+col+'">'+esc(r.name)+'</span><span class="grole" style="color:'+col+'">'+esc(r.role||'\u2014')+'</span></div>';}).join('');
+      body=lbl+rows.filter(function(r){return r.name!==gcl;}).map(function(r){var col=roleColor(r.role);return '<div class="gmrow"><span style="color:'+col+'">'+esc(r.name)+'</span><span class="grole" style="color:'+col+'">'+esc(r.role?roleLabel(r.role):'\u2014')+'</span></div>';}).join('');
     }else{
-      body=rows.map(function(r){var col=roleColor(r.role);return '<div class="gmrow"><span style="color:'+col+'">'+esc(r.name)+'</span><span class="grole" style="color:'+col+'">'+esc(r.role||'\u2014')+'</span></div>';}).join('');
+      body=rows.map(function(r){var col=roleColor(r.role);return '<div class="gmrow"><span style="color:'+col+'">'+esc(r.name)+'</span><span class="grole" style="color:'+col+'">'+esc(r.role?roleLabel(r.role):'\u2014')+'</span></div>';}).join('');
     }
-    gp+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+rallyLegions(g)+' leg</span></div>'+(body||'<div class="asg"><span style="color:#7a8a99">\u2014</span></div>')+'</div>';
+    gp+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+rallyLegions(g)+' '+esc(t('leg'))+'</span></div>'+(body||'<div class="asg"><span style="color:#7a8a99">\u2014</span></div>')+'</div>';
   });
   gp+='</div>';
   return '<div class="minfo"><div class="minfo-tp">'+tp+'</div><div class="minfo-gp">'+gp+'</div></div>';
@@ -306,7 +306,7 @@ function mergeDuplicates(rows){
 }
 function renderMembers(){
   var c=el('memberstbl');if(!c)return;
-  if(!IS_ADMIN){c.innerHTML='<div class="sub">Admins only.</div>';return;}
+  if(!IS_ADMIN){c.innerHTML='<div class="sub">'+esc(t('admins_only'))+'</div>';return;}
   if(!SB){c.innerHTML='<div class="sub">Sign-in isn\u2019t configured, so there are no accounts to manage.</div>';return;}
   c.innerHTML='<div class="sub">Loading members\u2026</div>';
   SB.from('profiles').select('id,email,role,approved,player,submission').then(function(res){
@@ -337,8 +337,8 @@ function renderMembers(){
       if(pf.length)h+='<div style="padding:2px 4px 6px;font-size:12px">Proof: '+pf.join(' &nbsp;\u00b7&nbsp; ')+'</div>';
       return h;
     }
-    var h='<div class="sub"><b>'+rows.length+'</b> account'+(rows.length===1?'':'s')+' \u00b7 '+pending+' pending review. Expand a row to see submitted details; approving adds them to the roster. <button class="mmerge">Merge duplicates</button></div>';
-    h+='<table class="t"><tr><th></th><th>Email</th><th>Name</th><th>UUID</th><th>Power</th><th>Main troop</th><th>Approved</th><th>Role</th><th>Player (team)</th></tr>';
+    var h='<div class="sub"><b>'+rows.length+'</b> account'+(rows.length===1?'':'s')+' \u00b7 '+pending+' '+esc(t('members_intro'))+' <button class="mmerge">'+esc(t('merge_dupes'))+'</button></div>';
+    h+='<table class="t"><tr><th></th><th>'+esc(t('col_email'))+'</th><th>'+esc(t('col_name'))+'</th><th>'+esc(t('col_uuid'))+'</th><th>'+esc(t('col_power'))+'</th><th>'+esc(t('col_troop'))+'</th><th>'+esc(t('col_approved'))+'</th><th>'+esc(t('col_role'))+'</th><th>'+esc(t('col_player'))+'</th></tr>';
     rows.forEach(function(m,ri){
       var s=src(m);
       h+='<tr'+(m.approved?'':' style="background:#3a2f18"')+'>'
@@ -349,8 +349,8 @@ function renderMembers(){
        +'<td>'+esc(bv(s,'power'))+'</td>'
        +'<td style="font-size:11px">'+esc(troop(s))+'</td>'
        +'<td style="text-align:center"><input type="checkbox" class="mapp" data-id="'+m.id+'" data-r="'+ri+'"'+(m.approved?' checked':'')+'></td>'
-       +'<td><select class="mrole" data-id="'+m.id+'"><option value="member"'+(m.role!=='admin'?' selected':'')+'>member</option><option value="admin"'+(m.role==='admin'?' selected':'')+'>admin</option></select></td>'
-       +'<td>'+(!m.approved?'<span style="color:#9fb3c6;font-size:11px">approve to add</span>':(m.submission?'<span class="mplayer-locked" title="Auto-assigned from their signup">'+esc(m.player||'\u2014')+'</span>':('<select class="mplayer" data-id="'+m.id+'"><option value="">\u2014 unassigned \u2014</option>'+opts.map(function(n){return '<option'+(m.player===n?' selected':'')+'>'+esc(n)+'</option>';}).join('')+'</select>')))+'</td>'
+       +'<td><select class="mrole" data-id="'+m.id+'"><option value="member"'+(m.role!=='admin'?' selected':'')+'>'+esc(t('r_member'))+'</option><option value="admin"'+(m.role==='admin'?' selected':'')+'>'+esc(t('r_admin'))+'</option></select></td>'
+       +'<td>'+(!m.approved?'<span style="color:#9fb3c6;font-size:11px">'+esc(t('approve_to_add'))+'</span>':(m.submission?'<span class="mplayer-locked" title="Auto-assigned from their signup">'+esc(m.player||'\u2014')+'</span>':('<select class="mplayer" data-id="'+m.id+'"><option value="">\u2014 unassigned \u2014</option>'+opts.map(function(n){return '<option'+(m.player===n?' selected':'')+'>'+esc(n)+'</option>';}).join('')+'</select>')))+'</td>'
        +'</tr>';
       h+='<tr class="mdet" id="mdet_'+ri+'" style="display:none"><td></td><td colspan="8">'+detail(s)+'</td></tr>';
     });
@@ -386,7 +386,7 @@ function renderPhases(){
   var h='';
   PHASES.forEach(function(ph,pi){
     h+='<div class="phhdr '+ph.cls+'">'+esc(ph.title)+'</div>';
-    h+='<table class="t"><tr><th>Group</th><th>Leader</th><th>Side</th><th>Objective</th></tr>';
+    h+='<table class="t"><tr><th>'+esc(t('col_group'))+'</th><th>'+esc(t('col_leader'))+'</th><th>'+esc(t('col_side'))+'</th><th>'+esc(t('col_objective'))+'</th></tr>';
     ph.rows.forEach(function(row,ri){
       h+='<tr><td><b>'+esc(row.group)+'</b></td>'
        +'<td><select class="plead" data-p="'+pi+'" data-r="'+ri+'">'+nameOptions(phaseLead(pi,ri,row))+'</select></td>'

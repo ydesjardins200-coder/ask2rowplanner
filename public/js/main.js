@@ -2,8 +2,9 @@
 var TABS=[["map-blue","tab_map_blue"],["map-yellow","tab_map_yellow"],["phases","tab_phases"],["life","tab_lifestone"],["rallies","tab_rallies"],["players","tab_players"],["staffing","tab_staffing"],["sides","tab_sides"],["members","tab_members"]];
 var ADMINTABS={rallies:1,players:1,staffing:1,sides:1,members:1};
 function buildTabs(){var tc=el('tabs');TABS.forEach(function(p){var b=document.createElement('button');b.textContent=t(p[1]);b.setAttribute('data-tk',p[1]);var cl=(p[0]==='map-blue')?'on':'';if(ADMINTABS[p[0]])cl=(cl?cl+' ':'')+'adminonly';if(cl)b.className=cl;b.onclick=function(){show(p[0],b);};tc.appendChild(b);});}
-function updateTabLabels(){var tc=el('tabs');if(!tc)return;var bs=tc.children;for(var i=0;i<bs.length;i++){var k=bs[i].getAttribute('data-tk');if(k)bs[i].textContent=t(k);}}
-window.setLang=function(l){if(!I18N[l])l='en';LANG=l;try{localStorage.setItem('s2ak_lang',l);}catch(e){}if(window.saveMyLang)window.saveMyLang(l);updateTabLabels();renderAll();enforceRole();};
+function updateTabLabels(){var tc=el("tabs");if(!tc)return;var bs=tc.children;for(var i=0;i<bs.length;i++){var k=bs[i].getAttribute("data-tk");if(k)bs[i].textContent=t(k);}}
+function applyStatic(){var ns=document.querySelectorAll("[data-i18n]");for(var i=0;i<ns.length;i++){var k=ns[i].getAttribute("data-i18n");if(k)ns[i].textContent=t(k);}}
+window.setLang=function(l){if(!I18N[l])l='en';LANG=l;try{localStorage.setItem('s2ak_lang',l);}catch(e){}if(window.saveMyLang)window.saveMyLang(l);updateTabLabels();applyStatic();renderAll();enforceRole();};
 function show(id,btn){var s=document.querySelectorAll('section');for(var i=0;i<s.length;i++)s[i].className=s[i].id===id?'on':'';var bs=el('tabs').children;for(var j=0;j<bs.length;j++)bs[j].className=(bs[j]===btn)?((''+bs[j].className).indexOf('adminonly')>=0?'on adminonly':'on'):((''+bs[j].className).indexOf('adminonly')>=0?'adminonly':'');if(id==='members'&&typeof renderMembers==='function')renderMembers();if(id==='phases'&&typeof renderPhases==='function')renderPhases();}
 function myIndex(){for(var i=0;i<roster.length;i++)if(MYNAME&&roster[i].name===MYNAME)return i;return -1;}
 // Members: disable plan-editing; re-enable only self-report controls on their own card.
@@ -34,7 +35,7 @@ window.forceRefresh=function(){
 // Called by the guard once the signed-in user's role/player is known.
 window.setRole=function(isAdmin,myName){IS_ADMIN=!!isAdmin;MYNAME=myName||'';var rb=document.getElementById('rolebadge');if(rb){rb.textContent=IS_ADMIN?t('admin'):(t('member')+(MYNAME?' \u00b7 '+MYNAME:''));rb.className=IS_ADMIN?'rolebadge admin':'rolebadge member';}applyRole();};
 window.linkMe=function(name){MYNAME=name||'';if(window.saveMyPlayer)window.saveMyPlayer(name);applyRole();};
-initRoster();initGroups();buildTabs();renderAll();enforceRole();
+initRoster();initGroups();buildTabs();applyStatic();renderAll();enforceRole();
 (function(){var ls=el('langsel');if(ls){try{ls.value=localStorage.getItem('s2ak_lang')||'en';}catch(e){}}})();
 if(window.__role&&window.setRole)window.setRole(window.__role.admin,window.__role.name);
 STORE.load(function(d){if(d){try{assign=d.a||{};if(!rosterDirty&&d.r&&d.r.length)roster=d.r;if(d.g&&d.g.length)groups=d.g;renderMap('blue');renderMap('yellow');if(!rosterDirty)renderPlayers();renderStaff();renderRallies();renderSides();renderMapInfo();renderLife();renderReady();enforceRole();}catch(e){}}});

@@ -10,7 +10,15 @@ var I18N={
   m_main:"Main",m_sub:"Sub",s_strong:"Strong",s_off:"Off",yes:"yes",proof:"proof",replace:"Replace",view_shot:"View screenshot",pick:"— pick —",
   f_uuid:"UUID (player ID)",f_power:"Total power",f_decoration:"Decoration Lvl.",f_svip:"SVIP",f_faction:"Faction",f_legendary:"# Of Legendary skin",f_maxed:"Maxed unit type",f_exemplar:"Exemplar artefact",f_maxpet:"Maxed pets",
   u_Infantry:"Infantry",u_Mage:"Mage",u_Cavalry:"Cavalry",u_Archer:"Archer",
-  players_intro:"Registered team. Set side & Main/Sub, fill fields, add proof. Tap ▸ to expand a card."
+  players_intro:"Registered team. Set side & Main/Sub, fill fields, add proof. Tap ▸ to expand a card.",
+  lead_main:"Lead · Main garrison",no_legions:"no legions assigned yet",leg:"leg",legions:"legions",
+  role_none:"— role —",role_backup:"Backup garrison",role_fill:"FILL",role_firsttake:"Phase 1 - FIRST TAKE",role_cavs:"CAVS",role_main:"Main garrison",
+  rallies_intro:"Members come from each player’s 5 legions (Players tab); add or remove here and it updates the Players tab. Give each a role.",
+  teleport:"Teleport",grouping:"Grouping",subs:"Subs",lg_1st:"1st take",lg_gar:"garrison",lg_fill:"fill",lg_cavs:"cavs",reset_plan:"Reset to plan",clear_all:"Clear all",
+  col_email:"Email",col_name:"Name",col_uuid:"UUID",col_power:"Power",col_troop:"Main troop",col_approved:"Approved",col_role:"Role",col_player:"Player (team)",
+  merge_dupes:"Merge duplicates",approve_to_add:"approve to add",admins_only:"Admins only.",r_member:"member",r_admin:"admin",members_intro:"Expand a row to see submitted details; approving adds them to the roster.",
+  col_rally:"Rally",col_legions:"Legions",col_plan:"Plan",col_status:"Status",
+  col_group:"Group",col_leader:"Leader",col_side:"Side",col_objective:"Objective",phases_intro:"Phase plan and mechanics. Leaders default to the assigned rally leader and can be overridden here (admin)."
  },
  fr:{
   tab_map_blue:"Carte · Bleu",tab_map_yellow:"Carte · Jaune",tab_phases:"Phases",tab_lifestone:"Pierre de vie",tab_rallies:"Ralliements",tab_players:"Joueurs",tab_staffing:"Effectifs",tab_sides:"Côtés",tab_members:"Membres",
@@ -21,7 +29,15 @@ var I18N={
   m_main:"Titulaire",m_sub:"Remplaçant",s_strong:"Fort",s_off:"Faible",yes:"oui",proof:"preuve",replace:"Remplacer",view_shot:"Voir la capture",pick:"— choisir —",
   f_uuid:"UUID (ID du joueur)",f_power:"Puissance totale",f_decoration:"Niveau de décoration",f_svip:"SVIP",f_faction:"Faction",f_legendary:"Nb de skins légendaires",f_maxed:"Type d’unité maximisé",f_exemplar:"Artéfact exemplaire",f_maxpet:"Familiers maximisés",
   u_Infantry:"Infanterie",u_Mage:"Mage",u_Cavalry:"Cavalerie",u_Archer:"Archer",
-  players_intro:"Effectif enregistré. Définissez le côté et Titulaire/Remplaçant, remplissez les champs, ajoutez une preuve. Touchez ▸ pour développer une fiche."
+  players_intro:"Effectif enregistré. Définissez le côté et Titulaire/Remplaçant, remplissez les champs, ajoutez une preuve. Touchez ▸ pour développer une fiche.",
+  lead_main:"Chef · Garnison principale",no_legions:"aucune légion assignée",leg:"lég",legions:"légions",
+  role_none:"— rôle —",role_backup:"Garnison de secours",role_fill:"RENFORT",role_firsttake:"Phase 1 - PREMIÈRE PRISE",role_cavs:"CAVS",role_main:"Garnison principale",
+  rallies_intro:"Les membres viennent des 5 légions de chaque joueur (onglet Joueurs) ; ajoutez ou retirez ici et l’onglet Joueurs se met à jour. Donnez un rôle à chacun.",
+  teleport:"Téléport",grouping:"Regroupement",subs:"Remplaçants",lg_1st:"1re prise",lg_gar:"garnison",lg_fill:"renfort",lg_cavs:"cavs",reset_plan:"Réinitialiser",clear_all:"Tout effacer",
+  col_email:"Courriel",col_name:"Nom",col_uuid:"UUID",col_power:"Puissance",col_troop:"Troupe princ.",col_approved:"Approuvé",col_role:"Rôle",col_player:"Joueur (équipe)",
+  merge_dupes:"Fusionner doublons",approve_to_add:"approuver pour ajouter",admins_only:"Admins seulement.",r_member:"membre",r_admin:"admin",members_intro:"Développez une ligne pour voir les détails soumis ; l’approbation l’ajoute à l’effectif.",
+  col_rally:"Ralliement",col_legions:"Légions",col_plan:"Prévu",col_status:"Statut",
+  col_group:"Groupe",col_leader:"Chef",col_side:"Côté",col_objective:"Objectif",phases_intro:"Plan de phases et mécaniques. Les chefs par défaut sont ceux du ralliement et peuvent être remplacés ici (admin)."
  },
  zh:{
   tab_map_blue:"地图 · 蓝",tab_map_yellow:"地图 · 黄",tab_phases:"阶段",tab_lifestone:"生命石",tab_rallies:"集结",tab_players:"玩家",tab_staffing:"人员",tab_sides:"阵营",tab_members:"成员",
@@ -32,7 +48,15 @@ var I18N={
   m_main:"主力",m_sub:"替补",s_strong:"强",s_off:"弱",yes:"是",proof:"证明",replace:"替换",view_shot:"查看截图",pick:"— 选择 —",
   f_uuid:"UUID（玩家ID）",f_power:"总战力",f_decoration:"装饰等级",f_svip:"SVIP",f_faction:"阵营",f_legendary:"传奇皮肤数量",f_maxed:"已满级兵种",f_exemplar:"典范神器",f_maxpet:"已满级宠物",
   u_Infantry:"步兵",u_Mage:"法师",u_Cavalry:"骑兵",u_Archer:"弓兵",
-  players_intro:"注册名单。设置阵营与主力/替补，填写字段，添加证明。点击 ▸ 展开卡片。"
+  players_intro:"注册名单。设置阵营与主力/替补，填写字段，添加证明。点击 ▸ 展开卡片。",
+  lead_main:"队长 · 主驻防",no_legions:"尚未分配军团",leg:"团",legions:"军团",
+  role_none:"— 角色 —",role_backup:"后备驻防",role_fill:"填补",role_firsttake:"阶段1 - 首占",role_cavs:"骑兵队",role_main:"主驻防",
+  rallies_intro:"成员来自每位玩家的 5 支军团（玩家页）；在此添加或移除会同步更新玩家页。为每人分配角色。",
+  teleport:"传送",grouping:"编组",subs:"替补",lg_1st:"首占",lg_gar:"驻防",lg_fill:"填补",lg_cavs:"骑兵",reset_plan:"重置",clear_all:"全部清除",
+  col_email:"邮箱",col_name:"名称",col_uuid:"UUID",col_power:"战力",col_troop:"主兵种",col_approved:"已批准",col_role:"角色",col_player:"玩家（队伍）",
+  merge_dupes:"合并重复",approve_to_add:"批准后添加",admins_only:"仅限管理员。",r_member:"成员",r_admin:"管理员",members_intro:"展开一行查看提交的详情；批准后会加入名单。",
+  col_rally:"集结",col_legions:"军团",col_plan:"计划",col_status:"状态",
+  col_group:"分组",col_leader:"队长",col_side:"阵营",col_objective:"目标",phases_intro:"阶段计划与机制。队长默认为对应集结的队长，可在此覆盖（管理员）。"
  },
  vi:{
   tab_map_blue:"Bản đồ · Xanh",tab_map_yellow:"Bản đồ · Vàng",tab_phases:"Giai đoạn",tab_lifestone:"Đá sự sống",tab_rallies:"Tập hợp",tab_players:"Người chơi",tab_staffing:"Nhân sự",tab_sides:"Phe",tab_members:"Thành viên",
@@ -43,8 +67,17 @@ var I18N={
   m_main:"Chính thức",m_sub:"Dự bị",s_strong:"Mạnh",s_off:"Yếu",yes:"có",proof:"bằng chứng",replace:"Thay",view_shot:"Xem ảnh",pick:"— chọn —",
   f_uuid:"UUID (ID người chơi)",f_power:"Tổng sức mạnh",f_decoration:"Cấp trang trí",f_svip:"SVIP",f_faction:"Phe",f_legendary:"Số skin huyền thoại",f_maxed:"Loại quân tối đa",f_exemplar:"Cổ vật mẫu mực",f_maxpet:"Thú cưng tối đa",
   u_Infantry:"Bộ binh",u_Mage:"Pháp sư",u_Cavalry:"Kỵ binh",u_Archer:"Cung thủ",
-  players_intro:"Danh sách đã đăng ký. Đặt phe & Chính thức/Dự bị, điền thông tin, thêm bằng chứng. Nhấn ▸ để mở thẻ."
+  players_intro:"Danh sách đã đăng ký. Đặt phe & Chính thức/Dự bị, điền thông tin, thêm bằng chứng. Nhấn ▸ để mở thẻ.",
+  lead_main:"Chỉ huy · Đồn chính",no_legions:"chưa có quân đoàn",leg:"qđ",legions:"quân đoàn",
+  role_none:"— vai trò —",role_backup:"Đồn dự bị",role_fill:"BỔ SUNG",role_firsttake:"Giai đoạn 1 - CHIẾM ĐẦU",role_cavs:"CAVS",role_main:"Đồn chính",
+  rallies_intro:"Thành viên đến từ 5 quân đoàn của mỗi người chơi (tab Người chơi); thêm/bớt ở đây sẽ cập nhật tab Người chơi. Gán vai trò cho từng người.",
+  teleport:"Dịch chuyển",grouping:"Nhóm",subs:"Dự bị",lg_1st:"chiếm đầu",lg_gar:"đồn",lg_fill:"bổ sung",lg_cavs:"cavs",reset_plan:"Đặt lại",clear_all:"Xóa hết",
+  col_email:"Email",col_name:"Tên",col_uuid:"UUID",col_power:"Sức mạnh",col_troop:"Quân chính",col_approved:"Đã duyệt",col_role:"Vai trò",col_player:"Người chơi (đội)",
+  merge_dupes:"Gộp trùng",approve_to_add:"duyệt để thêm",admins_only:"Chỉ quản trị.",r_member:"thành viên",r_admin:"quản trị",members_intro:"Mở một hàng để xem chi tiết đã gửi; duyệt sẽ thêm vào danh sách.",
+  col_rally:"Tập hợp",col_legions:"Quân đoàn",col_plan:"Kế hoạch",col_status:"Trạng thái",
+  col_group:"Nhóm",col_leader:"Chỉ huy",col_side:"Phe",col_objective:"Mục tiêu",phases_intro:"Kế hoạch giai đoạn và cơ chế. Chỉ huy mặc định theo tập hợp, có thể ghi đè tại đây (quản trị)."
  }
 };
 if(!I18N[LANG])LANG='en';
 function t(k,fb){var v=I18N[LANG]&&I18N[LANG][k];if(v!=null)return v;if(fb!=null)return fb;var e=I18N.en&&I18N.en[k];return e!=null?e:k;}
+function roleLabel(r){if(!r)return t('role_none');var m={'Backup garrison':'role_backup','FILL':'role_fill','Phase 1 - FIRST TAKE':'role_firsttake','CAVS':'role_cavs','Main garrison':'role_main'};return m[r]?t(m[r]):r;}
