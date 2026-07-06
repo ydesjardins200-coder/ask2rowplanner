@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reset password — S2AK</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(rgba(10,20,32,.85),rgba(10,20,32,.93)),url('landing-bg.jpg') center/cover fixed;min-height:100vh;color:#e8eef4;display:flex;align-items:center;justify-content:center}
+.card{width:340px;max-width:92vw;background:#0e1c2ce6;border:1px solid #24425f;border-radius:14px;padding:24px;box-shadow:0 10px 40px #0007}
+h2{margin:0 0 6px;font-size:22px}
+.sub{color:#9fb3c6;font-size:13px;margin-bottom:16px}
+label{display:block;font-size:12px;color:#9fb3c6;margin:12px 0 4px}
+input{width:100%;background:#0a1622;border:1px solid #2f5680;border-radius:8px;color:#fff;padding:10px;font-size:14px}
+input:focus{outline:none;border-color:#1c86ff}
+.go{width:100%;margin-top:18px;background:#1c86ff;border:none;color:#fff;font-weight:bold;font-size:15px;padding:11px;border-radius:9px;cursor:pointer}
+.go:disabled{opacity:.6;cursor:default}
+.msg{margin-top:12px;font-size:12px;min-height:16px}
+.err{color:#ff9b9b}.ok{color:#8ff0b0}
+a{color:#7fb2e6;font-size:12px}
+</style>
+</head>
+<body><div class="card">
+  <h2>Set a new password</h2>
+  <div class="sub" id="sub">Enter a new password for your account.</div>
+  <div id="form">
+    <label for="p1">New password</label>
+    <input id="p1" type="password" autocomplete="new-password" placeholder="••••••••">
+    <label for="p2">Confirm password</label>
+    <input id="p2" type="password" autocomplete="new-password" placeholder="••••••••">
+    <button class="go" id="go">Update password</button>
+  </div>
+  <div class="msg" id="msg"></div>
+  <div style="text-align:center;margin-top:10px"><a href="index.html">Back to sign in</a></div>
+</div>
+<script>
+(function(){
+  var msg=document.getElementById('msg'),go=document.getElementById('go'),
+      p1=document.getElementById('p1'),p2=document.getElementById('p2'),
+      form=document.getElementById('form'),sub=document.getElementById('sub');
+  function show(t,cls){msg.textContent=t;msg.className='msg'+(cls?' '+cls:'');}
+  if(!window.supabase||!window.SUPA||String(window.SUPA.key).indexOf('PASTE')>=0){
+    form.style.display='none';show('Sign-in isn’t configured.',['err']);return;
+  }
+  var SB=window.supabase.createClient(window.SUPA.url,window.SUPA.key);
+  var canReset=false;
+  SB.auth.onAuthStateChange(function(evt,session){if(evt==='PASSWORD_RECOVERY'||session)canReset=true;});
+  SB.auth.getSession().then(function(r){
+    if(r&&r.data&&r.data.session)canReset=true;
+    if(!canReset){setTimeout(function(){
+      if(!canReset){form.style.display='none';sub.textContent='';show('This reset link is invalid or has expired. Request a new one from the sign-in page.',['err']);}
+    },1500);}
+  });
+  go.onclick=function(){
+    var a=p1.value,b=p2.value;
+    if(!a||a.length<6){show('Password must be at least 6 characters.',['err']);return;}
+    if(a!==b){show('Passwords don’t match.',['err']);return;}
+    go.disabled=true;show('Updating…');
+    SB.auth.updateUser({password:a}).then(function(r){
+      if(r&&r.error){show(r.error.message,['err']);go.disabled=false;return;}
+      form.style.display='none';show('Password updated ✓ Redirecting to sign in…',['ok']);
+      setTimeout(function(){SB.auth.signOut().then(function(){location.replace('index.html');},function(){location.replace('index.html');});},1400);
+    },function(){show('Could not update. Try again.',['err']);go.disabled=false;});
+  };
+  p2.addEventListener('keydown',function(ev){if(ev.key==='Enter')go.onclick();});
+})();
+</script>
+</body></html>
