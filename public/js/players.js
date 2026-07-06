@@ -249,6 +249,39 @@ function openImg(url){
   m.className='imgmodal show';
 }
 // ---- Admin: Members panel (approve + assign team/player + role) ----
+function mergeDuplicates(rows){
+  if(!SB){alert('Sign-in not configured.');return;}
+  var groups={};
+  rows.forEach(function(m){
+    if(!m.approved)return;
+    var sub=m.submission||{},b=sub.buffs||{};
+    var uuid=(b.uuid&&b.uuid.v)?(''+b.uuid.v).trim():'';
+    var nm=((sub.name||m.player||'')+'').trim().toLowerCase();
+    var key=uuid?('u:'+uuid):(nm?('n:'+nm):'');
+    if(!key)return;(groups[key]=groups[key]||[]).push(m);
+  });
+  var dups=Object.keys(groups).map(function(k){return groups[k];}).filter(function(g){return g.length>1;});
+  if(!dups.length){alert('No duplicate accounts found (matched by UUID, then in-game name).');return;}
+  var summary=dups.map(function(g){return ((g[0].submission&&g[0].submission.name)||g[0].player||'?')+' \u00d7'+g.length;}).join(', ');
+  if(!confirm('Merge duplicates: '+summary+'\n\nThe most complete data is kept on one player and the extra account(s) are removed. This cannot be undone.'))return;
+  var toDelete=[],changed=false;
+  dups.forEach(function(g){
+    var primary=g[0],pname=(primary.submission&&primary.submission.name)||primary.player;
+    var pl=null;roster.forEach(function(p){if((p.name||'').toLowerCase()===(''+pname).toLowerCase())pl=p;});
+    if(!pl){pl={name:pname,side:'',sub:false,func:'',legions:['','','','',''],buffs:{}};roster.push(pl);changed=true;}
+    if(!pl.buffs)pl.buffs={};
+    g.forEach(function(m){var bb=(m.submission&&m.submission.buffs)||{};for(var fk in bb){var e=bb[fk];if(!e)continue;var cur=pl.buffs[fk],curHas=cur&&(cur.v||cur.img),newHas=e.v||e.img;if(newHas&&!curHas){pl.buffs[fk]=e;changed=true;}}});
+    for(var i=1;i<g.length;i++)toDelete.push(g[i].id);
+  });
+  // dedupe roster by name (keep first)
+  var seen={},nr=[];roster.forEach(function(p){var k=(p.name||'').toLowerCase();if(k&&seen[k]){changed=true;return;}if(k)seen[k]=1;nr.push(p);});
+  if(nr.length!==roster.length){roster.length=0;nr.forEach(function(p){roster.push(p);});}
+  if(changed&&typeof saveRoster==='function')saveRoster();
+  var done=0,total=toDelete.length;
+  function finish(){renderPlayers();renderMapInfo();renderMembers();}
+  if(!total){finish();return;}
+  toDelete.forEach(function(id){SB.from('profiles').delete().eq('id',id).then(function(){if(++done>=total)finish();},function(){if(++done>=total)finish();});});
+}
 function renderMembers(){
   var c=el('memberstbl');if(!c)return;
   if(!IS_ADMIN){c.innerHTML='<div class="sub">Admins only.</div>';return;}
@@ -282,7 +315,7 @@ function renderMembers(){
       if(pf.length)h+='<div style="padding:2px 4px 6px;font-size:12px">Proof: '+pf.join(' &nbsp;\u00b7&nbsp; ')+'</div>';
       return h;
     }
-    var h='<div class="sub"><b>'+rows.length+'</b> account'+(rows.length===1?'':'s')+' \u00b7 '+pending+' pending review. Expand a row to see everything they submitted; approving adds them to the roster (Unassigned).</div>';
+    var h='<div class="sub"><b>'+rows.length+'</b> account'+(rows.length===1?'':'s')+' \u00b7 '+pending+' pending review. Expand a row to see submitted details; approving adds them to the roster. <button class="mmerge">Merge duplicates</button></div>';
     h+='<table class="t"><tr><th></th><th>Email</th><th>Name</th><th>UUID</th><th>Power</th><th>Main troop</th><th>Approved</th><th>Role</th><th>Player (team)</th></tr>';
     rows.forEach(function(m,ri){
       var s=src(m);
@@ -317,5 +350,6 @@ function renderMembers(){
     };});
     each('.mrole',function(x){x.onchange=function(e){upd(e.target.getAttribute('data-id'),{role:e.target.value});};});
     each('.mplayer',function(x){x.onchange=function(e){upd(e.target.getAttribute('data-id'),{player:e.target.value},renderMembers);};});
+    var mb=c.querySelector('.mmerge');if(mb)mb.onclick=function(){mergeDuplicates(rows);};
   },function(){c.innerHTML='<div class="sub">Could not load members.</div>';});
 }
