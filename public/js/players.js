@@ -11,6 +11,10 @@ function legionOpts(sel){var o='<option value="">\u2014</option>';RALLY_ORDER.fo
 function funcOpts(sel){var o='<option value="">'+esc(t('pick'))+'</option>';FUNCTIONS.forEach(function(r){o+='<option'+(sel===r?' selected':'')+'>'+esc(r)+'</option>';});return o;}
 function membersOf(code){var out=[],seen={};roster.forEach(function(p){if(p.legions&&p.legions.indexOf(code)>=0&&!seen[p.name]){seen[p.name]=1;out.push(p.name);}});return out;}
 function legionCount(code){var n=0;roster.forEach(function(p){if(p.legions)p.legions.forEach(function(c){if(c===code)n++;});});return n;}
+// How many of THIS player's legion slots point at a group (duplicates allowed).
+function countSlots(p,code){var n=0;if(p&&p.legions)for(var i=0;i<p.legions.length;i++)if(p.legions[i]===code)n++;return n;}
+// Same, resolved by name (case/space tolerant), summed across any matching entries.
+function legsOfName(name,code){var me=(''+(name||'')).trim().toLowerCase(),n=0;roster.forEach(function(p){if((''+p.name).trim().toLowerCase()===me)n+=countSlots(p,code);});return n;}
 function pbuffs(p){if(!p.buffs)p.buffs={};return p.buffs;}
 function fEntry(p,k){var b=pbuffs(p);if(!b[k])b[k]={};return b[k];}
 function isFilled(f,v){
@@ -141,21 +145,27 @@ function leadLabel(code){if(code==='Ghost Cavalry')return 'Ghost cavalry leader 
 function leadCardColor(code){if(code==='Ghost Cavalry')return '#ff6b6b';if(code==='Lifestone')return '#2fb3a4';return '#5fd08a';}
 function rallyRows(g){
   var lead=(g.code in assign)?assign[g.code]:g.leader;
-  var mem=membersOf(g.code),roles=g.roles||{},rows=[],seen={};
+  var roles=g.roles||{},rows=[],seen={};
   var cavsOnly=(g.code==='Ghost Cavalry'||g.code==='Fraedrake');
-  if(lead){rows.push({name:lead,role:cavsOnly?'CAVS':'Main garrison'});seen[lead]=1;}
-  mem.forEach(function(nm){if(seen[nm])return;seen[nm]=1;rows.push({name:nm,role:cavsOnly?'CAVS':(roles[nm]||'')});});
+  if(lead){var ls=legsOfName(lead,g.code);rows.push({name:lead,role:cavsOnly?'CAVS':'Main garrison',legs:ls>0?ls:1});seen[(''+lead).trim().toLowerCase()]=1;}
+  roster.forEach(function(p){
+    var c=countSlots(p,g.code);if(c<=0)return;
+    var key=(''+p.name).trim().toLowerCase();if(seen[key])return;seen[key]=1;
+    rows.push({name:p.name,role:cavsOnly?'CAVS':(roles[p.name]||''),legs:c});
+  });
   return rows;
 }
-function rallyLegions(g){return rallyRows(g).length;}
+// Total marches committed to a group = every legion slot + the leader's rally.
+function rallyLegions(g){var n=0;rallyRows(g).forEach(function(r){n+=r.legs;});return n;}
 function roleOptions(sel,code){var R=(code==='Ghost Cavalry'||code==='Fraedrake')?["CAVS"]:["","Backup garrison","FILL","Phase 1 - FIRST TAKE"];return R.map(function(r){return '<option value="'+esc(r)+'"'+((sel||'')===r?' selected':'')+'>'+esc(roleLabel(r))+'</option>';}).join('');}
 function rallyPersist(){saveLocal();if(typeof saveRoster==='function')saveRoster();renderRallies();renderPlayers();renderMapInfo();renderStaff();renderLife();renderSides();}
 function addToRally(code,name){
   if(!name)return;var p=null;roster.forEach(function(x){if(x.name===name)p=x;});if(!p)return;
   if(!p.legions)p.legions=['','','','',''];
-  if(p.legions.indexOf(code)>=0)return;
+  // Duplicates allowed: a player can commit more than one of their 5 legions to
+  // the same group. Only the 5-slot ceiling stops them.
   var idx=p.legions.indexOf('');
-  if(idx<0){alert(name+' already has 5 legions assigned. Free one on their player card first.');renderRallies();return;}
+  if(idx<0){alert(name+' already has all 5 legions assigned. Free one on their player card first.');renderRallies();return;}
   p.legions[idx]=code;rallyPersist();
 }
 function removeFromRally(code,name){
@@ -173,10 +183,12 @@ function renderRallies(){
     h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+sideLbl(g.side)+' \u00b7 '+esc(g.troop)+' \u00b7 '+lc+' '+esc(t('legions'))+'</span></div>';
     h+='<div class="grow"><span class="glbl">'+esc(leadLabel(g.code))+'</span><select class="glead" data-g="'+gi+'">'+nameOptions(curLead)+'</select></div>';
     mem.forEach(function(mnm){
-      h+='<div class="grow"><span class="glbl mname">'+esc(mnm)+'</span><select class="mrole" data-g="'+gi+'" data-n="'+esc(mnm)+'">'+roleOptions(g.roles[mnm],g.code)+'</select><button class="mdel" data-c="'+esc(g.code)+'" data-n="'+esc(mnm)+'" title="'+esc(t('remove_rally'))+'">\u00d7</button></div>';
+      var lg=legsOfName(mnm,g.code),mult=lg>1?'<span class="lgx">\u00d7'+lg+'</span>':'';
+      h+='<div class="grow"><span class="glbl mname">'+esc(mnm)+mult+'</span><select class="mrole" data-g="'+gi+'" data-n="'+esc(mnm)+'">'+roleOptions(g.roles[mnm],g.code)+'</select><button class="mdel" data-c="'+esc(g.code)+'" data-n="'+esc(mnm)+'" title="'+esc(t('remove_rally'))+'">\u00d7</button></div>';
     });
     if(!mem.length)h+='<div class="asg"><span style="color:#7a8a99">'+esc(t('no_legions'))+'</span></div>';
-    var avail=roster.filter(function(p){return p.name&&mem.indexOf(p.name)<0;});
+    // Duplicates allowed, so every named player stays selectable (add again = +1 legion).
+    var avail=roster.filter(function(p){return p.name;});
     h+='<div class="grow"><span class="glbl">'+esc(t('add_player'))+'</span><select class="gadd" data-c="'+esc(g.code)+'"><option value="">'+esc(t('pick'))+'</option>'+avail.map(function(p){return '<option>'+esc(p.name)+'</option>';}).join('')+'</select></div>';
     h+='</div>';
   });
@@ -244,14 +256,13 @@ function mainRoleLbl(p){
   if(p.side==='off')return t('s_off');
   return '\u2014';
 }
-// How many groups a player is committed to: their filled legion slots PLUS any
-// group they lead (leading = you must be there), counted once per group.
-// Leader is matched on a normalized name so casing / trailing-space drift
-// (e.g. a leader set before the player card was renamed) still counts.
+// A player's total legion commitment for the teleport badge: every filled slot
+// counts (two legions in the same group count as two), plus any group they lead
+// where they hold no slot (leading = a march you must send).
 function legAssignedCount(p){
-  var seen={},n=0,me=(''+(p.name||'')).trim().toLowerCase();
-  if(p.legions)for(var i=0;i<p.legions.length;i++){var c=p.legions[i];if(c&&!seen[c]){seen[c]=1;n++;}}
-  for(var gi=0;gi<groups.length;gi++){var g=groups[gi];var lead=(g.code in assign)?assign[g.code]:g.leader;if(lead&&(''+lead).trim().toLowerCase()===me&&!seen[g.code]){seen[g.code]=1;n++;}}
+  var n=0,me=(''+(p.name||'')).trim().toLowerCase(),slotCodes={};
+  if(p.legions)for(var i=0;i<p.legions.length;i++){var c=p.legions[i];if(c){n++;slotCodes[c]=1;}}
+  for(var gi=0;gi<groups.length;gi++){var g=groups[gi];var lead=(g.code in assign)?assign[g.code]:g.leader;if(lead&&(''+lead).trim().toLowerCase()===me&&!slotCodes[g.code]){n++;slotCodes[g.code]=1;}}
   return n;
 }
 function mapInfoHTML(){
@@ -277,9 +288,10 @@ function mapInfoHTML(){
     var head=special?('<div class="gmrow" style="border-bottom:1px solid #2f5680"><span class="gmn" style="color:#c9d4de;font-weight:bold">'+esc(leadLabel(g.code))+'</span><span class="grole" style="color:'+leadCardColor(g.code)+';font-weight:bold">'+esc(lead||'\u2014')+'</span></div>'):'';
     var body=rows.filter(function(r){return !(special&&r.name===lead);}).map(function(r){
       var col=roleColor(r.role);
+      var mult=r.legs>1?'<span class="lgx">\u00d7'+r.legs+'</span>':'';
       // Leader row stays read-only (its role is fixed); members get an editable role + remove.
-      if(r.name===lead)return '<div class="gmrow"><span class="gmn" style="color:'+col+';font-weight:bold">'+esc(r.name)+'</span><span class="grole" style="color:'+col+'">'+esc(r.role?roleLabel(r.role):'\u2014')+'</span></div>';
-      return '<div class="gmrow"><span class="gmn" style="color:'+col+'">'+esc(r.name)+'</span>'
+      if(r.name===lead)return '<div class="gmrow"><span class="gmn" style="color:'+col+';font-weight:bold">'+esc(r.name)+mult+'</span><span class="grole" style="color:'+col+'">'+esc(r.role?roleLabel(r.role):'\u2014')+'</span></div>';
+      return '<div class="gmrow"><span class="gmn" style="color:'+col+'">'+esc(r.name)+mult+'</span>'
         +'<select class="gmrole" data-c="'+esc(g.code)+'" data-n="'+esc(r.name)+'">'+roleOptions(g.roles[r.name],g.code)+'</select>'
         +'<button class="gmdel" data-c="'+esc(g.code)+'" data-n="'+esc(r.name)+'" title="'+esc(t('remove_rally'))+'">\u00d7</button></div>';
     }).join('');

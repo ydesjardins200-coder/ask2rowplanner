@@ -161,5 +161,6 @@ body.is-admin .minfo .tp .tprow.dragging{opacity:.45}
 .gmrow .gmdel{flex:0 0 auto;background:transparent;border:none;color:#7a8a99;font-size:13px;line-height:1;padding:0 2px;cursor:pointer}
 .gmrow .gmdel:hover{color:#ff6b6b}
 .asg.drophint{font-size:10px;font-style:italic;text-align:center;padding:5px;color:#7a8a99}
+.lgx{display:inline-block;margin-left:5px;padding:0 4px;border-radius:7px;background:#3a2f5b;color:#c9b8ff;font-size:9px;font-weight:bold;vertical-align:middle}
 .rolekey .rk-b{background:#5fa8ff}
 .rolekey .rk-r{background:#ff6b6b}
