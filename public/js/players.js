@@ -259,7 +259,7 @@ function renderMembers(){
        +'<td style="font-size:11px">'+esc(troop(s))+'</td>'
        +'<td style="text-align:center"><input type="checkbox" class="mapp" data-id="'+m.id+'" data-r="'+ri+'"'+(m.approved?' checked':'')+'></td>'
        +'<td><select class="mrole" data-id="'+m.id+'"><option value="member"'+(m.role!=='admin'?' selected':'')+'>member</option><option value="admin"'+(m.role==='admin'?' selected':'')+'>admin</option></select></td>'
-       +'<td>'+(m.approved?('<select class="mplayer" data-id="'+m.id+'"><option value="">\u2014 unassigned \u2014</option>'+opts.map(function(n){return '<option'+(m.player===n?' selected':'')+'>'+esc(n)+'</option>';}).join('')+'</select>'):'<span style="color:#9fb3c6;font-size:11px">approve to add</span>')+'</td>'
+       +'<td>'+(!m.approved?'<span style="color:#9fb3c6;font-size:11px">approve to add</span>':(m.submission?'<span class="mplayer-locked" title="Auto-assigned from their signup">'+esc(m.player||'\u2014')+'</span>':('<select class="mplayer" data-id="'+m.id+'"><option value="">\u2014 unassigned \u2014</option>'+opts.map(function(n){return '<option'+(m.player===n?' selected':'')+'>'+esc(n)+'</option>';}).join('')+'</select>')))+'</td>'
        +'</tr>';
       h+='<tr class="mdet" id="mdet_'+ri+'" style="display:none"><td></td><td colspan="8">'+detail(s)+'</td></tr>';
     });
