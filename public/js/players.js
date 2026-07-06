@@ -221,3 +221,30 @@ function openImg(url){
   var im=document.getElementById('imgmodal-img');if(im)im.src=url;
   m.className='imgmodal show';
 }
+// ---- Admin: Members panel (approve + assign team/player + role) ----
+function renderMembers(){
+  var c=el('memberstbl');if(!c)return;
+  if(!IS_ADMIN){c.innerHTML='<div class="sub">Admins only.</div>';return;}
+  if(!SB){c.innerHTML='<div class="sub">Sign-in isn\u2019t configured, so there are no accounts to manage.</div>';return;}
+  c.innerHTML='<div class="sub">Loading members\u2026</div>';
+  SB.from('profiles').select('id,email,role,approved,player').then(function(res){
+    if(!res||res.error){c.innerHTML='<div class="sub">Could not load members.</div>';return;}
+    var rows=res.data||[];
+    rows.sort(function(a,b){return (a.approved?1:0)-(b.approved?1:0)||((a.email||'')<(b.email||'')?-1:1);});
+    var opts=roster.map(function(p){return p.name;});
+    var h='<div class="sub"><b>'+rows.length+'</b> account'+(rows.length===1?'':'s')+' \u00b7 '+rows.filter(function(m){return !m.approved;}).length+' pending</div>';
+    h+='<table class="t"><tr><th>Email</th><th>Approved</th><th>Role</th><th>Player (team)</th></tr>';
+    rows.forEach(function(m){
+      h+='<tr'+(m.approved?'':' style="background:#3a2f18"')+'><td>'+esc(m.email||'')+'</td>'
+       +'<td style="text-align:center"><input type="checkbox" class="mapp" data-id="'+m.id+'"'+(m.approved?' checked':'')+'></td>'
+       +'<td><select class="mrole" data-id="'+m.id+'"><option value="member"'+(m.role!=='admin'?' selected':'')+'>member</option><option value="admin"'+(m.role==='admin'?' selected':'')+'>admin</option></select></td>'
+       +'<td><select class="mplayer" data-id="'+m.id+'"><option value="">\u2014 unassigned \u2014</option>'+opts.map(function(n){return '<option'+(m.player===n?' selected':'')+'>'+esc(n)+'</option>';}).join('')+'</select></td></tr>';
+    });
+    c.innerHTML=h+'</table>';
+    function upd(id,patch,ok){SB.from('profiles').update(patch).eq('id',id).then(function(r){if(r&&!r.error&&ok)ok();},function(){});}
+    function each(sel,fn){var n=c.querySelectorAll(sel);for(var i=0;i<n.length;i++)fn(n[i]);}
+    each('.mapp',function(x){x.onchange=function(e){upd(e.target.getAttribute('data-id'),{approved:e.target.checked},renderMembers);};});
+    each('.mrole',function(x){x.onchange=function(e){upd(e.target.getAttribute('data-id'),{role:e.target.value});};});
+    each('.mplayer',function(x){x.onchange=function(e){upd(e.target.getAttribute('data-id'),{player:e.target.value});};});
+  },function(){c.innerHTML='<div class="sub">Could not load members.</div>';});
+}

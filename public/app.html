@@ -16,8 +16,16 @@
     if(!(r&&r.data&&r.data.session)){location.replace('index.html');return;}
     var uid=r.data.session.user.id;window.MYUID=uid;
     window.saveMyPlayer=function(name){try{g.from('profiles').update({player:name}).eq('id',uid).then(function(){},function(){});}catch(e){}};
-    g.from('profiles').select('role,player').eq('id',uid).single().then(function(p){
-      var role=(p&&p.data&&p.data.role)||'member',player=(p&&p.data&&p.data.player)||'';
+    g.from('profiles').select('role,player,approved').eq('id',uid).single().then(function(p){
+      var d=(p&&p.data)||{},role=d.role||'member',player=d.player||'',approved=!!d.approved;
+      if(!approved){
+        var ov=document.createElement('div');
+        ov.style.cssText='position:fixed;inset:0;z-index:99999;background:#0a1420;display:flex;align-items:center;justify-content:center;text-align:center;font-family:Arial;color:#e8eef4';
+        ov.innerHTML='<div style="max-width:460px;padding:24px"><h2>Awaiting approval</h2><p style="color:#9fb3c6;line-height:1.5">Your account is pending approval by an alliance admin. You\u2019ll get access once you\u2019re approved and assigned to your player.</p><button id="pov" style="margin-top:16px;background:#24425f;color:#fff;border:1px solid #3d6a96;border-radius:8px;padding:9px 18px;cursor:pointer;font-weight:bold">Log out</button></div>';
+        document.body.appendChild(ov);
+        document.getElementById('pov').onclick=function(){g.auth.signOut().then(function(){location.replace('index.html');});};
+        reveal();return;
+      }
       window.__role={admin:role==='admin',name:player};
       if(window.setRole)window.setRole(role==='admin',player);
       reveal();
@@ -41,6 +49,7 @@
 <section id="players"><div class="sub">Set each player's primary rally. Feeds the Staffing tab live.</div><div id="playerlist"></div></section>
 <section id="staffing"><div class="sub">Primary players per rally vs target (from Players tab).</div><div id="stafftbl"></div><div class="rolehdr"><span>Buff readiness</span></div><div id="readytbl"></div></section>
 <section id="sides"><div class="sub">Registered Strong / Off — derived from the Players tab (mains only).</div><div id="sidestbl"></div></section>
+<section id="members"><div class="sub">Approve members and assign each to their player (their team). Admin only.</div><div id="memberstbl"></div></section>
 <script src="js/data.js"></script>
 <script src="js/util.js"></script>
 <script src="js/store.js"></script>
