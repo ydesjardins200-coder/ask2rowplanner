@@ -6,7 +6,7 @@ var CLR={strong:'#e06fb5',off:'#5b9bd5',center:'#2fb3a4',support:'#c8952a'};
 // angle/length, mirrored to the parallel position on the far side of the map
 // center so the (flipped) strong lane sits on the Lucia side. Tune freely.
 var DIVIDE={blue:{l:25,t:31,w:66,r:56},yellow:{l:21,t:3.5,w:105,r:55}};
-var ZONES={blue:{strong:[64.5,28.9],off:[21.5,70.5]},yellow:{strong:[28.1,66.4],off:[71.9,24.4]}};
+var ZONES={blue:{strong:[64.5,28.9],off:[21.5,70.5]},yellow:{strong:[23.1,69.4],off:[71.9,24.4]}};
 // Cross-side equivalence: on the YELLOW map each role sits at its mirror tower.
 // (Blue is the reference; assignments stay tied to the role and follow it.)
 var MIRROR={H1:"H4",H4:"H1",H2:"H3",H3:"H2",T1:"T2",T2:"T1",TH1:"TH2",TH2:"TH1",O1:"O3",O3:"O1",O2:"O4",O4:"O2",LIFESTONE:"LIFESTONE"};
