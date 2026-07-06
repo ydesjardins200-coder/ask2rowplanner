@@ -246,8 +246,14 @@ function mapInfoHTML(){
   if(subs.length)tp+='<div class="sub" style="font-size:10px"><b>Subs:</b> '+esc(subs.join(', '))+'</div>';
   var gp='<div class="rolehdr"><span>Grouping</span> <span class="rolekey"><i class="rk-b"></i> 1st take <i class="rk-g"></i> take / hold &nbsp; <i class="rk-y"></i> fillnbsp; <i class="rk-g"></i> garrison <i class="rk-g"></i> take / hold &nbsp; <i class="rk-y"></i> fillnbsp; <i class="rk-y"></i> fill</span></div><div class="gpgrid">';
   groups.forEach(function(g){
-    var rows=rallyRows(g);
-    var body=rows.map(function(r){var col=roleColor(r.role);return '<div class="gmrow"><span style="color:'+col+'">'+esc(r.name)+'</span><span class="grole" style="color:'+col+'">'+esc(r.role||'\u2014')+'</span></div>';}).join('');
+    var rows=rallyRows(g),body;
+    if(g.code==='Ghost Cavalry'){
+      var gcl=(g.code in assign)?assign[g.code]:g.leader;
+      var lbl='<div class="gmrow" style="border-bottom:1px solid #2f5680"><span style="color:#c9d4de;font-weight:bold">Ghost cavalry leader (SUN)</span><span class="grole" style="color:#ff6b6b;font-weight:bold">'+esc(gcl||'\u2014')+'</span></div>';
+      body=lbl+rows.filter(function(r){return r.name!==gcl;}).map(function(r){var col=roleColor(r.role);return '<div class="gmrow"><span style="color:'+col+'">'+esc(r.name)+'</span><span class="grole" style="color:'+col+'">'+esc(r.role||'\u2014')+'</span></div>';}).join('');
+    }else{
+      body=rows.map(function(r){var col=roleColor(r.role);return '<div class="gmrow"><span style="color:'+col+'">'+esc(r.name)+'</span><span class="grole" style="color:'+col+'">'+esc(r.role||'\u2014')+'</span></div>';}).join('');
+    }
     gp+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+rallyLegions(g)+' leg</span></div>'+(body||'<div class="asg"><span style="color:#7a8a99">\u2014</span></div>')+'</div>';
   });
   gp+='</div>';
