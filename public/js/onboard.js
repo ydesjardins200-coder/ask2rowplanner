@@ -54,19 +54,13 @@ window.showOnboarding=function(client,uid){
     var maxed={},mm=document.querySelectorAll('.ob_maxed');for(var i=0;i<mm.length;i++){if(mm[i].checked)maxed[mm[i].getAttribute('data-o')]=true;}
     var buffs={uuid:{v:gv('ob_uuid')},power:{v:gv('ob_power')},decoration:{v:gv('ob_decoration')},svip:{v:gc('ob_svip')},faction:{v:gv('ob_faction')},legendary:{v:gv('ob_legendary')},maxed:{v:maxed},exemplar:{v:gc('ob_exemplar')},maxpet:{}};
     for(var kk in imgs){if(buffs[kk])buffs[kk].img=imgs[kk];}
-    var entry={name:name,side:'',sub:false,func:'',legions:['','','','',''],buffs:buffs};
     msg.style.color='#9fb3c6';msg.textContent='Submitting\u2026';btn.disabled=true;
     var fail=function(t){msg.style.color='#ff9b9b';msg.textContent=t||'Could not submit \u2014 please try again.';btn.disabled=false;};
-    client.from('plan').select('data').eq('id','btx').single().then(function(r){
-      var data=(r&&r.data&&r.data.data)||{};var ros=(data.r&&data.r.slice)?data.r.slice():[];
-      var found=-1;for(var i=0;i<ros.length;i++){if((ros[i].name||'').toLowerCase()===name.toLowerCase()){found=i;break;}}
-      if(found>=0){ros[found].func=entry.func||ros[found].func;ros[found].buffs=buffs;}else ros.push(entry);
-      client.rpc('save_roster',{p_roster:ros}).then(function(rr){
-        if(rr&&rr.error){fail();return;}
-        client.from('profiles').update({player:name}).eq('id',uid).then(function(){},function(){});
-        document.querySelector('.obform').innerHTML='<h2>Submitted \u2713</h2><p class="obsub">Thanks! Your profile is saved. An admin will approve you shortly \u2014 you\u2019ll get full access once approved.</p><button class="obout" id="ob_out2">Log out</button>';
-        document.getElementById('ob_out2').onclick=function(){client.auth.signOut().then(function(){location.replace('index.html');});};
-      },function(){fail();});
+    var submission={name:name,buffs:buffs};
+    client.from('profiles').update({submission:submission,player:name}).eq('id',uid).then(function(r){
+      if(r&&r.error){fail();return;}
+      document.querySelector('.obform').innerHTML='<h2>Submitted \u2713</h2><p class="obsub">Thanks! Your profile is saved. An admin will review it and approve you shortly \u2014 you\u2019ll get full access once approved.</p><button class="obout" id="ob_out2">Log out</button>';
+      document.getElementById('ob_out2').onclick=function(){client.auth.signOut().then(function(){location.replace('index.html');});};
     },function(){fail('Could not reach the server. Try again.');});
   };
 };

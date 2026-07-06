@@ -227,27 +227,58 @@ function renderMembers(){
   if(!IS_ADMIN){c.innerHTML='<div class="sub">Admins only.</div>';return;}
   if(!SB){c.innerHTML='<div class="sub">Sign-in isn\u2019t configured, so there are no accounts to manage.</div>';return;}
   c.innerHTML='<div class="sub">Loading members\u2026</div>';
-  SB.from('profiles').select('id,email,role,approved,player').then(function(res){
-    if(!res||res.error){c.innerHTML='<div class="sub">Could not load members.</div>';return;}
+  SB.from('profiles').select('id,email,role,approved,player,submission').then(function(res){
+    if(!res||res.error){c.innerHTML='<div class="sub">Could not load members. (Add the profiles.submission column if you haven\u2019t.)</div>';return;}
     var rows=res.data||[];
     rows.sort(function(a,b){return (a.approved?1:0)-(b.approved?1:0)||((a.email||'')<(b.email||'')?-1:1);});
     var opts=roster.map(function(p){return p.name;});
-    var h='<div class="sub"><b>'+rows.length+'</b> account'+(rows.length===1?'':'s')+' \u00b7 '+rows.filter(function(m){return !m.approved;}).length+' pending</div>';
-    h+='<table class="t"><tr><th>Email</th><th>Approved</th><th>Role</th><th>Player (team)</th><th>UUID</th><th>Power</th><th>Main troop</th></tr>';
-    rows.forEach(function(m){
-      var pl=null;roster.forEach(function(x){if(x.name===m.player)pl=x;});
-      var bv=function(k){var e=pl&&pl.buffs&&pl.buffs[k];return (e&&e.v!=null&&e.v!=='')?e.v:'\u2014';};
-      var troop=function(){var e=pl&&pl.buffs&&pl.buffs.maxed,v=e&&e.v;if(!v||typeof v!=='object')return '\u2014';var a=[];for(var k in v){if(v[k])a.push(k);}return a.length?a.join(', '):'\u2014';};
-      h+='<tr'+(m.approved?'':' style="background:#3a2f18"')+'><td>'+esc(m.email||'')+'</td>'
-       +'<td style="text-align:center"><input type="checkbox" class="mapp" data-id="'+m.id+'"'+(m.approved?' checked':'')+'></td>'
+    var pending=rows.filter(function(m){return !m.approved;}).length;
+    function src(m){var pl=null;roster.forEach(function(x){if(x.name===m.player)pl=x;});return (m.approved&&pl&&pl.buffs)?pl.buffs:((m.submission&&m.submission.buffs)||{});}
+    function nm(m){return (m.submission&&m.submission.name)||m.player||'\u2014';}
+    function bv(s,k){var e=s[k];return (e&&e.v!=null&&e.v!=='')?e.v:'\u2014';}
+    function yn(s,k){return (s[k]&&s[k].v)?'yes':'no';}
+    function troop(s){var e=s.maxed,v=e&&e.v;if(!v||typeof v!=='object')return '\u2014';var a=[];for(var k in v){if(v[k])a.push(k);}return a.length?a.join(', '):'\u2014';}
+    function shot(s,k,lbl){var e=s[k];return (e&&e.img)?'<a class="viewshot" href="#" data-full="'+esc(e.img)+'">'+lbl+'</a>':'';}
+    function detail(s){
+      var parts=['Decoration Lvl: <b>'+esc(bv(s,'decoration'))+'</b>','SVIP: <b>'+yn(s,'svip')+'</b>','Faction: <b>'+esc(bv(s,'faction'))+'</b>','Legendary skins: <b>'+esc(bv(s,'legendary'))+'</b>','Exemplar: <b>'+yn(s,'exemplar')+'</b>'];
+      var pf=[shot(s,'decoration','decoration'),shot(s,'svip','SVIP'),shot(s,'legendary','legendary skin'),shot(s,'maxpet','maxed pets')].filter(Boolean);
+      var h='<div style="padding:6px 4px;font-size:12px;color:#cdd">'+parts.join(' &nbsp;\u00b7&nbsp; ')+'</div>';
+      if(pf.length)h+='<div style="padding:2px 4px 6px;font-size:12px">Proof: '+pf.join(' &nbsp;\u00b7&nbsp; ')+'</div>';
+      return h;
+    }
+    var h='<div class="sub"><b>'+rows.length+'</b> account'+(rows.length===1?'':'s')+' \u00b7 '+pending+' pending review. Expand a row to see everything they submitted; approving adds them to the roster (Unassigned).</div>';
+    h+='<table class="t"><tr><th></th><th>Email</th><th>Name</th><th>UUID</th><th>Power</th><th>Main troop</th><th>Approved</th><th>Role</th><th>Player (team)</th></tr>';
+    rows.forEach(function(m,ri){
+      var s=src(m);
+      h+='<tr'+(m.approved?'':' style="background:#3a2f18"')+'>'
+       +'<td><button class="mexp" data-r="'+ri+'">\u25B8</button></td>'
+       +'<td>'+esc(m.email||'')+'</td>'
+       +'<td><b>'+esc(nm(m))+'</b></td>'
+       +'<td>'+esc(bv(s,'uuid'))+'</td>'
+       +'<td>'+esc(bv(s,'power'))+'</td>'
+       +'<td style="font-size:11px">'+esc(troop(s))+'</td>'
+       +'<td style="text-align:center"><input type="checkbox" class="mapp" data-id="'+m.id+'" data-r="'+ri+'"'+(m.approved?' checked':'')+'></td>'
        +'<td><select class="mrole" data-id="'+m.id+'"><option value="member"'+(m.role!=='admin'?' selected':'')+'>member</option><option value="admin"'+(m.role==='admin'?' selected':'')+'>admin</option></select></td>'
-       +'<td><select class="mplayer" data-id="'+m.id+'"><option value="">\u2014 unassigned \u2014</option>'+opts.map(function(n){return '<option'+(m.player===n?' selected':'')+'>'+esc(n)+'</option>';}).join('')+'</select></td>'
-       +'<td>'+esc(bv('uuid'))+'</td><td>'+esc(bv('power'))+'</td><td style="font-size:11px">'+esc(troop())+'</td></tr>';
+       +'<td>'+(m.approved?('<select class="mplayer" data-id="'+m.id+'"><option value="">\u2014 unassigned \u2014</option>'+opts.map(function(n){return '<option'+(m.player===n?' selected':'')+'>'+esc(n)+'</option>';}).join('')+'</select>'):'<span style="color:#9fb3c6;font-size:11px">approve to add</span>')+'</td>'
+       +'</tr>';
+      h+='<tr class="mdet" id="mdet_'+ri+'" style="display:none"><td></td><td colspan="8">'+detail(s)+'</td></tr>';
     });
     c.innerHTML=h+'</table>';
     function upd(id,patch,ok){SB.from('profiles').update(patch).eq('id',id).then(function(r){if(r&&!r.error&&ok)ok();},function(){});}
     function each(sel,fn){var n=c.querySelectorAll(sel);for(var i=0;i<n.length;i++)fn(n[i]);}
-    each('.mapp',function(x){x.onchange=function(e){upd(e.target.getAttribute('data-id'),{approved:e.target.checked},renderMembers);};});
+    each('.mexp',function(x){x.onclick=function(e){var r=e.target.getAttribute('data-r'),d=document.getElementById('mdet_'+r);if(d){var op=d.style.display==='none';d.style.display=op?'table-row':'none';e.target.textContent=op?'\u25BE':'\u25B8';}};});
+    each('.viewshot',function(x){x.onclick=function(e){e.preventDefault();openImg(e.target.getAttribute('data-full'));};});
+    each('.mapp',function(x){x.onchange=function(e){
+      var id=e.target.getAttribute('data-id'),m=rows[+e.target.getAttribute('data-r')];
+      if(e.target.checked){
+        var nmv=(m.submission&&m.submission.name)||m.player;
+        if(nmv){
+          var ex=false;roster.forEach(function(p){if((p.name||'').toLowerCase()===nmv.toLowerCase())ex=true;});
+          if(!ex){roster.push({name:nmv,side:'',sub:false,func:'',legions:['','','','',''],buffs:((m.submission&&m.submission.buffs)||{})});saveRoster();renderPlayers();}
+          upd(id,{approved:true,player:nmv},renderMembers);
+        }else{upd(id,{approved:true},renderMembers);}
+      }else{upd(id,{approved:false},renderMembers);}
+    };});
     each('.mrole',function(x){x.onchange=function(e){upd(e.target.getAttribute('data-id'),{role:e.target.value});};});
     each('.mplayer',function(x){x.onchange=function(e){upd(e.target.getAttribute('data-id'),{player:e.target.value});};});
   },function(){c.innerHTML='<div class="sub">Could not load members.</div>';});
