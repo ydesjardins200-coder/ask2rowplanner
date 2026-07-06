@@ -7,6 +7,6 @@ function renderStaff(){
     var cls='ok',lbl='OK';if(n===0){cls='bad';lbl='EMPTY';}else if(n<t){cls='bad';lbl='UNDER';}else if(n>t){cls='over';lbl='OVER';}
     h+='<tr><td><b>'+esc(g.code)+'</b></td><td>'+n+'</td><td>'+t+'</td><td class="'+cls+'">'+lbl+'</td></tr>';
   });
-  h+='<tr><td><b>TOTAL</b></td><td><b>'+tot+'</b></td><td><b>'+ttot+'</b></td><td></td></tr></table>';
+  h+='<tr><td><b>'+esc(t('total'))+'</b></td><td><b>'+tot+'</b></td><td><b>'+ttot+'</b></td><td></td></tr></table>';
   c.innerHTML=h;
 }

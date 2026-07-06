@@ -41,20 +41,20 @@
 })();
 </script>
 </head><body>
-<h1>S2AK — Roots of War Command Sheet <select id="langsel" title="Language" onchange="if(window.setLang)setLang(this.value)"><option value="en">English</option><option value="fr">Français</option><option value="zh">中文</option><option value="vi">Tiếng Việt</option></select> <span id="rolebadge"></span><button id="refreshbtn" title="Refresh from team" onclick="if(window.forceRefresh)forceRefresh()">↻</button><button id="logoutbtn" onclick="if(window.AUTH)AUTH.auth.signOut().then(function(){location.replace('index.html');});else location.replace('index.html');">Log out</button></h1>
+<h1>S2AK — Roots of War Command Sheet <select id="langsel" title="Language" onchange="if(window.setLang)setLang(this.value)"><option value="en">English</option><option value="fr">Français</option><option value="zh">中文</option><option value="vi">Tiếng Việt</option></select> <span id="rolebadge"></span><button id="refreshbtn" title="Refresh from team" onclick="if(window.forceRefresh)forceRefresh()">↻</button><button id="logoutbtn" data-i18n="logout" onclick="if(window.AUTH)AUTH.auth.signOut().then(function(){location.replace('index.html');});else location.replace('index.html');">Log out</button></h1>
 <div class="tabs" id="tabs"></div>
 <section id="map-blue" class="on"><div class="sub">YOU = BLUE (Lucia). Strong side points at Yaen. Tap a picker to set a building's leader.</div>
  <div class="bar"><button class="adminonly" onclick="resetPlan()" data-i18n="reset_plan">Reset to plan</button><button class="adminonly" onclick="clearAll()" data-i18n="clear_all">Clear all</button><button class="adminonly" onclick="setLeadKey()" id="keybtn">Write key</button><span id="st" class="sub"></span></div>
  <div class="wrap" id="wrap-blue"></div>
- <div class="legend"><span class="dot" style="background:#e06fb5"></span>Strong<span class="dot" style="background:#5b9bd5"></span>Off<span class="dot" style="background:#2fb3a4"></span>Center<span class="dot" style="background:#c8952a"></span>Fraedrake</div><div id="mapinfo-blue"></div></section>
+ <div class="legend"><span class="dot" style="background:#e06fb5"></span><span data-i18n="s_strong">Strong</span><span class="dot" style="background:#5b9bd5"></span><span data-i18n="s_off">Off</span><span class="dot" style="background:#2fb3a4"></span><span data-i18n="center">Center</span><span class="dot" style="background:#c8952a"></span>Fraedrake</div><div id="mapinfo-blue"></div></section>
 <section id="map-yellow"><div class="sub">YOU = YELLOW (Yaen). Strong side FLIPS to point at Lucia — same leaders, mirrored zones.</div>
  <div class="wrap" id="wrap-yellow"></div>
- <div class="legend"><span class="dot" style="background:#e06fb5"></span>Strong<span class="dot" style="background:#5b9bd5"></span>Off<span class="dot" style="background:#2fb3a4"></span>Center<span class="dot" style="background:#c8952a"></span>Fraedrake</div><div id="mapinfo-yellow"></div></section>
+ <div class="legend"><span class="dot" style="background:#e06fb5"></span><span data-i18n="s_strong">Strong</span><span class="dot" style="background:#5b9bd5"></span><span data-i18n="s_off">Off</span><span class="dot" style="background:#2fb3a4"></span><span data-i18n="center">Center</span><span class="dot" style="background:#c8952a"></span>Fraedrake</div><div id="mapinfo-yellow"></div></section>
 <section id="phases"><div class="sub" data-i18n="phases_intro">Phase plan and mechanics. Leaders default to the assigned rally leader and can be overridden here (admin).</div><div id="phasetbl"></div></section>
 <section id="life"><div class="note">LIFESTONE = PRIORITY #1. Spawns center; deliveries compound.</div><div id="lifetbl"></div></section>
 <section id="rallies"><div class="sub">Grouped live from the Players tab — edit players there and this reflects it.</div><div id="rallytbl"></div></section>
 <section id="players"><div class="sub">Set each player's primary rally. Feeds the Staffing tab live.</div><div id="playerlist"></div></section>
-<section id="staffing"><div class="sub">Primary players per rally vs target (from Players tab).</div><div id="stafftbl"></div><div class="rolehdr"><span>Buff readiness</span></div><div id="readytbl"></div></section>
+<section id="staffing"><div class="sub" data-i18n="staffing_intro">Primary players per rally vs target (from Players tab).</div><div id="stafftbl"></div><div class="rolehdr"><span data-i18n="buff_readiness">Buff readiness</span></div><div id="readytbl"></div></section>
 <section id="sides"><div class="sub">Registered Strong / Off — derived from the Players tab (mains only).</div><div id="sidestbl"></div></section>
 <section id="members"><div class="sub">Approve members and assign each to their player (their team). Admin only.</div><div id="memberstbl"></div></section>
 <script src="js/i18n.js"></script>

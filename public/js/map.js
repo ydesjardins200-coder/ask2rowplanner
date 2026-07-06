@@ -25,7 +25,7 @@ function renderMap(color){
  h+='<div class="zone" style="color:#8fc0f0;left:'+off[0]+'%;top:'+off[1]+'%">OFF</div>';
  h+='<div class="base" style="left:'+LUC[0]+'%;top:'+LUC[1]+'%;color:#9fe0ff">Lucia</div>';
  h+='<div class="base" style="left:'+YAE[0]+'%;top:'+YAE[1]+'%;color:#ffce7a">Yaen</div>';
- h+='<div class="you" style="left:'+youBase[0]+'%;top:'+(youBase[1]+7)+'%">YOU</div>';
+ h+='<div class="you" style="left:'+youBase[0]+'%;top:'+(youBase[1]+7)+'%">'+esc(t('you'))+'</div>';
  h+='<div class="life" style="left:'+LIFE[0]+'%;top:'+LIFE[1]+'%"></div>';
  BUILD.forEach(function(b){var ld=(b.code in assign)?assign[b.code]:b.leader;var sd=sideFor(b,color);var bp=bpos(b,color);
   h+='<div class="b'+(ld?'':' un')+'" style="left:'+bp[0]+'%;top:'+bp[1]+'%;border-color:'+CLR[sd]+'"><span class="code" style="color:'+CLR[sd]+'">'+b.code+'</span><select data-code="'+b.code+'">'+leaderOptions(ld)+'</select></div>';});

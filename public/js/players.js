@@ -38,7 +38,7 @@ var rosterDirty=false;
 var openCards={};
 function rdirtyNote(){var n=el('rdirty');if(n)n.textContent=rosterDirty?'Unsaved changes \u2014 tap Save to share with the team.':'';}
 function markDirty(){rosterDirty=true;var b=document.querySelectorAll('#playerlist .save');for(var i=0;i<b.length;i++){b[i].className='save dirty';b[i].textContent='Save*';}rdirtyNote();}
-function clearDirty(){rosterDirty=false;var b=document.querySelectorAll('#playerlist .save');for(var i=0;i<b.length;i++){b[i].className='save';b[i].textContent='Save';}rdirtyNote();}
+function clearDirty(){rosterDirty=false;var b=document.querySelectorAll('#playerlist .save');for(var i=0;i<b.length;i++){b[i].className='save';b[i].textContent=t('save');}rdirtyNote();}
 function commitRoster(){saveRoster();clearDirty();renderMap('blue');renderMap('yellow');renderRallies();renderStaff();renderSides();renderMapInfo();renderLife();renderReady();}
 function readyBadge(p){var n=buffCount(p),t=fieldsFor(p).length;var cls=n>=t?'rdy full':(n>0?'rdy part':'rdy none');return '<span class="'+cls+'">'+n+'/'+t+'</span>';}
 function buffList(i,p){
@@ -49,7 +49,7 @@ function buffList(i,p){
     if(f.type==='check'){
       h+='<label class="bchkw"><input type="checkbox" class="bchk" data-i="'+i+'" data-k="'+f.key+'"'+(v===true?' checked':'')+'> '+esc(t('yes'))+'</label>';
     }else if(f.type==='text'){
-      h+='<input type="text" class="btxt" data-i="'+i+'" data-k="'+f.key+'" value="'+esc(v||'')+'" placeholder="value">';
+      h+='<input type="text" class="btxt" data-i="'+i+'" data-k="'+f.key+'" value="'+esc(v||'')+'" placeholder="'+esc(t('value_ph'))+'">';
     }else if(f.type==='multicheck'){
       f.opts.forEach(function(o){var on=v&&typeof v==='object'&&v[o];h+='<label class="bmcw"><input type="checkbox" class="bmck" data-i="'+i+'" data-k="'+f.key+'" data-o="'+esc(o)+'"'+(on?' checked':'')+'> '+esc(t('u_'+o,o))+'</label>';});
     }else if(f.type!=='proof'){
@@ -133,7 +133,7 @@ function uploadBuff(i,k,file){
     },function(){flash(t('fl_uploadfail'));});
   }catch(e){flash(t('fl_uploadfail'));}
 }
-function addPlayer(){roster.push({name:'New player',side:'',sub:false,func:'',legions:['','','','',''],buffs:{}});saveLocal();markDirty();renderPlayers();}
+function addPlayer(){roster.push({name:t('new_player'),side:'',sub:false,func:'',legions:['','','','',''],buffs:{}});saveLocal();markDirty();renderPlayers();}
 function resetPlayers(){initRoster();saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();}
 // ---- Rallies tab: the grouping (editable; member dropdowns from registered list) ----
 function roleColor(role){if(role==='FILL')return '#f4c430';if(role==='Phase 1 - FIRST TAKE')return '#5fa8ff';if(role==='CAVS')return '#ff6b6b';if(role==='Backup garrison'||role==='Main garrison')return '#5fd08a';return '#9fb3c6';}
@@ -173,7 +173,7 @@ function renderRallies(){
     h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+sideLbl(g.side)+' \u00b7 '+esc(g.troop)+' \u00b7 '+lc+' '+esc(t('legions'))+'</span></div>';
     h+='<div class="grow"><span class="glbl">'+esc(leadLabel(g.code))+'</span><select class="glead" data-g="'+gi+'">'+nameOptions(curLead)+'</select></div>';
     mem.forEach(function(mnm){
-      h+='<div class="grow"><span class="glbl mname">'+esc(mnm)+'</span><select class="mrole" data-g="'+gi+'" data-n="'+esc(mnm)+'">'+roleOptions(g.roles[mnm],g.code)+'</select><button class="mdel" data-c="'+esc(g.code)+'" data-n="'+esc(mnm)+'" title="Remove from rally">\u00d7</button></div>';
+      h+='<div class="grow"><span class="glbl mname">'+esc(mnm)+'</span><select class="mrole" data-g="'+gi+'" data-n="'+esc(mnm)+'">'+roleOptions(g.roles[mnm],g.code)+'</select><button class="mdel" data-c="'+esc(g.code)+'" data-n="'+esc(mnm)+'" title="'+esc(t('remove_rally'))+'">\u00d7</button></div>';
     });
     if(!mem.length)h+='<div class="asg"><span style="color:#7a8a99">'+esc(t('no_legions'))+'</span></div>';
     var avail=roster.filter(function(p){return p.name&&mem.indexOf(p.name)<0;});
@@ -213,7 +213,7 @@ function renderReady(){
   var rows=roster.map(function(p){return {p:p,n:buffCount(p)};});
   rows.sort(function(a,b){return a.n-b.n||(a.p.name.toLowerCase()<b.p.name.toLowerCase()?-1:1);});
   var full=0;roster.forEach(function(p){if(buffCount(p)>=FIELDS.length)full++;});
-  var h='<div class="sub"><b>'+full+'/'+roster.length+'</b> fully filled \u2014 least ready first.</div><table class="t stat"><tr><th>Player</th><th>Side</th><th>Fields</th><th>Missing</th></tr>';
+  var h='<div class="sub"><b>'+full+'/'+roster.length+'</b> '+esc(t('ready_note'))+'.</div><table class="t stat"><tr><th>'+esc(t('col_player_short'))+'</th><th>'+esc(t('col_side'))+'</th><th>'+esc(t('col_fields'))+'</th><th>'+esc(t('col_missing'))+'</th></tr>';
   rows.forEach(function(r){
     var p=r.p,miss=[];FIELDS.forEach(function(f){var e=pbuffs(p)[f.key];if(!(e&&isFilled(f,e.v)))miss.push(f.label);});
     var cls=r.n>=FIELDS.length?'ok':(r.n>0?'over':'bad');
@@ -239,7 +239,7 @@ function teleportOrder(){
 function mapInfoHTML(){
   var subs=[];roster.forEach(function(p){if(p.sub)subs.push(p.name);});
   var ord=teleportOrder();
-  var tp='<div class="rolehdr"><span>'+esc(t('teleport'))+'</span></div><table class="t tp"><tr><th>#</th><th>Player</th></tr>';
+  var tp='<div class="rolehdr"><span>'+esc(t('teleport'))+'</span></div><table class="t tp"><tr><th>#</th><th>'+esc(t('col_player_short'))+'</th></tr>';
   ord.forEach(function(p,i){
     var sc=p.side==='strong'?'#f4a6d7':(p.side==='off'?'#8fc0f0':'#c9d4de');
     tp+='<tr><td>'+(i+1)+'</td><td style="color:'+sc+'">'+esc(p.name)+'</td></tr>';
@@ -308,9 +308,9 @@ function renderMembers(){
   var c=el('memberstbl');if(!c)return;
   if(!IS_ADMIN){c.innerHTML='<div class="sub">'+esc(t('admins_only'))+'</div>';return;}
   if(!SB){c.innerHTML='<div class="sub">Sign-in isn\u2019t configured, so there are no accounts to manage.</div>';return;}
-  c.innerHTML='<div class="sub">Loading members\u2026</div>';
+  c.innerHTML='<div class="sub">'+esc(t('loading_members'))+'</div>';
   SB.from('profiles').select('id,email,role,approved,player,submission').then(function(res){
-    if(!res||res.error){c.innerHTML='<div class="sub">Could not load members. (Add the profiles.submission column if you haven\u2019t.)</div>';return;}
+    if(!res||res.error){c.innerHTML='<div class="sub">'+esc(t('load_members_fail'))+'</div>';return;}
     var rows=res.data||[];
     rows.sort(function(a,b){return (a.approved?1:0)-(b.approved?1:0)||((a.email||'')<(b.email||'')?-1:1);});
     // safety net: any approved account not yet in the roster gets added
@@ -373,7 +373,7 @@ function renderMembers(){
     each('.mrole',function(x){x.onchange=function(e){upd(e.target.getAttribute('data-id'),{role:e.target.value});};});
     each('.mplayer',function(x){x.onchange=function(e){upd(e.target.getAttribute('data-id'),{player:e.target.value},renderMembers);};});
     var mb=c.querySelector('.mmerge');if(mb)mb.onclick=function(){mergeDuplicates(rows);};
-  },function(){c.innerHTML='<div class="sub">Could not load members.</div>';});
+  },function(){c.innerHTML='<div class="sub">'+esc(t('load_members_fail'))+'</div>';});
 }
 // ---- Phases: mechanics table with editable leaders (default to rally leaders) ----
 function phaseLead(pi,ri,row){
