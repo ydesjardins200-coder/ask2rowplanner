@@ -296,25 +296,20 @@ function mapInfoHTML(){
     if(!g.roles)g.roles={};
     var rows=rallyRows(g);
     var lead=(g.code in assign)?assign[g.code]:g.leader;
-    var special=(g.code==='Ghost Cavalry'||g.code==='Lifestone');
-    var head='';
     var body=rows.map(function(r){
       var col=roleColor(r.role),roleTxt='<span class="grole" style="color:'+col+'">'+esc(r.role?roleLabel(r.role):'\u2014')+'</span>';
       var del='<button class="gmdel" data-c="'+esc(g.code)+'" data-n="'+esc(r.name)+'" title="'+esc(t('remove_rally'))+'">\u00d7</button>';
-      if(r.lead&&r.first){
-        // The leader's first march. Special groups show it as the titled header row;
-        // others as a read-only leader line (change the leader from the Rallies tab).
-        if(special){head='<div class="gmrow" style="border-bottom:1px solid #2f5680"><span class="gmn" style="color:#c9d4de;font-weight:bold">'+esc(leadLabel(g.code))+'</span><span class="grole" style="color:'+leadCardColor(g.code)+';font-weight:bold">'+esc(lead||'\u2014')+'</span></div>';return '';}
-        return '<div class="gmrow"><span class="gmn" style="color:'+col+';font-weight:bold">'+esc(r.name)+'</span>'+roleTxt+'</div>';
-      }
+      // Leader's rally (first) is read-only and can't be removed here (change the lead
+      // in the Rallies tab); their extra marches and all member legions are removable.
+      if(r.lead&&r.first)return '<div class="gmrow"><span class="gmn" style="color:'+col+';font-weight:bold">'+esc(r.name)+'</span>'+roleTxt+'</div>';
       if(r.lead)return '<div class="gmrow"><span class="gmn" style="color:'+col+';font-weight:bold">'+esc(r.name)+'</span>'+roleTxt+del+'</div>';
-      // Member legion: first one carries the editable role; extra legions echo it read-only.
       if(r.first)return '<div class="gmrow"><span class="gmn" style="color:'+col+'">'+esc(r.name)+'</span>'
         +'<select class="gmrole" data-c="'+esc(g.code)+'" data-n="'+esc(r.name)+'">'+roleOptions(g.roles[r.name],g.code)+'</select>'+del+'</div>';
       return '<div class="gmrow"><span class="gmn" style="color:'+col+';opacity:.75">'+esc(r.name)+'</span>'+roleTxt+del+'</div>';
     }).join('');
-    var inner=head+body;
-    gp+='<div class="grp gs-'+g.side+'" data-c="'+esc(g.code)+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+rallyLegions(g)+' '+esc(t('leg'))+'</span></div>'+(inner||'<div class="asg drophint"><span>'+esc(t('drag_here'))+'</span></div>')+'</div>';
+    var foot=lead?('<div class="gfoot"><span class="gfoot-l">'+esc(leadLabel(g.code))+'</span><span class="gfoot-n">'+esc(lead)+'</span></div>'):'';
+    var inner=(body||'<div class="asg drophint"><span>'+esc(t('drag_here'))+'</span></div>')+foot;
+    gp+='<div class="grp gs-'+g.side+'" data-c="'+esc(g.code)+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+rallyLegions(g)+' '+esc(t('leg'))+'</span></div>'+inner+'</div>';
   });
   gp+='</div>';
   return '<div class="minfo"><div class="minfo-tp">'+tp+'</div><div class="minfo-gp">'+gp+'</div></div>';

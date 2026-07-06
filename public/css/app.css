@@ -162,5 +162,8 @@ body.is-admin .minfo .tp .tprow.dragging{opacity:.45}
 .gmrow .gmdel:hover{color:#ff6b6b}
 .asg.drophint{font-size:10px;font-style:italic;text-align:center;padding:5px;color:#7a8a99}
 .lgx{display:inline-block;margin-left:5px;padding:0 4px;border-radius:7px;background:#3a2f5b;color:#c9b8ff;font-size:9px;font-weight:bold;vertical-align:middle}
+.gfoot{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:4px;padding:3px 4px 1px;border-top:1px solid #22364d;font-size:10px}
+.gfoot-l{color:#7d92a6;text-transform:uppercase;letter-spacing:.3px;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gfoot-n{color:#c9b8ff;font-weight:bold;white-space:nowrap;flex:0 0 auto}
 .rolekey .rk-b{background:#5fa8ff}
 .rolekey .rk-r{background:#ff6b6b}
