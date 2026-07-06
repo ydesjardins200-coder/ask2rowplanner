@@ -136,12 +136,13 @@ function uploadBuff(i,k,file){
 function addPlayer(){roster.push({name:'New player',side:'',sub:false,func:'',legions:['','','','',''],buffs:{}});saveLocal();markDirty();renderPlayers();}
 function resetPlayers(){initRoster();saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();}
 // ---- Rallies tab: the grouping (editable; member dropdowns from registered list) ----
-function roleColor(role){if(role==='FILL')return '#f4c430';if(role==='Phase 1 - FIRST TAKE')return '#5fa8ff';if(role==='Backup garrison'||role==='Main garrison')return '#5fd08a';return '#9fb3c6';}
+function roleColor(role){if(role==='FILL')return '#f4c430';if(role==='Phase 1 - FIRST TAKE')return '#5fa8ff';if(role==='CAVS')return '#ff6b6b';if(role==='Backup garrison'||role==='Main garrison')return '#5fd08a';return '#9fb3c6';}
 function rallyRows(g){
   var lead=(g.code in assign)?assign[g.code]:g.leader;
   var mem=membersOf(g.code),roles=g.roles||{},rows=[],seen={};
-  if(lead){rows.push({name:lead,role:'Main garrison'});seen[lead]=1;}
-  mem.forEach(function(nm){if(seen[nm])return;seen[nm]=1;rows.push({name:nm,role:roles[nm]||''});});
+  var cavsOnly=(g.code==='Ghost Cavalry'||g.code==='Fraedrake');
+  if(lead){rows.push({name:lead,role:cavsOnly?'CAVS':'Main garrison'});seen[lead]=1;}
+  mem.forEach(function(nm){if(seen[nm])return;seen[nm]=1;rows.push({name:nm,role:cavsOnly?'CAVS':(roles[nm]||'')});});
   return rows;
 }
 function rallyLegions(g){return rallyRows(g).length;}
