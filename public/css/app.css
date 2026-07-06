@@ -138,3 +138,7 @@ body.is-member #logoutbtn{background:#24425f;border-color:#3d6a96}
 .mmerge{background:#24425f;border:1px solid #3d6a96;color:#fff;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:bold;cursor:pointer;margin-left:8px}
 #refreshbtn{background:#1c86ff;border:none;color:#fff;border-radius:8px;padding:2px 11px;font-size:15px;font-weight:bold;cursor:pointer;margin-left:8px;line-height:1.4}
 #keybtn{display:none}
+.rolekey{font-size:10px;color:#9fb3c6;font-weight:normal;float:right}
+.rolekey i{display:inline-block;width:9px;height:9px;border-radius:2px;vertical-align:middle;margin-right:2px}
+.rolekey .rk-g{background:#5fd08a}
+.rolekey .rk-y{background:#f4c430}

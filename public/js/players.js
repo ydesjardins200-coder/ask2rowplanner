@@ -136,6 +136,7 @@ function uploadBuff(i,k,file){
 function addPlayer(){roster.push({name:'New player',side:'',sub:false,func:'',legions:['','','','',''],buffs:{}});saveLocal();markDirty();renderPlayers();}
 function resetPlayers(){initRoster();saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();}
 // ---- Rallies tab: the grouping (editable; member dropdowns from registered list) ----
+function roleColor(role){if(role==='FILL')return '#f4c430';if(role==='Backup garrison'||role==='Phase 1 - FIRST TAKE'||role==='Main garrison')return '#5fd08a';return '#9fb3c6';}
 function roleOptions(sel,code){var R=(code==='Ghost Cavalry'||code==='Fraedrake')?["CAVS"]:["","Backup garrison","FILL","Phase 1 - FIRST TAKE"];return R.map(function(r){return '<option value="'+esc(r)+'"'+((sel||'')===r?' selected':'')+'>'+esc(r||'\u2014 role \u2014')+'</option>';}).join('');}
 function rallyPersist(){saveLocal();if(typeof saveRoster==='function')saveRoster();renderRallies();renderPlayers();renderMapInfo();renderStaff();renderLife();renderSides();}
 function addToRally(code,name){
@@ -234,8 +235,14 @@ function mapInfoHTML(){
   });
   tp+='</table>';
   if(subs.length)tp+='<div class="sub" style="font-size:10px"><b>Subs:</b> '+esc(subs.join(', '))+'</div>';
-  var gp='<div class="rolehdr"><span>Grouping</span></div><div class="gpgrid">';
-  groups.forEach(function(g){var mem=membersOf(g.code);gp+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+(g.leader?'lead: '+esc(g.leader)+' \u00b7 ':'')+legionCount(g.code)+' leg</span></div><div class="asg">'+(mem.length?esc(mem.join(', ')):'<span style="color:#7a8a99">\u2014</span>')+'</div></div>';});
+  var gp='<div class="rolehdr"><span>Grouping</span> <span class="rolekey"><i class="rk-g"></i> take / hold &nbsp; <i class="rk-y"></i> fill</span></div><div class="gpgrid">';
+  groups.forEach(function(g){
+    var mem=membersOf(g.code),roles=g.roles||{};
+    var curLead=(g.code in assign)?assign[g.code]:g.leader;
+    var parts=mem.map(function(nm){var col=roleColor(roles[nm]||'');return '<span style="color:'+col+'">'+esc(nm)+'</span>';});
+    var leadHtml=curLead?'lead: <span style="color:'+roleColor('Main garrison')+'">'+esc(curLead)+'</span> \u00b7 ':'';
+    gp+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+leadHtml+legionCount(g.code)+' leg</span></div><div class="asg">'+(parts.length?parts.join(', '):'<span style="color:#7a8a99">\u2014</span>')+'</div></div>';
+  });
   gp+='</div>';
   return '<div class="minfo"><div class="minfo-tp">'+tp+'</div><div class="minfo-gp">'+gp+'</div></div>';
 }
