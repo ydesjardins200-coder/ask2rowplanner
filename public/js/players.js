@@ -258,6 +258,15 @@ function renderMembers(){
     if(!res||res.error){c.innerHTML='<div class="sub">Could not load members. (Add the profiles.submission column if you haven\u2019t.)</div>';return;}
     var rows=res.data||[];
     rows.sort(function(a,b){return (a.approved?1:0)-(b.approved?1:0)||((a.email||'')<(b.email||'')?-1:1);});
+    // safety net: any approved account not yet in the roster gets added
+    var _added=false;
+    rows.forEach(function(m){
+      if(!m.approved)return;
+      var nmv=(m.submission&&m.submission.name)||m.player;if(!nmv)return;
+      var ex=false;roster.forEach(function(p){if((p.name||'').toLowerCase()===(''+nmv).toLowerCase())ex=true;});
+      if(!ex){roster.push({name:nmv,side:'',sub:false,func:'',legions:['','','','',''],buffs:((m.submission&&m.submission.buffs)||{})});_added=true;}
+    });
+    if(_added){if(typeof saveRoster==='function')saveRoster();if(typeof renderPlayers==='function')renderPlayers();if(typeof renderMapInfo==='function')renderMapInfo();}
     var opts=roster.map(function(p){return p.name;});
     var pending=rows.filter(function(m){return !m.approved;}).length;
     function src(m){var pl=null;roster.forEach(function(x){if(x.name===m.player)pl=x;});return (m.approved&&pl&&pl.buffs)?pl.buffs:((m.submission&&m.submission.buffs)||{});}
