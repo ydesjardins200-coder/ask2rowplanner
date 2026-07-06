@@ -11,7 +11,7 @@ function enforceRole(){
   var n=document.querySelectorAll(lock);for(var i=0;i<n.length;i++){n[i].disabled=true;}
   var mi=myIndex();
   if(mi>=0){
-    var mine=document.querySelectorAll('.pcard[data-i="'+mi+'"] .pfunc, .pcard[data-i="'+mi+'"] .pleg, .pcard[data-i="'+mi+'"] .bchk, .pcard[data-i="'+mi+'"] .bsel, .pcard[data-i="'+mi+'"] .btxt, .pcard[data-i="'+mi+'"] .bmck, .pcard[data-i="'+mi+'"] .bfile, .pcard[data-i="'+mi+'"] .save');
+    var mine=document.querySelectorAll('.pcard[data-i="'+mi+'"] .pleg, .pcard[data-i="'+mi+'"] .bchk, .pcard[data-i="'+mi+'"] .bsel, .pcard[data-i="'+mi+'"] .btxt, .pcard[data-i="'+mi+'"] .bmck, .pcard[data-i="'+mi+'"] .bfile, .pcard[data-i="'+mi+'"] .save');
     for(var j=0;j<mine.length;j++){mine[j].disabled=false;}
   }
 }

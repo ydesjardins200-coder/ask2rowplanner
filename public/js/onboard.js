@@ -16,7 +16,6 @@ window.showOnboarding=function(client,uid){
   function row(lbl,inner){return '<div class="obrow"><label>'+esc(lbl)+'</label>'+inner+'</div>';}
   var h='<div class="obform"><h2>Complete your player profile</h2><p class="obsub">Fill in your details, then submit for approval. An alliance admin will review and grant you access.</p>';
   h+=row('In-game name *','<input id="ob_name" type="text" placeholder="exact in-game name">');
-  h+=row('Main function','<select id="ob_func"><option value="">\u2014</option>'+FUNCS.map(function(f){return '<option>'+esc(f)+'</option>';}).join('')+'</select>');
   FS.forEach(function(f){
     var inner='';
     if(f.t==='text')inner='<input id="ob_'+f.k+'" type="text">';
@@ -40,7 +39,7 @@ window.showOnboarding=function(client,uid){
     if(!name){msg.style.color='#ff9b9b';msg.textContent='Please enter your in-game name.';return;}
     var maxed={},mm=document.querySelectorAll('.ob_maxed');for(var i=0;i<mm.length;i++){if(mm[i].checked)maxed[mm[i].getAttribute('data-o')]=true;}
     var buffs={uuid:{v:gv('ob_uuid')},power:{v:gv('ob_power')},decoration:{v:gv('ob_decoration')},svip:{v:gc('ob_svip')},faction:{v:gv('ob_faction')},title:{v:gv('ob_title')},legendary:{v:gv('ob_legendary')},maxed:{v:maxed},exemplar:{v:gc('ob_exemplar')}};
-    var entry={name:name,side:'',sub:true,func:gv('ob_func'),legions:['','','','',''],buffs:buffs};
+    var entry={name:name,side:'',sub:true,func:'',legions:['','','','',''],buffs:buffs};
     msg.style.color='#9fb3c6';msg.textContent='Submitting\u2026';btn.disabled=true;
     var fail=function(t){msg.style.color='#ff9b9b';msg.textContent=t||'Could not submit \u2014 please try again.';btn.disabled=false;};
     client.from('plan').select('data').eq('id','btx').single().then(function(r){
