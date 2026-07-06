@@ -7,6 +7,15 @@ function setLeadKey(){var v=window.prompt('Leadership WRITE key (leave blank to 
 function localFallback(){try{var v=localStorage.getItem('btx_app_v2');return v?JSON.parse(v):null;}catch(e){return null;}}
 var STORE={save:function(d){var s=JSON.stringify(d);try{localStorage.setItem('btx_app_v2',s);}catch(e){}if(SB){SB.rpc('save_plan',{p_id:SBKEY,p_data:d,p_secret:LEADKEY}).then(function(res){if(res&&res.error){flash('Sync failed (local saved)');}else if(res&&res.data===true){flash('Synced \u2713');}else{flash('Read-only \u2014 need write key');}},function(){flash('Sync failed (local saved)');});}else{flash('Saved (local)');}},
 saveRoster:function(full,ros){try{localStorage.setItem('btx_app_v2',JSON.stringify(full));}catch(e){}if(SB){SB.rpc('save_roster',{p_roster:ros}).then(function(res){if(res&&res.error){flash('Sync failed (local saved)');}else{flash('Saved \u2713');}},function(){flash('Sync failed (local saved)');});}else{flash('Saved (local)');}},
-load:function(cb){if(SB){SB.from('plan').select('data').eq('id',SBKEY).single().then(function(r){var d=(r&&r.data&&r.data.data)?r.data.data:localFallback();cb(d);try{SB.channel('plan-'+SBKEY).on('postgres_changes',{event:'*',schema:'public',table:'plan',filter:'id=eq.'+SBKEY},function(p){if(p&&p.new&&p.new.data){cb(p.new.data);flash('Updated (team)');}}).subscribe();}catch(e){}},function(){cb(localFallback());});}else{cb(localFallback());}}};
+load:function(cb){
+  if(!SB){cb(localFallback());return;}
+  var last='';
+  function apply(d){var s=JSON.stringify(d||null);if(s===last)return;var first=(last==='');last=s;cb(d);if(!first)flash('Updated (team)');}
+  function fetchPlan(initial){SB.from('plan').select('data').eq('id',SBKEY).single().then(function(r){apply((r&&r.data&&r.data.data)?r.data.data:localFallback());},function(){if(initial)apply(localFallback());});}
+  fetchPlan(true);
+  try{SB.channel('plan-'+SBKEY).on('postgres_changes',{event:'*',schema:'public',table:'plan',filter:'id=eq.'+SBKEY},function(p){if(p&&p.new&&p.new.data)apply(p.new.data);}).subscribe();}catch(e){}
+  try{setInterval(function(){fetchPlan(false);},15000);}catch(e){}
+  try{if(typeof document!=='undefined'&&document.addEventListener)document.addEventListener('visibilitychange',function(){if(!document.hidden)fetchPlan(false);});}catch(e){}
+}};
 function save(){STORE.save({a:assign,r:roster,g:groups});}
 function saveRoster(){STORE.saveRoster({a:assign,r:roster},roster);}
