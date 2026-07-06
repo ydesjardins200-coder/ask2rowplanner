@@ -137,27 +137,43 @@ function addPlayer(){roster.push({name:'New player',side:'',sub:false,func:'',le
 function resetPlayers(){initRoster();saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();}
 // ---- Rallies tab: the grouping (editable; member dropdowns from registered list) ----
 function roleOptions(sel){var R=["","Backup garrison","FILL","Phase 1 - FIRST TAKE"];return R.map(function(r){return '<option value="'+esc(r)+'"'+((sel||'')===r?' selected':'')+'>'+esc(r||'\u2014 role \u2014')+'</option>';}).join('');}
+function rallyPersist(){saveLocal();if(typeof saveRoster==='function')saveRoster();renderRallies();renderPlayers();renderMapInfo();renderStaff();renderLife();renderSides();}
+function addToRally(code,name){
+  if(!name)return;var p=null;roster.forEach(function(x){if(x.name===name)p=x;});if(!p)return;
+  if(!p.legions)p.legions=['','','','',''];
+  if(p.legions.indexOf(code)>=0)return;
+  var idx=p.legions.indexOf('');
+  if(idx<0){alert(name+' already has 5 legions assigned. Free one on their player card first.');renderRallies();return;}
+  p.legions[idx]=code;rallyPersist();
+}
+function removeFromRally(code,name){
+  var p=null;roster.forEach(function(x){if(x.name===name)p=x;});if(!p||!p.legions)return;
+  var idx=p.legions.indexOf(code);if(idx>=0)p.legions[idx]='';rallyPersist();
+}
 function renderRallies(){
   var c=el('rallytbl');if(!c)return;
-  var h='<div class="sub">Lead = the building\u2019s main garrison \u2014 setting it here shows it on both maps. Members come from each player\u2019s 5 legion assignments (Players tab); give each a role.</div>';
+  var h='<div class="sub">Lead = the building\u2019s main garrison \u2014 setting it here shows it on both maps. Members come from each player\u2019s 5 legions; add or remove players here and it updates the Players tab. Give each a role.</div>';
+  h+='<div class="rgrid">';
   groups.forEach(function(g,gi){
     var mem=membersOf(g.code),lc=legionCount(g.code);
     var curLead=(g.code in assign)?assign[g.code]:g.leader;
     if(!g.roles)g.roles={};
     h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+sideLbl(g.side)+' \u00b7 '+esc(g.troop)+' \u00b7 '+lc+' legions</span></div>';
     h+='<div class="grow"><span class="glbl">Lead \u00b7 Main garrison</span><select class="glead" data-g="'+gi+'">'+nameOptions(curLead)+'</select></div>';
-    if(mem.length){
-      mem.forEach(function(mnm){
-        h+='<div class="grow"><span class="glbl mname">'+esc(mnm)+'</span><select class="mrole" data-g="'+gi+'" data-n="'+esc(mnm)+'">'+roleOptions(g.roles[mnm])+'</select></div>';
-      });
-    }else{
-      h+='<div class="asg"><span style="color:#7a8a99">no legions assigned yet</span></div>';
-    }
+    mem.forEach(function(mnm){
+      h+='<div class="grow"><span class="glbl mname">'+esc(mnm)+'</span><select class="mrole" data-g="'+gi+'" data-n="'+esc(mnm)+'">'+roleOptions(g.roles[mnm])+'</select><button class="mdel" data-c="'+esc(g.code)+'" data-n="'+esc(mnm)+'" title="Remove from rally">\u00d7</button></div>';
+    });
+    if(!mem.length)h+='<div class="asg"><span style="color:#7a8a99">no legions assigned yet</span></div>';
+    var avail=roster.filter(function(p){return p.name&&mem.indexOf(p.name)<0;});
+    h+='<div class="grow"><span class="glbl">+ Add player</span><select class="gadd" data-c="'+esc(g.code)+'"><option value="">\u2014 pick \u2014</option>'+avail.map(function(p){return '<option>'+esc(p.name)+'</option>';}).join('')+'</select></div>';
     h+='</div>';
   });
+  h+='</div>';
   c.innerHTML=h;
   var gl=c.querySelectorAll('.glead');for(var i=0;i<gl.length;i++){gl[i].onchange=function(e){var gi=+e.target.getAttribute('data-g');assign[groups[gi].code]=e.target.value;groups[gi].leader=e.target.value;save();renderRallies();renderLife();renderMapInfo();renderMap('blue');renderMap('yellow');};}
   var mr=c.querySelectorAll('.mrole');for(var k=0;k<mr.length;k++){mr[k].onchange=function(e){var gi=+e.target.getAttribute('data-g'),nm=e.target.getAttribute('data-n');if(!groups[gi].roles)groups[gi].roles={};groups[gi].roles[nm]=e.target.value;save();};}
+  var ga=c.querySelectorAll('.gadd');for(var a=0;a<ga.length;a++){ga[a].onchange=function(e){addToRally(e.target.getAttribute('data-c'),e.target.value);};}
+  var md=c.querySelectorAll('.mdel');for(var d=0;d<md.length;d++){md[d].onclick=function(e){removeFromRally(e.target.getAttribute('data-c'),e.target.getAttribute('data-n'));};}
   if(typeof enforceRole==='function')enforceRole();
 }
 // ---- Sides tab: registered Strong/Off, derived from roster ----
