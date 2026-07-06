@@ -145,5 +145,21 @@ body.is-member #logoutbtn{background:#24425f;border-color:#3d6a96}
 .gmrow{display:flex;justify-content:space-between;gap:8px;font-size:11px;padding:2px 4px;border-bottom:1px solid #0f1a28}
 .gmrow:last-child{border-bottom:none}
 .gmrow .grole{font-size:10px;opacity:.9;white-space:nowrap}
+/* teleport list: name + main role + legion count, draggable */
+.minfo .tp td.tplg,.minfo .tp th.tplg{text-align:center;width:26px}
+.minfo .tp .tpn{display:block;line-height:1.15}
+.minfo .tp .tprole{display:block;font-size:9px;color:#7d92a6;text-transform:uppercase;letter-spacing:.3px;line-height:1.1}
+.lgbadge{display:inline-block;min-width:16px;padding:0 4px;border-radius:8px;background:#24425f;color:#cfe0f0;font-size:10px;font-weight:bold;text-align:center;line-height:15px}
+.lgbadge.full{background:#5fd08a;color:#08301c}
+.lgbadge.zero{background:#1a2a3d;color:#5a6f84}
+body.is-admin .minfo .tp .tprow[draggable]{cursor:grab}
+body.is-admin .minfo .tp .tprow.dragging{opacity:.45}
+/* grouping cards as drop targets + inline role/remove */
+.grp.drop-hi{outline:2px dashed #5fd08a;outline-offset:1px;background:#12261c}
+.gmrow .gmn{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gmrow .gmrole{flex:0 0 auto;max-width:118px;font-size:10px;padding:1px 3px;background:#0e1a28;color:#cfe0f0;border:1px solid #294863;border-radius:4px}
+.gmrow .gmdel{flex:0 0 auto;background:transparent;border:none;color:#7a8a99;font-size:13px;line-height:1;padding:0 2px;cursor:pointer}
+.gmrow .gmdel:hover{color:#ff6b6b}
+.asg.drophint{font-size:10px;font-style:italic;text-align:center;padding:5px;color:#7a8a99}
 .rolekey .rk-b{background:#5fa8ff}
 .rolekey .rk-r{background:#ff6b6b}

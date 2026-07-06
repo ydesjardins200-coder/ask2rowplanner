@@ -236,32 +236,71 @@ function teleportOrder(){
   return mains.map(function(x){return x.p;});
 }
 // ---- Below-map command panel: teleport order + live grouping ----
+// Player's headline role for the teleport list: their explicit function if set,
+// otherwise their lane side. Kept short so it fits the narrow column.
+function mainRoleLbl(p){
+  if(p.func)return p.func;
+  if(p.side==='strong')return t('s_strong');
+  if(p.side==='off')return t('s_off');
+  return '\u2014';
+}
+// How many of a player's 5 legion slots are filled.
+function legAssignedCount(p){var n=0;if(p.legions)for(var i=0;i<p.legions.length;i++){if(p.legions[i])n++;}return n;}
 function mapInfoHTML(){
   var subs=[];roster.forEach(function(p){if(p.sub)subs.push(p.name);});
   var ord=teleportOrder();
-  var tp='<div class="rolehdr"><span>'+esc(t('teleport'))+'</span></div><table class="t tp"><tr><th>#</th><th>'+esc(t('col_player_short'))+'</th></tr>';
+  var tp='<div class="rolehdr"><span>'+esc(t('teleport'))+'</span></div><table class="t tp"><tr><th>#</th><th>'+esc(t('col_player_short'))+'</th><th class="tplg" title="'+esc(t('legions'))+'">'+esc(t('leg'))+'</th></tr>';
   ord.forEach(function(p,i){
     var sc=p.side==='strong'?'#f4a6d7':(p.side==='off'?'#8fc0f0':'#c9d4de');
-    tp+='<tr><td>'+(i+1)+'</td><td style="color:'+sc+'">'+esc(p.name)+'</td></tr>';
+    var lc=legAssignedCount(p);
+    tp+='<tr class="tprow" data-n="'+esc(p.name)+'"'+(IS_ADMIN?' draggable="true"':'')+'>'
+      +'<td>'+(i+1)+'</td>'
+      +'<td><span class="tpn" style="color:'+sc+'">'+esc(p.name)+'</span><span class="tprole">'+esc(mainRoleLbl(p))+'</span></td>'
+      +'<td class="tplg"><span class="lgbadge'+(lc>=5?' full':(lc===0?' zero':''))+'">'+lc+'</span></td></tr>';
   });
   tp+='</table>';
   if(subs.length)tp+='<div class="sub" style="font-size:10px"><b>'+esc(t('subs'))+':</b> '+esc(subs.join(', '))+'</div>';
-  var gp='<div class="rolehdr"><span>'+esc(t('grouping'))+'</span> <span class="rolekey"><i class="rk-b"></i> 1st take <i class="rk-g"></i> take / hold &nbsp; <i class="rk-y"></i> fillnbsp; <i class="rk-g"></i> garrison <i class="rk-g"></i> take / hold &nbsp; <i class="rk-y"></i> fillnbsp; <i class="rk-y"></i> fill</span></div><div class="gpgrid">';
+  var gp='<div class="rolehdr"><span>'+esc(t('grouping'))+'</span> <span class="rolekey"><i class="rk-b"></i> '+esc(t('lg_1st'))+' <i class="rk-g"></i> '+esc(t('lg_gar'))+' <i class="rk-y"></i> '+esc(t('lg_fill'))+' <i class="rk-r"></i> '+esc(t('lg_cavs'))+'</span></div><div class="gpgrid">';
   groups.forEach(function(g){
-    var rows=rallyRows(g),body;
-    if(g.code==='Ghost Cavalry'||g.code==='Lifestone'){
-      var gcl=(g.code in assign)?assign[g.code]:g.leader;
-      var lbl='<div class="gmrow" style="border-bottom:1px solid #2f5680"><span style="color:#c9d4de;font-weight:bold">'+esc(leadLabel(g.code))+'</span><span class="grole" style="color:'+leadCardColor(g.code)+';font-weight:bold">'+esc(gcl||'\u2014')+'</span></div>';
-      body=lbl+rows.filter(function(r){return r.name!==gcl;}).map(function(r){var col=roleColor(r.role);return '<div class="gmrow"><span style="color:'+col+'">'+esc(r.name)+'</span><span class="grole" style="color:'+col+'">'+esc(r.role?roleLabel(r.role):'\u2014')+'</span></div>';}).join('');
-    }else{
-      body=rows.map(function(r){var col=roleColor(r.role);return '<div class="gmrow"><span style="color:'+col+'">'+esc(r.name)+'</span><span class="grole" style="color:'+col+'">'+esc(r.role?roleLabel(r.role):'\u2014')+'</span></div>';}).join('');
-    }
-    gp+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+rallyLegions(g)+' '+esc(t('leg'))+'</span></div>'+(body||'<div class="asg"><span style="color:#7a8a99">\u2014</span></div>')+'</div>';
+    if(!g.roles)g.roles={};
+    var rows=rallyRows(g);
+    var lead=(g.code in assign)?assign[g.code]:g.leader;
+    var special=(g.code==='Ghost Cavalry'||g.code==='Lifestone');
+    var head=special?('<div class="gmrow" style="border-bottom:1px solid #2f5680"><span class="gmn" style="color:#c9d4de;font-weight:bold">'+esc(leadLabel(g.code))+'</span><span class="grole" style="color:'+leadCardColor(g.code)+';font-weight:bold">'+esc(lead||'\u2014')+'</span></div>'):'';
+    var body=rows.filter(function(r){return !(special&&r.name===lead);}).map(function(r){
+      var col=roleColor(r.role);
+      // Leader row stays read-only (its role is fixed); members get an editable role + remove.
+      if(r.name===lead)return '<div class="gmrow"><span class="gmn" style="color:'+col+';font-weight:bold">'+esc(r.name)+'</span><span class="grole" style="color:'+col+'">'+esc(r.role?roleLabel(r.role):'\u2014')+'</span></div>';
+      return '<div class="gmrow"><span class="gmn" style="color:'+col+'">'+esc(r.name)+'</span>'
+        +'<select class="gmrole" data-c="'+esc(g.code)+'" data-n="'+esc(r.name)+'">'+roleOptions(g.roles[r.name],g.code)+'</select>'
+        +'<button class="gmdel" data-c="'+esc(g.code)+'" data-n="'+esc(r.name)+'" title="'+esc(t('remove_rally'))+'">\u00d7</button></div>';
+    }).join('');
+    var inner=head+body;
+    gp+='<div class="grp gs-'+g.side+'" data-c="'+esc(g.code)+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+rallyLegions(g)+' '+esc(t('leg'))+'</span></div>'+(inner||'<div class="asg drophint"><span>'+esc(t('drag_here'))+'</span></div>')+'</div>';
   });
   gp+='</div>';
   return '<div class="minfo"><div class="minfo-tp">'+tp+'</div><div class="minfo-gp">'+gp+'</div></div>';
 }
-function renderMapInfo(){var h=mapInfoHTML();var a=el('mapinfo-blue'),b=el('mapinfo-yellow');if(a)a.innerHTML=h;if(b)b.innerHTML=h;}
+// Wire drag-to-group + inline role/remove inside one rendered panel container.
+function bindMapInfo(c){
+  if(!c)return;
+  var rows=c.querySelectorAll('.tprow');
+  for(var i=0;i<rows.length;i++){
+    rows[i].ondragstart=function(e){e.dataTransfer.setData('text/plain',this.getAttribute('data-n'));e.dataTransfer.effectAllowed='copy';this.classList.add('dragging');};
+    rows[i].ondragend=function(){this.classList.remove('dragging');};
+  }
+  var cards=c.querySelectorAll('.gpgrid .grp');
+  for(var k=0;k<cards.length;k++){
+    cards[k].ondragover=function(e){if(!IS_ADMIN)return;e.preventDefault();e.dataTransfer.dropEffect='copy';this.classList.add('drop-hi');};
+    cards[k].ondragleave=function(){this.classList.remove('drop-hi');};
+    cards[k].ondrop=function(e){e.preventDefault();this.classList.remove('drop-hi');if(!IS_ADMIN)return;var nm=e.dataTransfer.getData('text/plain'),code=this.getAttribute('data-c');if(nm&&code)addToRally(code,nm);};
+  }
+  var rs=c.querySelectorAll('.gmrole');
+  for(var r=0;r<rs.length;r++){rs[r].onchange=function(e){var code=e.target.getAttribute('data-c'),nm=e.target.getAttribute('data-n');for(var gi=0;gi<groups.length;gi++){if(groups[gi].code===code){if(!groups[gi].roles)groups[gi].roles={};groups[gi].roles[nm]=e.target.value;break;}}save();renderRallies();renderMapInfo();};}
+  var dl=c.querySelectorAll('.gmdel');
+  for(var d=0;d<dl.length;d++){dl[d].onclick=function(e){removeFromRally(e.target.getAttribute('data-c'),e.target.getAttribute('data-n'));};}
+}
+function renderMapInfo(){var h=mapInfoHTML();var a=el('mapinfo-blue'),b=el('mapinfo-yellow');if(a)a.innerHTML=h;if(b)b.innerHTML=h;bindMapInfo(a);bindMapInfo(b);if(typeof enforceRole==='function')enforceRole();}
 // ---- Image modal (lightbox) for any uploaded proof ----
 function openImg(url){
   if(!url)return;

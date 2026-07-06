@@ -10,7 +10,7 @@ function myIndex(){for(var i=0;i<roster.length;i++)if(MYNAME&&roster[i].name===M
 // Members: disable plan-editing; re-enable only self-report controls on their own card.
 function enforceRole(){
   var b=document.body;if(b)b.className=IS_ADMIN?'is-admin':'is-member';
-  var lock='select[data-code],.glead,.pn,.pside,.psub,.rm,.addto,.pfunc,.pleg,.bchk,.bsel,.btxt,.bmck,.bfile,.save,.mrole,.gadd,.mdel,.plead,.adminonly';
+  var lock='select[data-code],.glead,.pn,.pside,.psub,.rm,.addto,.pfunc,.pleg,.bchk,.bsel,.btxt,.bmck,.bfile,.save,.mrole,.gadd,.mdel,.gmrole,.gmdel,.plead,.adminonly';
   var n=document.querySelectorAll(lock);
   for(var i=0;i<n.length;i++){n[i].disabled=false;}
   if(IS_ADMIN)return;
