@@ -7,7 +7,9 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#0a1420;color:#e8eef4;line-height:1.5}
 .bg{background:linear-gradient(rgba(10,20,32,.82),rgba(10,20,32,.93)),url('landing-bg.jpg') center/cover fixed;min-height:100vh}
-.wrap{max-width:1000px;margin:0 auto;padding:34px 20px 50px}
+.wrap{max-width:1000px;margin:0 auto;padding:78px 20px 50px;position:relative}
+.langbar{position:absolute;top:16px;right:20px}
+.langbar select{background:rgba(10,22,34,.85);color:#e8eef4;border:1px solid #2f5680;border-radius:8px;padding:6px 11px;font-size:13px;cursor:pointer}
 .brand{font-size:13px;letter-spacing:2px;color:#7fb2e6;font-weight:bold;text-transform:uppercase}
 h1{font-size:32px;margin:6px 0 4px}
 .tag{color:#9fb3c6;font-size:15px;margin-bottom:26px}
@@ -17,7 +19,7 @@ h1{font-size:32px;margin:6px 0 4px}
 .feat .dot{flex:0 0 auto;width:22px;height:22px;border-radius:6px;background:#1c86ff33;border:1px solid #1c86ff;color:#7fb2e6;font-weight:bold;font-size:13px;text-align:center;line-height:21px}
 .feat b{color:#eaf1f8}
 .feat span{color:#9fb3c6;font-size:13px}
-.card{flex:0 0 330px;background:#0e1c2c;border:1px solid #24425f;border-radius:14px;padding:22px;box-shadow:0 10px 40px #0007}
+.card{flex:0 0 330px;background:#0e1c2ce6;border:1px solid #24425f;border-radius:14px;padding:22px;box-shadow:0 10px 40px #0007}
 .seg{display:flex;background:#0a1622;border:1px solid #24425f;border-radius:9px;padding:3px;margin-bottom:16px}
 .seg button{flex:1;background:none;border:none;color:#9fb3c6;font-weight:bold;font-size:13px;padding:8px;border-radius:7px;cursor:pointer}
 .seg button.on{background:#1c86ff;color:#fff}
@@ -35,50 +37,69 @@ footer{margin-top:34px;font-size:11px;color:#5f7286}
 </style>
 </head>
 <body><div class="bg"><div class="wrap">
-  <div class="brand">S2AK Alliance</div>
-  <h1>Roots of War — Command Sheet</h1>
-  <div class="tag">The live battle planner for our 30v30. Maps, rosters, rallies and readiness — in one place, in real time.</div>
+  <div class="langbar"><select id="langsel">
+    <option value="en">English</option><option value="fr">Français</option>
+    <option value="zh">中文</option><option value="vi">Tiếng Việt</option>
+  </select></div>
+  <div class="brand" data-i18n="brand">S2AK Alliance</div>
+  <h1 data-i18n="title">Roots of War — Command Sheet</h1>
+  <div class="tag" data-i18n="tagline">The live battle planner for our 30v30. Maps, rosters, rallies and readiness — in one place, in real time.</div>
 
   <div class="grid">
     <div class="info">
-      <div class="feat"><span class="dot">1</span><div><b>Interactive maps</b><br><span>Blue &amp; Yellow layouts with per-building leaders, auto-mirrored when we flip sides, plus teleport order below.</span></div></div>
-      <div class="feat"><span class="dot">2</span><div><b>Registered roster</b><br><span>Strong / Off mains &amp; subs, each with buffs, account fields and screenshot proof.</span></div></div>
-      <div class="feat"><span class="dot">3</span><div><b>Legion grouping</b><br><span>Everyone assigns their 5 legions to rally roles; the Rallies, Sides and Staffing views build themselves from it.</span></div></div>
-      <div class="feat"><span class="dot">4</span><div><b>Readiness at a glance</b><br><span>Leadership sees who's fully prepped and who still has fields or proof missing.</span></div></div>
+      <div class="feat"><span class="dot">1</span><div><b data-i18n="f1t">Interactive maps</b><br><span data-i18n="f1d">Blue &amp; Yellow layouts with per-building leaders, auto-mirrored when we flip sides, plus teleport order below.</span></div></div>
+      <div class="feat"><span class="dot">2</span><div><b data-i18n="f2t">Registered roster</b><br><span data-i18n="f2d">Strong / Off mains &amp; subs, each with buffs, account fields and screenshot proof.</span></div></div>
+      <div class="feat"><span class="dot">3</span><div><b data-i18n="f3t">Legion grouping</b><br><span data-i18n="f3d">Everyone assigns their 5 legions to rally roles; the Rallies, Sides and Staffing views build themselves from it.</span></div></div>
+      <div class="feat"><span class="dot">4</span><div><b data-i18n="f4t">Readiness at a glance</b><br><span data-i18n="f4d">Leadership sees who's fully prepped and who still has fields or proof missing.</span></div></div>
     </div>
 
     <div class="card">
-      <div class="seg"><button id="tabLogin" class="on">Log in</button><button id="tabSignup">Sign up</button></div>
-      <label class="f" for="email">Email</label>
+      <div class="seg"><button id="tabLogin" class="on" data-i18n="login">Log in</button><button id="tabSignup" data-i18n="signup">Sign up</button></div>
+      <label class="f" for="email" data-i18n="emaillbl">Email</label>
       <input class="f" id="email" type="email" autocomplete="email" placeholder="you@example.com">
-      <label class="f" for="pass">Password</label>
+      <label class="f" for="pass" data-i18n="passlbl">Password</label>
       <input class="f" id="pass" type="password" autocomplete="current-password" placeholder="••••••••">
       <button class="go" id="go">Log in</button>
       <div class="msg" id="msg"></div>
-      <div class="note">Members only. Ask leadership if you need access.</div>
+      <div class="note" data-i18n="note">Members only. Ask leadership if you need access.</div>
     </div>
   </div>
 
-  <footer>Private alliance tool · not affiliated with the game publisher.</footer>
+  <footer data-i18n="footer">Private alliance tool · not affiliated with the game publisher.</footer>
 </div></div>
 
 <script>
+var T={
+ en:{brand:"S2AK Alliance",title:"Roots of War — Command Sheet",tagline:"The live battle planner for our 30v30. Maps, rosters, rallies and readiness — in one place, in real time.",f1t:"Interactive maps",f1d:"Blue & Yellow layouts with per-building leaders, auto-mirrored when we flip sides, plus teleport order below.",f2t:"Registered roster",f2d:"Strong / Off mains & subs, each with buffs, account fields and screenshot proof.",f3t:"Legion grouping",f3d:"Everyone assigns their 5 legions to rally roles; the Rallies, Sides and Staffing views build themselves from it.",f4t:"Readiness at a glance",f4d:"Leadership sees who's fully prepped and who still has fields or proof missing.",login:"Log in",signup:"Sign up",create:"Create account",emaillbl:"Email",passlbl:"Password",note:"Members only. Ask leadership if you need access.",footer:"Private alliance tool · not affiliated with the game publisher.",working:"Working…",needcreds:"Enter your email and password.",created:"Account created — check your email to confirm, then log in.",noconfig:"Sign-in isn’t configured yet (Supabase key missing)."},
+ fr:{brand:"Alliance S2AK",title:"Roots of War — Feuille de commandement",tagline:"Le planificateur de bataille en direct pour notre 30 contre 30. Cartes, effectifs, ralliements et préparation — au même endroit, en temps réel.",f1t:"Cartes interactives",f1d:"Dispositions Bleue et Jaune avec un chef par bâtiment, reflétées automatiquement au changement de côté, avec l’ordre de téléportation en dessous.",f2t:"Effectif enregistré",f2d:"Titulaires et remplaçants (Fort / Faible), chacun avec ses buffs, ses infos de compte et une preuve par capture d’écran.",f3t:"Regroupement des légions",f3d:"Chacun assigne ses 5 légions à des rôles de ralliement ; les vues Ralliements, Côtés et Effectifs se construisent d’elles-mêmes.",f4t:"Préparation en un coup d’œil",f4d:"Le commandement voit qui est prêt et à qui il manque des champs ou des preuves.",login:"Connexion",signup:"Inscription",create:"Créer un compte",emaillbl:"Courriel",passlbl:"Mot de passe",note:"Réservé aux membres. Demandez au commandement si vous avez besoin d’un accès.",footer:"Outil d’alliance privé · non affilié à l’éditeur du jeu.",working:"En cours…",needcreds:"Saisissez votre courriel et votre mot de passe.",created:"Compte créé — vérifiez votre courriel pour confirmer, puis connectez-vous.",noconfig:"La connexion n’est pas encore configurée (clé Supabase manquante)."},
+ zh:{brand:"S2AK 联盟",title:"Roots of War — 指挥表",tagline:"为我们的 30v30 打造的实时作战规划器。地图、名单、集结与准备情况，尽在一处，实时更新。",f1t:"交互式地图",f1d:"蓝方与黄方布局，每座建筑指定队长，换边时自动镜像，下方还有传送顺序。",f2t:"注册名单",f2d:"强侧/弱侧的主力与替补，每人含增益、账号信息和截图证明。",f3t:"军团编组",f3d:"每人将自己的 5 支军团分配到集结角色；集结、阵营和人员视图会自动生成。",f4t:"准备情况一览",f4d:"指挥层可查看谁已完全就绪，谁还缺少字段或证明。",login:"登录",signup:"注册",create:"创建账号",emaillbl:"邮箱",passlbl:"密码",note:"仅限成员。如需访问权限，请联系指挥层。",footer:"私人联盟工具 · 与游戏发行商无关。",working:"处理中…",needcreds:"请输入邮箱和密码。",created:"账号已创建 — 请查收邮件确认，然后登录。",noconfig:"登录尚未配置（缺少 Supabase 密钥）。"},
+ vi:{brand:"Liên minh S2AK",title:"Roots of War — Bảng chỉ huy",tagline:"Công cụ lập kế hoạch trận đấu trực tiếp cho trận 30 đấu 30. Bản đồ, đội hình, tập hợp và mức sẵn sàng — tất cả ở một nơi, theo thời gian thực.",f1t:"Bản đồ tương tác",f1d:"Bố cục Xanh và Vàng với chỉ huy cho từng công trình, tự động phản chiếu khi đổi phe, kèm thứ tự dịch chuyển bên dưới.",f2t:"Danh sách đã đăng ký",f2d:"Chính thức và dự bị (Mạnh/Yếu), mỗi người có buff, thông tin tài khoản và ảnh chụp màn hình làm bằng chứng.",f3t:"Nhóm quân đoàn",f3d:"Mỗi người gán 5 quân đoàn của mình vào vai trò tập hợp; các mục Tập hợp, Phe và Nhân sự tự động tạo ra.",f4t:"Mức sẵn sàng trong nháy mắt",f4d:"Ban chỉ huy thấy ai đã sẵn sàng và ai còn thiếu thông tin hoặc bằng chứng.",login:"Đăng nhập",signup:"Đăng ký",create:"Tạo tài khoản",emaillbl:"Email",passlbl:"Mật khẩu",note:"Chỉ dành cho thành viên. Hãy hỏi ban chỉ huy nếu bạn cần quyền truy cập.",footer:"Công cụ liên minh riêng tư · không liên kết với nhà phát hành trò chơi.",working:"Đang xử lý…",needcreds:"Nhập email và mật khẩu của bạn.",created:"Đã tạo tài khoản — kiểm tra email để xác nhận, rồi đăng nhập.",noconfig:"Đăng nhập chưa được cấu hình (thiếu khóa Supabase)."}
+};
 (function(){
   var msg=document.getElementById('msg'),go=document.getElementById('go'),
       tL=document.getElementById('tabLogin'),tS=document.getElementById('tabSignup'),
-      email=document.getElementById('email'),pass=document.getElementById('pass');
+      email=document.getElementById('email'),pass=document.getElementById('pass'),
+      langsel=document.getElementById('langsel');
+  var lang=(function(){try{return localStorage.getItem('s2ak_lang')||(navigator.language||'en').slice(0,2);}catch(e){return 'en';}})();
+  if(!T[lang])lang='en';
+  var mode='login';
+  function tr(k){return (T[lang]&&T[lang][k])||T.en[k]||k;}
+  function applyLang(){
+    document.documentElement.lang=lang;langsel.value=lang;
+    var n=document.querySelectorAll('[data-i18n]');
+    for(var i=0;i<n.length;i++){n[i].textContent=tr(n[i].getAttribute('data-i18n'));}
+    go.textContent=mode==='login'?tr('login'):tr('create');
+  }
+  langsel.onchange=function(){lang=langsel.value;try{localStorage.setItem('s2ak_lang',lang);}catch(e){}applyLang();};
   var SB=null, ready=false;
   if(window.supabase&&window.SUPA&&String(window.SUPA.key).indexOf('PASTE')<0){
     SB=window.supabase.createClient(window.SUPA.url,window.SUPA.key);
     ready=true;
     SB.auth.getSession().then(function(r){if(r&&r.data&&r.data.session)location.replace('app.html');});
-  }else{
-    show('Sign-in isn\u2019t configured yet (Supabase key missing).',true);go.disabled=true;
-  }
-  var mode='login';
+  }else{show(tr('noconfig'),true);go.disabled=true;}
   function setMode(m){mode=m;
     tL.className=m==='login'?'on':'';tS.className=m==='signup'?'on':'';
-    go.textContent=m==='login'?'Log in':'Create account';
+    go.textContent=m==='login'?tr('login'):tr('create');
     pass.setAttribute('autocomplete',m==='login'?'current-password':'new-password');
     show('');
   }
@@ -87,8 +108,8 @@ footer{margin-top:34px;font-size:11px;color:#5f7286}
   function submit(){
     if(!ready)return;
     var e=email.value.trim(),p=pass.value;
-    if(!e||!p){show('Enter your email and password.',true);return;}
-    go.disabled=true;show('Working\u2026');
+    if(!e||!p){show(tr('needcreds'),true);return;}
+    go.disabled=true;show(tr('working'));
     var done=function(){go.disabled=false;};
     if(mode==='login'){
       SB.auth.signInWithPassword({email:e,password:p}).then(function(r){
@@ -98,12 +119,13 @@ footer{margin-top:34px;font-size:11px;color:#5f7286}
       SB.auth.signUp({email:e,password:p}).then(function(r){
         if(r.error){show(r.error.message,true);done();}
         else if(r.data&&r.data.session)location.replace('app.html');
-        else{show('Account created \u2014 check your email to confirm, then log in.',false);setMode('login');done();}
+        else{show(tr('created'),false);setMode('login');done();}
       });
     }
   }
   go.onclick=submit;
   pass.addEventListener('keydown',function(ev){if(ev.key==='Enter')submit();});
+  applyLang();
 })();
 </script>
 </body></html>
