@@ -142,3 +142,6 @@ body.is-member #logoutbtn{background:#24425f;border-color:#3d6a96}
 .rolekey i{display:inline-block;width:9px;height:9px;border-radius:2px;vertical-align:middle;margin-right:2px}
 .rolekey .rk-g{background:#5fd08a}
 .rolekey .rk-y{background:#f4c430}
+.gmrow{display:flex;justify-content:space-between;gap:8px;font-size:11px;padding:2px 4px;border-bottom:1px solid #0f1a28}
+.gmrow:last-child{border-bottom:none}
+.gmrow .grole{font-size:10px;opacity:.9;white-space:nowrap}
