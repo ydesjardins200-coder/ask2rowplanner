@@ -246,10 +246,12 @@ function mainRoleLbl(p){
 }
 // How many groups a player is committed to: their filled legion slots PLUS any
 // group they lead (leading = you must be there), counted once per group.
+// Leader is matched on a normalized name so casing / trailing-space drift
+// (e.g. a leader set before the player card was renamed) still counts.
 function legAssignedCount(p){
-  var seen={},n=0;
+  var seen={},n=0,me=(''+(p.name||'')).trim().toLowerCase();
   if(p.legions)for(var i=0;i<p.legions.length;i++){var c=p.legions[i];if(c&&!seen[c]){seen[c]=1;n++;}}
-  for(var gi=0;gi<groups.length;gi++){var g=groups[gi];var lead=(g.code in assign)?assign[g.code]:g.leader;if(lead&&lead===p.name&&!seen[g.code]){seen[g.code]=1;n++;}}
+  for(var gi=0;gi<groups.length;gi++){var g=groups[gi];var lead=(g.code in assign)?assign[g.code]:g.leader;if(lead&&(''+lead).trim().toLowerCase()===me&&!seen[g.code]){seen[g.code]=1;n++;}}
   return n;
 }
 function mapInfoHTML(){
