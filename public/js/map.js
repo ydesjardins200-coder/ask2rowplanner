@@ -31,6 +31,7 @@ function renderMap(color){
   h+='<div class="b'+(ld?'':' un')+'" style="left:'+bp[0]+'%;top:'+bp[1]+'%;border-color:'+CLR[sd]+'"><span class="code" style="color:'+CLR[sd]+'">'+b.code+'</span><select data-code="'+b.code+'">'+leaderOptions(ld)+'</select></div>';});
  wrap.innerHTML=h;
  var sels=wrap.querySelectorAll('select');for(var i=0;i<sels.length;i++){sels[i].onchange=function(e){assign[e.target.getAttribute('data-code')]=e.target.value;save();renderMap('blue');renderMap('yellow');};}
+  if(typeof enforceRole==='function')enforceRole();
 }
 function resetPlan(){assign={};BUILD.forEach(function(b){assign[b.code]=b.leader;});save();renderMap('blue');renderMap('yellow');}
 function clearAll(){assign={};BUILD.forEach(function(b){assign[b.code]='';});save();renderMap('blue');renderMap('yellow');}

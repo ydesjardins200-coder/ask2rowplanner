@@ -41,3 +41,4 @@ var TROOP={};     GROUPS.forEach(function(g){TROOP[g.code]=g.troop;});
 var GSIDE={};     GROUPS.forEach(function(g){GSIDE[g.code]=g.side;});
 
 var assign={}, roster=[], groups=[];
+var IS_ADMIN=false, MYNAME='';

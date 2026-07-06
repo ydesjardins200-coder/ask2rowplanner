@@ -6,21 +6,30 @@
 <script>
 (function(){
   var reveal=function(){document.documentElement.style.visibility='visible';};
-  // No Supabase configured yet -> don't lock anyone out (dev mode).
-  if(!window.supabase||!window.SUPA||String(window.SUPA.key).indexOf('PASTE')>=0){reveal();return;}
+  // No Supabase configured yet -> dev mode, full access, no gate.
+  if(!window.supabase||!window.SUPA||String(window.SUPA.key).indexOf('PASTE')>=0){
+    window.__role={admin:true,name:''};if(window.setRole)window.setRole(true,'');reveal();return;
+  }
   var g=window.supabase.createClient(window.SUPA.url,window.SUPA.key);
   window.AUTH=g;
   g.auth.getSession().then(function(r){
-    if(r&&r.data&&r.data.session)reveal();
-    else location.replace('index.html');
-  }).catch(reveal);
+    if(!(r&&r.data&&r.data.session)){location.replace('index.html');return;}
+    var uid=r.data.session.user.id;window.MYUID=uid;
+    window.saveMyPlayer=function(name){try{g.from('profiles').update({player:name}).eq('id',uid).then(function(){},function(){});}catch(e){}};
+    g.from('profiles').select('role,player').eq('id',uid).single().then(function(p){
+      var role=(p&&p.data&&p.data.role)||'member',player=(p&&p.data&&p.data.player)||'';
+      window.__role={admin:role==='admin',name:player};
+      if(window.setRole)window.setRole(role==='admin',player);
+      reveal();
+    },function(){window.__role={admin:false,name:''};if(window.setRole)window.setRole(false,'');reveal();});
+  }).catch(function(){reveal();});
 })();
 </script>
 </head><body>
 <h1>S2AK — Roots of War Command Sheet <button id="logoutbtn" onclick="if(window.AUTH)AUTH.auth.signOut().then(function(){location.replace('index.html');});else location.replace('index.html');">Log out</button></h1>
 <div class="tabs" id="tabs"></div>
 <section id="map-blue" class="on"><div class="sub">YOU = BLUE (Lucia). Strong side points at Yaen. Tap a picker to set a building's leader.</div>
- <div class="bar"><button onclick="resetPlan()">Reset to plan</button><button onclick="clearAll()">Clear all</button><button onclick="setLeadKey()" id="keybtn">Write key</button><span id="st" class="sub"></span></div>
+ <div class="bar"><button class="adminonly" onclick="resetPlan()">Reset to plan</button><button class="adminonly" onclick="clearAll()">Clear all</button><button class="adminonly" onclick="setLeadKey()" id="keybtn">Write key</button><span id="st" class="sub"></span></div>
  <div class="wrap" id="wrap-blue"></div>
  <div class="legend"><span class="dot" style="background:#e06fb5"></span>Strong<span class="dot" style="background:#5b9bd5"></span>Off<span class="dot" style="background:#2fb3a4"></span>Center<span class="dot" style="background:#c8952a"></span>Fraedrake</div><div id="mapinfo-blue"></div></section>
 <section id="map-yellow"><div class="sub">YOU = YELLOW (Yaen). Strong side FLIPS to point at Lucia — same leaders, mirrored zones.</div>

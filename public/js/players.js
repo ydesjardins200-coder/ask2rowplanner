@@ -91,7 +91,7 @@ function renderPlayers(){
             ['Substitutes',function(p){return p.sub;}],
             ['Unassigned',function(p){return !p.sub&&p.side!=='strong'&&p.side!=='off';}]];
   var nMain=0,nSub=0;roster.forEach(function(p){if(p.sub)nSub++;else nMain++;});
-  var h='<div class="bar"><span class="sub">Registered team \u2014 <b>'+nMain+' main + '+nSub+' subs</b>. Set side &amp; Main/Sub, tick buffs, add proof. The Rallies tab pulls names from here. Tap \u25B8 to expand.</span></div><div class="sub" id="rdirty" style="color:#e0a52a"></div><div class="bar"><button onclick="addPlayer()">+ Add player</button></div>';
+  var h='<div class="bar"><span class="sub">Registered team \u2014 <b>'+nMain+' main + '+nSub+' subs</b>. Set side &amp; Main/Sub, tick buffs, add proof. The Rallies tab pulls names from here. Tap \u25B8 to expand.</span></div><div class="sub" id="rdirty" style="color:#e0a52a"></div><div class="bar"><button class="adminonly" onclick="addPlayer()">+ Add player</button></div>'+((!IS_ADMIN&&!MYNAME)?'<div class="linkme"><b>Which player are you?</b> pick your name to edit your own card: <select id="linkmesel"><option value="">\u2014 select \u2014</option>'+roster.map(function(pp){return '<option>'+esc(pp.name)+'</option>';}).join('')+'</select></div>':'');
   secs.forEach(function(s){
     var idxs=[];roster.forEach(function(p,i){if(s[1](p))idxs.push(i);});
     if(idxs.length===0)return;
@@ -114,6 +114,8 @@ function renderPlayers(){
   each('.btxt',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i');fEntry(roster[i],e.target.getAttribute('data-k')).v=e.target.value;saveLocal();markDirty();updateBadge(i);renderReady();};});
   each('.bmck',function(x){x.onchange=function(e){var i=+e.target.getAttribute('data-i'),ent=fEntry(roster[i],e.target.getAttribute('data-k'));if(!ent.v||typeof ent.v!=='object')ent.v={};ent.v[e.target.getAttribute('data-o')]=e.target.checked;saveLocal();markDirty();updateBadge(i);renderReady();};});
   each('.bfile',function(x){x.onchange=function(e){uploadBuff(+e.target.getAttribute('data-i'),e.target.getAttribute('data-k'),e.target.files[0]);};});
+  var lm=el('linkmesel');if(lm)lm.onchange=function(e){if(window.linkMe)window.linkMe(e.target.value);};
+  if(typeof enforceRole==='function')enforceRole();
 }
 function updateBadge(i){var card=document.querySelector('.pcard[data-i="'+i+'"]');if(!card)return;var old=card.querySelector('.rdy');if(!old)return;var t=document.createElement('div');t.innerHTML=readyBadge(roster[i]);old.parentNode.replaceChild(t.firstChild,old);}
 function uploadBuff(i,k,file){
@@ -145,6 +147,7 @@ function renderRallies(){
   });
   c.innerHTML=h;
   var n=c.querySelectorAll('.glead');for(var i=0;i<n.length;i++){n[i].onchange=function(e){groups[+e.target.getAttribute('data-g')].leader=e.target.value;save();renderRallies();renderLife();renderMapInfo();};}
+  if(typeof enforceRole==='function')enforceRole();
 }
 // ---- Sides tab: registered Strong/Off, derived from roster ----
 function renderSides(){
