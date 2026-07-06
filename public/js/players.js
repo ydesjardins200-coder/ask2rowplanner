@@ -137,6 +137,8 @@ function addPlayer(){roster.push({name:'New player',side:'',sub:false,func:'',le
 function resetPlayers(){initRoster();saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();}
 // ---- Rallies tab: the grouping (editable; member dropdowns from registered list) ----
 function roleColor(role){if(role==='FILL')return '#f4c430';if(role==='Phase 1 - FIRST TAKE')return '#5fa8ff';if(role==='CAVS')return '#ff6b6b';if(role==='Backup garrison'||role==='Main garrison')return '#5fd08a';return '#9fb3c6';}
+function leadLabel(code){if(code==='Ghost Cavalry')return 'Ghost cavalry leader (SUN)';if(code==='Lifestone')return 'Lifestone leader';return 'Lead \u00b7 Main garrison';}
+function leadCardColor(code){if(code==='Ghost Cavalry')return '#ff6b6b';if(code==='Lifestone')return '#2fb3a4';return '#5fd08a';}
 function rallyRows(g){
   var lead=(g.code in assign)?assign[g.code]:g.leader;
   var mem=membersOf(g.code),roles=g.roles||{},rows=[],seen={};
@@ -169,7 +171,7 @@ function renderRallies(){
     var curLead=(g.code in assign)?assign[g.code]:g.leader;
     if(!g.roles)g.roles={};
     h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+sideLbl(g.side)+' \u00b7 '+esc(g.troop)+' \u00b7 '+lc+' legions</span></div>';
-    h+='<div class="grow"><span class="glbl">'+(g.code==='Ghost Cavalry'?'Ghost cavalry leader (SUN)':'Lead \u00b7 Main garrison')+'</span><select class="glead" data-g="'+gi+'">'+nameOptions(curLead)+'</select></div>';
+    h+='<div class="grow"><span class="glbl">'+esc(leadLabel(g.code))+'</span><select class="glead" data-g="'+gi+'">'+nameOptions(curLead)+'</select></div>';
     mem.forEach(function(mnm){
       h+='<div class="grow"><span class="glbl mname">'+esc(mnm)+'</span><select class="mrole" data-g="'+gi+'" data-n="'+esc(mnm)+'">'+roleOptions(g.roles[mnm],g.code)+'</select><button class="mdel" data-c="'+esc(g.code)+'" data-n="'+esc(mnm)+'" title="Remove from rally">\u00d7</button></div>';
     });
@@ -247,9 +249,9 @@ function mapInfoHTML(){
   var gp='<div class="rolehdr"><span>Grouping</span> <span class="rolekey"><i class="rk-b"></i> 1st take <i class="rk-g"></i> take / hold &nbsp; <i class="rk-y"></i> fillnbsp; <i class="rk-g"></i> garrison <i class="rk-g"></i> take / hold &nbsp; <i class="rk-y"></i> fillnbsp; <i class="rk-y"></i> fill</span></div><div class="gpgrid">';
   groups.forEach(function(g){
     var rows=rallyRows(g),body;
-    if(g.code==='Ghost Cavalry'){
+    if(g.code==='Ghost Cavalry'||g.code==='Lifestone'){
       var gcl=(g.code in assign)?assign[g.code]:g.leader;
-      var lbl='<div class="gmrow" style="border-bottom:1px solid #2f5680"><span style="color:#c9d4de;font-weight:bold">Ghost cavalry leader (SUN)</span><span class="grole" style="color:#ff6b6b;font-weight:bold">'+esc(gcl||'\u2014')+'</span></div>';
+      var lbl='<div class="gmrow" style="border-bottom:1px solid #2f5680"><span style="color:#c9d4de;font-weight:bold">'+esc(leadLabel(g.code))+'</span><span class="grole" style="color:'+leadCardColor(g.code)+';font-weight:bold">'+esc(gcl||'\u2014')+'</span></div>';
       body=lbl+rows.filter(function(r){return r.name!==gcl;}).map(function(r){var col=roleColor(r.role);return '<div class="gmrow"><span style="color:'+col+'">'+esc(r.name)+'</span><span class="grole" style="color:'+col+'">'+esc(r.role||'\u2014')+'</span></div>';}).join('');
     }else{
       body=rows.map(function(r){var col=roleColor(r.role);return '<div class="gmrow"><span style="color:'+col+'">'+esc(r.name)+'</span><span class="grole" style="color:'+col+'">'+esc(r.role||'\u2014')+'</span></div>';}).join('');
