@@ -6,9 +6,11 @@ function myIndex(){for(var i=0;i<roster.length;i++)if(MYNAME&&roster[i].name===M
 // Members: disable plan-editing; re-enable only self-report controls on their own card.
 function enforceRole(){
   var b=document.body;if(b)b.className=IS_ADMIN?'is-admin':'is-member';
-  if(IS_ADMIN)return;
   var lock='select[data-code],.glead,.pn,.pside,.psub,.rm,.addto,.pfunc,.pleg,.bchk,.bsel,.btxt,.bmck,.bfile,.save,.adminonly';
-  var n=document.querySelectorAll(lock);for(var i=0;i<n.length;i++){n[i].disabled=true;}
+  var n=document.querySelectorAll(lock);
+  for(var i=0;i<n.length;i++){n[i].disabled=false;}
+  if(IS_ADMIN)return;
+  for(var k=0;k<n.length;k++){n[k].disabled=true;}
   var mi=myIndex();
   if(mi>=0){
     var mine=document.querySelectorAll('.pcard[data-i="'+mi+'"] .pleg, .pcard[data-i="'+mi+'"] .bchk, .pcard[data-i="'+mi+'"] .bsel, .pcard[data-i="'+mi+'"] .btxt, .pcard[data-i="'+mi+'"] .bmck, .pcard[data-i="'+mi+'"] .bfile, .pcard[data-i="'+mi+'"] .save');
