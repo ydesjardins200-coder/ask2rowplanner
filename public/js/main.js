@@ -2,12 +2,12 @@
 var TABS=[["map-blue","Map · Blue"],["map-yellow","Map · Yellow"],["phases","Phases"],["life","Lifestone"],["rallies","Rallies"],["players","Players"],["staffing","Staffing"],["sides","Sides"],["members","Members"]];
 var ADMINTABS={rallies:1,players:1,staffing:1,sides:1,members:1};
 function buildTabs(){var t=el('tabs');TABS.forEach(function(p){var b=document.createElement('button');b.textContent=p[1];var cl=(p[0]==='map-blue')?'on':'';if(ADMINTABS[p[0]])cl=(cl?cl+' ':'')+'adminonly';if(cl)b.className=cl;b.onclick=function(){show(p[0],b);};t.appendChild(b);});}
-function show(id,btn){var s=document.querySelectorAll('section');for(var i=0;i<s.length;i++)s[i].className=s[i].id===id?'on':'';var bs=el('tabs').children;for(var j=0;j<bs.length;j++)bs[j].className=(bs[j]===btn)?((''+bs[j].className).indexOf('adminonly')>=0?'on adminonly':'on'):((''+bs[j].className).indexOf('adminonly')>=0?'adminonly':'');if(id==='members'&&typeof renderMembers==='function')renderMembers();}
+function show(id,btn){var s=document.querySelectorAll('section');for(var i=0;i<s.length;i++)s[i].className=s[i].id===id?'on':'';var bs=el('tabs').children;for(var j=0;j<bs.length;j++)bs[j].className=(bs[j]===btn)?((''+bs[j].className).indexOf('adminonly')>=0?'on adminonly':'on'):((''+bs[j].className).indexOf('adminonly')>=0?'adminonly':'');if(id==='members'&&typeof renderMembers==='function')renderMembers();if(id==='phases'&&typeof renderPhases==='function')renderPhases();}
 function myIndex(){for(var i=0;i<roster.length;i++)if(MYNAME&&roster[i].name===MYNAME)return i;return -1;}
 // Members: disable plan-editing; re-enable only self-report controls on their own card.
 function enforceRole(){
   var b=document.body;if(b)b.className=IS_ADMIN?'is-admin':'is-member';
-  var lock='select[data-code],.glead,.pn,.pside,.psub,.rm,.addto,.pfunc,.pleg,.bchk,.bsel,.btxt,.bmck,.bfile,.save,.mrole,.gadd,.mdel,.adminonly';
+  var lock='select[data-code],.glead,.pn,.pside,.psub,.rm,.addto,.pfunc,.pleg,.bchk,.bsel,.btxt,.bmck,.bfile,.save,.mrole,.gadd,.mdel,.plead,.adminonly';
   var n=document.querySelectorAll(lock);
   for(var i=0;i<n.length;i++){n[i].disabled=false;}
   if(IS_ADMIN)return;
@@ -18,7 +18,7 @@ function enforceRole(){
     for(var j=0;j<mine.length;j++){mine[j].disabled=false;}
   }
 }
-function renderAll(){renderMap('blue');renderMap('yellow');renderPlayers();renderStaff();renderRallies();renderSides();renderMapInfo();renderLife();renderReady();}
+function renderAll(){renderMap("blue");renderMap("yellow");renderPlayers();renderStaff();renderRallies();renderSides();renderMapInfo();renderLife();renderReady();renderPhases();}
 function applyRole(){renderAll();enforceRole();}
 window.forceRefresh=function(){
   if(typeof SB==='undefined'||!SB){if(typeof flash==='function')flash('No connection');return;}

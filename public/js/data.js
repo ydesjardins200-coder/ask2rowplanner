@@ -42,3 +42,29 @@ var GSIDE={};     GROUPS.forEach(function(g){GSIDE[g.code]=g.side;});
 
 var assign={}, roster=[], groups=[];
 var IS_ADMIN=false, MYNAME='';
+
+var PHASES=[
+ {title:"PHASE 1 — OPENING (0-10 min)",cls:"p1",rows:[
+  {group:"Lifestone Squad",code:"Lifestone",side:"LIFE",sc:"#2fb3a4",obj:"PRE-POSITION on the CENTER spawn — be first on it at gates open."},
+  {group:"Ghost Cavalry",code:"Ghost Cavalry",side:"SUP",sc:"#c8952a",obj:"Rush-tag central + key buildings (first occupation). Screen Lifestone."},
+  {group:"Strong Side Inf",side:"STRONG",sc:"#e06fb5",obj:"H2 BLINK to forward center. H1+H3 push strong-side buildings."},
+  {group:"Towers",side:"STRONG",sc:"#e06fb5",obj:"Garrison captured towers on the strong side."},
+  {group:"Off Side (Cav)",code:"H4",side:"OFF",sc:"#5b9bd5",obj:"Cav sweep off-side buildings — tag & hold."},
+  {group:"Fraedrake",code:"Fraedrake",side:"SUP",sc:"#c8952a",obj:"Anchor the flank; prep forward team for O3/O4."}
+ ]},
+ {title:"PHASE 2 — CENTER FIGHT / LIFESTONE",cls:"p2",rows:[
+  {group:"Lifestone Squad",code:"Lifestone",side:"LIFE",sc:"#2fb3a4",obj:"TOP PRIORITY: grab, escort, DELIVER to a safe building, repeat."},
+  {group:"Ghost Cavalry",code:"Ghost Cavalry",side:"SUP",sc:"#c8952a",obj:"Clear the carrier's path. Intercept enemy carriers, wipe rallies."},
+  {group:"Beastmaster",code:"Beastmaster",side:"RNG",sc:"#8bb84a",obj:"Behemoth into the DECISIVE center fight + officer skills."},
+  {group:"Strong Side",side:"STRONG",sc:"#e06fb5",obj:"Collapse on center, win the Lifestone ground."},
+  {group:"Towers",side:"STRONG",sc:"#e06fb5",obj:"Hold towers, feed rallies, don't abandon for kills."},
+  {group:"Off Side",code:"H4",side:"OFF",sc:"#5b9bd5",obj:"Press enemy underside (O3/O4), split their attention."}
+ ]},
+ {title:"PHASE 3 — LOCKDOWN",cls:"p3",rows:[
+  {group:"Lifestone Squad",code:"Lifestone",side:"LIFE",sc:"#2fb3a4",obj:"CAMP center, deny pickups, keep delivering."},
+  {group:"Ghost Cavalry",code:"Ghost Cavalry",side:"SUP",sc:"#c8952a",obj:"Roam, punish overextensions, protect carriers."},
+  {group:"Strong Side",side:"STRONG",sc:"#e06fb5",obj:"Flex into garrison; hold every building. Rotate subs."},
+  {group:"Off Side",code:"H4",side:"OFF",sc:"#5b9bd5",obj:"Hold off-side buildings, keep the flank shut."},
+  {group:"Fraedrake",code:"Fraedrake",side:"SUP",sc:"#c8952a",obj:"Lock O3/O4 and the flank."}
+ ]}
+];

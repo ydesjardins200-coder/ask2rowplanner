@@ -373,3 +373,27 @@ function renderMembers(){
     var mb=c.querySelector('.mmerge');if(mb)mb.onclick=function(){mergeDuplicates(rows);};
   },function(){c.innerHTML='<div class="sub">Could not load members.</div>';});
 }
+// ---- Phases: mechanics table with editable leaders (default to rally leaders) ----
+function phaseLead(pi,ri,row){
+  var k='PH:'+pi+':'+ri;if(k in assign)return assign[k];
+  if(row.code){var l=(row.code in assign)?assign[row.code]:null;if(l==null){groups.forEach(function(g){if(g.code===row.code)l=g.leader;});}return l||'';}
+  return '';
+}
+function renderPhases(){
+  var c=el('phasetbl');if(!c)return;
+  var h='';
+  PHASES.forEach(function(ph,pi){
+    h+='<div class="phhdr '+ph.cls+'">'+esc(ph.title)+'</div>';
+    h+='<table class="t"><tr><th>Group</th><th>Leader</th><th>Side</th><th>Objective</th></tr>';
+    ph.rows.forEach(function(row,ri){
+      h+='<tr><td><b>'+esc(row.group)+'</b></td>'
+       +'<td><select class="plead" data-p="'+pi+'" data-r="'+ri+'">'+nameOptions(phaseLead(pi,ri,row))+'</select></td>'
+       +'<td style="color:'+row.sc+';font-weight:bold">'+esc(row.side)+'</td>'
+       +'<td>'+esc(row.obj)+'</td></tr>';
+    });
+    h+='</table>';
+  });
+  c.innerHTML=h;
+  var n=c.querySelectorAll('.plead');for(var i=0;i<n.length;i++){n[i].onchange=function(e){assign['PH:'+e.target.getAttribute('data-p')+':'+e.target.getAttribute('data-r')]=e.target.value;save();};}
+  if(typeof enforceRole==='function')enforceRole();
+}
