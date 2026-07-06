@@ -105,6 +105,10 @@ var T={
   }
   tL.onclick=function(){setMode('login');};tS.onclick=function(){setMode('signup');};
   function show(t,err){msg.textContent=t;msg.className='msg'+(t?(err?' err':' ok'):'');}
+  function saveLangGo(session){
+    try{if(session&&session.user)SB.from('profiles').update({lang:lang}).eq('id',session.user.id).then(function(){location.replace('app.html');},function(){location.replace('app.html');});else location.replace('app.html');}
+    catch(e){location.replace('app.html');}
+  }
   function submit(){
     if(!ready)return;
     var e=email.value.trim(),p=pass.value;
@@ -113,13 +117,17 @@ var T={
     var done=function(){go.disabled=false;};
     if(mode==='login'){
       SB.auth.signInWithPassword({email:e,password:p}).then(function(r){
-        if(r.error){show(r.error.message,true);done();}else location.replace('app.html');
+        if(r.error){show(r.error.message,true);done();}else saveLangGo(r.data.session);
       });
     }else{
       SB.auth.signUp({email:e,password:p}).then(function(r){
-        if(r.error){show(r.error.message,true);done();}
-        else if(r.data&&r.data.session)location.replace('app.html');
-        else{show(tr('created'),false);setMode('login');done();}
+        if(r.error){show(r.error.message,true);done();return;}
+        if(r.data&&r.data.session){saveLangGo(r.data.session);return;}
+        // no session -> try to sign in right away (works when email confirmation is off)
+        SB.auth.signInWithPassword({email:e,password:p}).then(function(r2){
+          if(r2&&r2.data&&r2.data.session)saveLangGo(r2.data.session);
+          else{show(tr('created'),false);setMode('login');done();}
+        });
       });
     }
   }

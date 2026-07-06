@@ -17,8 +17,10 @@
     if(!(r&&r.data&&r.data.session)){location.replace('index.html');return;}
     var uid=r.data.session.user.id;window.MYUID=uid;
     window.saveMyPlayer=function(name){try{g.from('profiles').update({player:name}).eq('id',uid).then(function(){},function(){});}catch(e){}};
-    g.from('profiles').select('role,player,approved').eq('id',uid).single().then(function(p){
+    window.saveMyLang=function(l){try{localStorage.setItem('s2ak_lang',l);g.from('profiles').update({lang:l}).eq('id',uid).then(function(){},function(){});}catch(e){}};
+    g.from('profiles').select('role,player,approved,lang').eq('id',uid).single().then(function(p){
       var d=(p&&p.data)||{},role=d.role||'member',player=d.player||'',approved=!!d.approved;
+      if(d.lang){try{localStorage.setItem('s2ak_lang',d.lang);}catch(e){}}
       if(!approved){
         if(window.showOnboarding){window.showOnboarding(g,uid);}
         else{
@@ -39,7 +41,7 @@
 })();
 </script>
 </head><body>
-<h1>S2AK — Roots of War Command Sheet <span id="rolebadge"></span><button id="logoutbtn" onclick="if(window.AUTH)AUTH.auth.signOut().then(function(){location.replace('index.html');});else location.replace('index.html');">Log out</button></h1>
+<h1>S2AK — Roots of War Command Sheet <select id="langsel" title="Language" onchange="if(window.saveMyLang)saveMyLang(this.value)"><option value="en">English</option><option value="fr">Français</option><option value="zh">中文</option><option value="vi">Tiếng Việt</option></select> <span id="rolebadge"></span><button id="logoutbtn" onclick="if(window.AUTH)AUTH.auth.signOut().then(function(){location.replace('index.html');});else location.replace('index.html');">Log out</button></h1>
 <div class="tabs" id="tabs"></div>
 <section id="map-blue" class="on"><div class="sub">YOU = BLUE (Lucia). Strong side points at Yaen. Tap a picker to set a building's leader.</div>
  <div class="bar"><button class="adminonly" onclick="resetPlan()">Reset to plan</button><button class="adminonly" onclick="clearAll()">Clear all</button><button class="adminonly" onclick="setLeadKey()" id="keybtn">Write key</button><span id="st" class="sub"></span></div>
