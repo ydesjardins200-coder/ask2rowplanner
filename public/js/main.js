@@ -20,6 +20,15 @@ function enforceRole(){
 }
 function renderAll(){renderMap('blue');renderMap('yellow');renderPlayers();renderStaff();renderRallies();renderSides();renderMapInfo();renderLife();renderReady();}
 function applyRole(){renderAll();enforceRole();}
+window.forceRefresh=function(){
+  if(typeof SB==='undefined'||!SB){if(typeof flash==='function')flash('No connection');return;}
+  if(rosterDirty&&!(typeof confirm==='function'&&confirm('You have unsaved local changes that will be discarded. Pull the latest team plan?')))return;
+  SB.from('plan').select('data').eq('id',SBKEY).single().then(function(r){
+    var d=(r&&r.data&&r.data.data)?r.data.data:null;
+    if(d){assign=d.a||{};if(d.r&&d.r.length)roster=d.r;if(d.g&&d.g.length)groups=d.g;rosterDirty=false;renderAll();enforceRole();if(typeof flash==='function')flash('Refreshed \u2713');}
+    else if(typeof flash==='function')flash('Nothing to load yet');
+  },function(){if(typeof flash==='function')flash('Refresh failed');});
+};
 // Called by the guard once the signed-in user's role/player is known.
 window.setRole=function(isAdmin,myName){IS_ADMIN=!!isAdmin;MYNAME=myName||'';var rb=document.getElementById('rolebadge');if(rb){rb.textContent=IS_ADMIN?'Admin':('Member'+(MYNAME?' \u00b7 '+MYNAME:''));rb.className=IS_ADMIN?'rolebadge admin':'rolebadge member';}applyRole();};
 window.linkMe=function(name){MYNAME=name||'';if(window.saveMyPlayer)window.saveMyPlayer(name);applyRole();};
