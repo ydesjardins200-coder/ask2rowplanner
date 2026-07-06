@@ -167,3 +167,5 @@ body.is-admin .minfo .tp .tprow.dragging{opacity:.45}
 .gfoot-n{color:#c9b8ff;font-weight:bold;white-space:nowrap;flex:0 0 auto}
 .rolekey .rk-b{background:#5fa8ff}
 .rolekey .rk-r{background:#ff6b6b}
+.mdelall{background:transparent;border:1px solid #5a2b2b;color:#ff6b6b;border-radius:6px;padding:2px 6px;font-size:12px;line-height:1;cursor:pointer}
+.mdelall:hover{background:#3a1c1c;border-color:#ff6b6b}

@@ -376,6 +376,28 @@ function mergeDuplicates(rows){
   if(!total){finish();return;}
   toDelete.forEach(function(id){SB.from('profiles').delete().eq('id',id).then(function(){if(++done>=total)finish();},function(){if(++done>=total)finish();});});
 }
+// Permanently remove a member: deletes their account record AND erases the linked
+// player from the roster, every rally/legion, all leader slots and map assignments.
+function removeMemberCompletely(id,name){
+  var label=name||'this member';
+  if(typeof confirm==='function'&&!confirm('Remove '+label+' completely?\n\nThis deletes their account record and erases them from the roster, all rallies, every role, and any leader/tower slot they hold. This cannot be undone.'))return;
+  if(name){
+    var me=(''+name).trim().toLowerCase();
+    // roster
+    for(var i=roster.length-1;i>=0;i--){if((''+roster[i].name).trim().toLowerCase()===me)roster.splice(i,1);}
+    // group leaders (constant) + per-member roles
+    groups.forEach(function(g){
+      if((''+(g.leader||'')).trim().toLowerCase()===me)g.leader='';
+      if(g.roles){for(var k in g.roles){if((''+k).trim().toLowerCase()===me)delete g.roles[k];}}
+    });
+    // any assign slot pointing at them (group leaders + map building/tower leaders)
+    for(var code in assign){if(assign[code]&&(''+assign[code]).trim().toLowerCase()===me)assign[code]='';}
+    if(typeof save==='function')save();
+    if(typeof saveRoster==='function')saveRoster();
+  }
+  function done(){renderMembers();if(typeof renderPlayers==='function')renderPlayers();if(typeof renderMap==='function'){renderMap('blue');renderMap('yellow');}if(typeof renderRallies==='function')renderRallies();if(typeof renderStaff==='function')renderStaff();if(typeof renderSides==='function')renderSides();if(typeof renderMapInfo==='function')renderMapInfo();if(typeof renderLife==='function')renderLife();if(typeof renderReady==='function')renderReady();}
+  if(SB&&id){SB.from('profiles').delete().eq('id',id).then(done,done);}else done();
+}
 function renderMembers(){
   var c=el('memberstbl');if(!c)return;
   if(!IS_ADMIN){c.innerHTML='<div class="sub">'+esc(t('admins_only'))+'</div>';return;}
@@ -410,7 +432,7 @@ function renderMembers(){
       return h;
     }
     var h='<div class="sub"><b>'+rows.length+'</b> account'+(rows.length===1?'':'s')+' \u00b7 '+pending+' '+esc(t('members_intro'))+' <button class="mmerge">'+esc(t('merge_dupes'))+'</button></div>';
-    h+='<table class="t"><tr><th></th><th>'+esc(t('col_email'))+'</th><th>'+esc(t('col_name'))+'</th><th>'+esc(t('col_uuid'))+'</th><th>'+esc(t('col_power'))+'</th><th>'+esc(t('col_troop'))+'</th><th>'+esc(t('col_approved'))+'</th><th>'+esc(t('col_role'))+'</th><th>'+esc(t('col_player'))+'</th></tr>';
+    h+='<table class="t"><tr><th></th><th>'+esc(t('col_email'))+'</th><th>'+esc(t('col_name'))+'</th><th>'+esc(t('col_uuid'))+'</th><th>'+esc(t('col_power'))+'</th><th>'+esc(t('col_troop'))+'</th><th>'+esc(t('col_approved'))+'</th><th>'+esc(t('col_role'))+'</th><th>'+esc(t('col_player'))+'</th><th></th></tr>';
     rows.forEach(function(m,ri){
       var s=src(m);
       h+='<tr'+(m.approved?'':' style="background:#3a2f18"')+'>'
@@ -423,8 +445,9 @@ function renderMembers(){
        +'<td style="text-align:center"><input type="checkbox" class="mapp" data-id="'+m.id+'" data-r="'+ri+'"'+(m.approved?' checked':'')+'></td>'
        +'<td><select class="mrole" data-id="'+m.id+'"><option value="member"'+(m.role!=='admin'?' selected':'')+'>'+esc(t('r_member'))+'</option><option value="admin"'+(m.role==='admin'?' selected':'')+'>'+esc(t('r_admin'))+'</option></select></td>'
        +'<td>'+(!m.approved?'<span style="color:#9fb3c6;font-size:11px">'+esc(t('approve_to_add'))+'</span>':(m.submission?'<span class="mplayer-locked" title="Auto-assigned from their signup">'+esc(m.player||'\u2014')+'</span>':('<select class="mplayer" data-id="'+m.id+'"><option value="">\u2014 unassigned \u2014</option>'+opts.map(function(n){return '<option'+(m.player===n?' selected':'')+'>'+esc(n)+'</option>';}).join('')+'</select>')))+'</td>'
+       +'<td style="text-align:center"><button class="mdelall" data-id="'+m.id+'" data-n="'+esc(m.player||nm(m)||'')+'" title="'+esc(t('remove_member'))+'">\uD83D\uDDD1</button></td>'
        +'</tr>';
-      h+='<tr class="mdet" id="mdet_'+ri+'" style="display:none"><td></td><td colspan="8">'+detail(s)+'</td></tr>';
+      h+='<tr class="mdet" id="mdet_'+ri+'" style="display:none"><td></td><td colspan="9">'+detail(s)+'</td></tr>';
     });
     c.innerHTML=h+'</table>';
     function upd(id,patch,ok){SB.from('profiles').update(patch).eq('id',id).then(function(r){if(r&&!r.error&&ok)ok();},function(){});}
@@ -444,6 +467,7 @@ function renderMembers(){
     };});
     each('.mrole',function(x){x.onchange=function(e){upd(e.target.getAttribute('data-id'),{role:e.target.value});};});
     each('.mplayer',function(x){x.onchange=function(e){upd(e.target.getAttribute('data-id'),{player:e.target.value},renderMembers);};});
+    each('.mdelall',function(x){x.onclick=function(e){var b=e.target.closest('button')||e.target;removeMemberCompletely(b.getAttribute('data-id'),b.getAttribute('data-n'));};});
     var mb=c.querySelector('.mmerge');if(mb)mb.onclick=function(){mergeDuplicates(rows);};
   },function(){c.innerHTML='<div class="sub">'+esc(t('load_members_fail'))+'</div>';});
 }
