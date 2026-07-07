@@ -2,14 +2,15 @@
 window.showOnboarding=function(client,uid){
   var lang=(function(){try{return localStorage.getItem('s2ak_lang')||(navigator.language||'en').slice(0,2);}catch(e){return 'en';}})();
   var OL={
-    en:{title:"Complete your player profile",sub:"Fill in your details, then submit for approval. An alliance admin will review and grant you access.",name:"In-game name",submit:"Submit for approval",logout:"Log out",proof:"proof",need:"Please enter your in-game name.",submitting:"Submitting…",failed:"Could not submit — please try again.",noreach:"Could not reach the server. Try again.",done:"Submitted ✓",donesub:"Thanks! Your profile is saved. An admin will review it and approve you shortly — you’ll get full access once approved.",added:"✓ added",uploading:"uploading…",upfail:"upload failed",uuid:"UUID (player ID)",power:"Total power",decoration:"Decoration Lvl.",svip:"SVIP",faction:"Faction",legendary:"# Of Legendary skin",maxed:"Maxed unit type",exemplar:"Exemplar artefact",maxpet:"Maxed pets",Infantry:"Infantry",Mage:"Mage",Cavalry:"Cavalry",Archer:"Archer",yes:"yes"},
-    fr:{title:"Complétez votre profil de joueur",sub:"Remplissez vos informations, puis soumettez pour approbation. Un admin de l’alliance vérifiera et vous accordera l’accès.",name:"Nom en jeu",submit:"Soumettre pour approbation",logout:"Déconnexion",proof:"preuve",need:"Veuillez saisir votre nom en jeu.",submitting:"Envoi…",failed:"Échec de l’envoi — réessayez.",noreach:"Impossible de joindre le serveur. Réessayez.",done:"Envoyé ✓",donesub:"Merci ! Votre profil est enregistré. Un admin le vérifiera et vous approuvera sous peu — vous aurez l’accès complet une fois approuvé.",added:"✓ ajouté",uploading:"envoi…",upfail:"échec de l’envoi",uuid:"UUID (ID du joueur)",power:"Puissance totale",decoration:"Niveau de décoration",svip:"SVIP",faction:"Faction",legendary:"Nb de skins légendaires",maxed:"Type d’unité maximisé",exemplar:"Artéfact exemplaire",maxpet:"Familiers maximisés",Infantry:"Infanterie",Mage:"Mage",Cavalry:"Cavalerie",Archer:"Archer",yes:"oui"},
-    zh:{title:"完善你的玩家资料",sub:"填写你的信息，然后提交审批。联盟管理员将审核并授予你访问权限。",name:"游戏内名称",submit:"提交审批",logout:"登出",proof:"证明",need:"请输入你的游戏内名称。",submitting:"提交中…",failed:"提交失败 — 请重试。",noreach:"无法连接服务器。请重试。",done:"已提交 ✓",donesub:"谢谢！你的资料已保存。管理员将尽快审核并批准 — 批准后你将获得完整访问权限。",added:"✓ 已添加",uploading:"上传中…",upfail:"上传失败",uuid:"UUID（玩家ID）",power:"总战力",decoration:"装饰等级",svip:"SVIP",faction:"阵营",legendary:"传奇皮肤数量",maxed:"已满级兵种",exemplar:"典范神器",maxpet:"已满级宠物",Infantry:"步兵",Mage:"法师",Cavalry:"骑兵",Archer:"弓兵",yes:"是"},
-    vi:{title:"Hoàn thiện hồ sơ người chơi",sub:"Điền thông tin của bạn, sau đó gửi để duyệt. Quản trị viên liên minh sẽ xem xét và cấp quyền truy cập.",name:"Tên trong game",submit:"Gửi để duyệt",logout:"Đăng xuất",proof:"bằng chứng",need:"Vui lòng nhập tên trong game của bạn.",submitting:"Đang gửi…",failed:"Không gửi được — vui lòng thử lại.",noreach:"Không thể kết nối máy chủ. Thử lại.",done:"Đã gửi ✓",donesub:"Cảm ơn! Hồ sơ của bạn đã được lưu. Quản trị viên sẽ xem xét và phê duyệt sớm — bạn sẽ có toàn quyền sau khi được duyệt.",added:"✓ đã thêm",uploading:"đang tải lên…",upfail:"tải lên thất bại",uuid:"UUID (ID người chơi)",power:"Tổng sức mạnh",decoration:"Cấp trang trí",svip:"SVIP",faction:"Phe",legendary:"Số skin huyền thoại",maxed:"Loại quân tối đa",exemplar:"Cổ vật mẫu mực",maxpet:"Thú cưng tối đa",Infantry:"Bộ binh",Mage:"Pháp sư",Cavalry:"Kỵ binh",Archer:"Cung thủ",yes:"có"}
+    en:{title:"Complete your player profile",sub:"Fill in your details, then submit for approval. An alliance admin will review and grant you access.",name:"In-game name",submit:"Submit for approval",logout:"Log out",proof:"proof",need:"Please enter your in-game name.",submitting:"Submitting…",failed:"Could not submit — please try again.",noreach:"Could not reach the server. Try again.",done:"Submitted ✓",donesub:"Thanks! Your profile is saved. An admin will review it and approve you shortly — you’ll get full access once approved.",added:"✓ added",uploading:"uploading…",upfail:"upload failed",uuid:"UUID (player ID)",power:"Total power",decoration:"Decoration Lvl.",svip:"SVIP",faction:"Faction",legendary:"# Of Legendary skin",maxed:"Maxed unit type",exemplar:"Exemplar artefact",maxpet:"Maxed pets",Infantry:"Infantry",Mage:"Mage",Cavalry:"Cavalry",Archer:"Archer",yes:"yes",edit:"Edit my info",waiting:"Awaiting approval"},
+    fr:{title:"Complétez votre profil de joueur",sub:"Remplissez vos informations, puis soumettez pour approbation. Un admin de l’alliance vérifiera et vous accordera l’accès.",name:"Nom en jeu",submit:"Soumettre pour approbation",logout:"Déconnexion",proof:"preuve",need:"Veuillez saisir votre nom en jeu.",submitting:"Envoi…",failed:"Échec de l’envoi — réessayez.",noreach:"Impossible de joindre le serveur. Réessayez.",done:"Envoyé ✓",donesub:"Merci ! Votre profil est enregistré. Un admin le vérifiera et vous approuvera sous peu — vous aurez l’accès complet une fois approuvé.",added:"✓ ajouté",uploading:"envoi…",upfail:"échec de l’envoi",uuid:"UUID (ID du joueur)",power:"Puissance totale",decoration:"Niveau de décoration",svip:"SVIP",faction:"Faction",legendary:"Nb de skins légendaires",maxed:"Type d’unité maximisé",exemplar:"Artéfact exemplaire",maxpet:"Familiers maximisés",Infantry:"Infanterie",Mage:"Mage",Cavalry:"Cavalerie",Archer:"Archer",yes:"oui",edit:"Modifier mes infos",waiting:"En attente d’approbation"},
+    zh:{title:"完善你的玩家资料",sub:"填写你的信息，然后提交审批。联盟管理员将审核并授予你访问权限。",name:"游戏内名称",submit:"提交审批",logout:"登出",proof:"证明",need:"请输入你的游戏内名称。",submitting:"提交中…",failed:"提交失败 — 请重试。",noreach:"无法连接服务器。请重试。",done:"已提交 ✓",donesub:"谢谢！你的资料已保存。管理员将尽快审核并批准 — 批准后你将获得完整访问权限。",added:"✓ 已添加",uploading:"上传中…",upfail:"上传失败",uuid:"UUID（玩家ID）",power:"总战力",decoration:"装饰等级",svip:"SVIP",faction:"阵营",legendary:"传奇皮肤数量",maxed:"已满级兵种",exemplar:"典范神器",maxpet:"已满级宠物",Infantry:"步兵",Mage:"法师",Cavalry:"骑兵",Archer:"弓兵",yes:"是",edit:"编辑我的资料",waiting:"等待审批"},
+    vi:{title:"Hoàn thiện hồ sơ người chơi",sub:"Điền thông tin của bạn, sau đó gửi để duyệt. Quản trị viên liên minh sẽ xem xét và cấp quyền truy cập.",name:"Tên trong game",submit:"Gửi để duyệt",logout:"Đăng xuất",proof:"bằng chứng",need:"Vui lòng nhập tên trong game của bạn.",submitting:"Đang gửi…",failed:"Không gửi được — vui lòng thử lại.",noreach:"Không thể kết nối máy chủ. Thử lại.",done:"Đã gửi ✓",donesub:"Cảm ơn! Hồ sơ của bạn đã được lưu. Quản trị viên sẽ xem xét và phê duyệt sớm — bạn sẽ có toàn quyền sau khi được duyệt.",added:"✓ đã thêm",uploading:"đang tải lên…",upfail:"tải lên thất bại",uuid:"UUID (ID người chơi)",power:"Tổng sức mạnh",decoration:"Cấp trang trí",svip:"SVIP",faction:"Phe",legendary:"Số skin huyền thoại",maxed:"Loại quân tối đa",exemplar:"Cổ vật mẫu mực",maxpet:"Thú cưng tối đa",Infantry:"Bộ binh",Mage:"Pháp sư",Cavalry:"Kỵ binh",Archer:"Cung thủ",yes:"có",edit:"Chỉnh sửa thông tin",waiting:"Đang chờ duyệt"}
   };
   if(!OL[lang])lang='en';
   function tr(k){return (OL[lang]&&OL[lang][k])||OL.en[k]||k;}
   var imgs={};
+  var existing=null;
   var FS=[
     {k:"uuid",t:"text"},{k:"power",t:"text"},
     {k:"decoration",t:"sel",o:["1","2","3","4","5","6","7","8","9"],proof:true},
@@ -58,6 +59,7 @@ window.showOnboarding=function(client,uid){
       }catch(e){if(span){span.style.color='#ff9b9b';span.textContent=tr('upfail');}}
     }
     var ofs=document.querySelectorAll('.ob_file');for(var oi=0;oi<ofs.length;oi++){ofs[oi].onchange=function(e){obUpload(e.target.getAttribute('data-k'),e.target.files[0]);};}
+    prefill();
     function gv(id){var e=document.getElementById(id);return e?e.value:'';}
     function gc(id){var e=document.getElementById(id);return !!(e&&e.checked);}
     var msg=document.getElementById('ob_msg'),btn=document.getElementById('ob_submit');
@@ -77,5 +79,36 @@ window.showOnboarding=function(client,uid){
       },function(){fail(tr('noreach'));});
     };
   }
-  render();
+  // Repopulate the form from a previously-saved submission (and keep already
+  // uploaded proof images so a re-submit doesn't lose them).
+  function prefill(){
+    if(!existing)return;var b=existing.buffs||{};
+    function sv(id,val){var e=document.getElementById(id);if(e&&val!=null&&val!=='')e.value=val;}
+    function sc(id,val){var e=document.getElementById(id);if(e)e.checked=!!val;}
+    var nEl=document.getElementById('ob_name');if(nEl&&existing.name)nEl.value=existing.name;
+    sv('ob_uuid',b.uuid&&b.uuid.v);sv('ob_power',b.power&&b.power.v);
+    sv('ob_decoration',b.decoration&&b.decoration.v);sv('ob_faction',b.faction&&b.faction.v);
+    sv('ob_legendary',b.legendary&&b.legendary.v);
+    sc('ob_svip',b.svip&&b.svip.v);sc('ob_exemplar',b.exemplar&&b.exemplar.v);
+    var mv=(b.maxed&&b.maxed.v)||{},mm=document.querySelectorAll('.ob_maxed');for(var i=0;i<mm.length;i++){mm[i].checked=!!mv[mm[i].getAttribute('data-o')];}
+    ['decoration','svip','legendary','maxpet'].forEach(function(k){if(b[k]&&b[k].img){imgs[k]=b[k].img;var sp=document.getElementById('obimg_'+k);if(sp){sp.style.color='#8ff0b0';sp.textContent=tr('added');}}});
+  }
+  // Already-submitted, not-yet-approved users see a waiting screen instead of a
+  // blank form — with the option to edit their info or log out.
+  function renderDone(){
+    ov.innerHTML='<div class="obform"><div class="oblang"><select id="ob_lang">'+langOpts()+'</select></div>'
+      +'<h2>'+esc(tr('waiting'))+'</h2><p class="obsub">'+esc(tr('donesub'))+'</p>'
+      +'<button id="ob_edit" class="obgo">'+esc(tr('edit'))+'</button> <button class="obout" id="ob_out3">'+esc(tr('logout'))+'</button></div>';
+    document.getElementById('ob_lang').onchange=function(e){lang=e.target.value;if(!OL[lang])lang='en';try{localStorage.setItem('s2ak_lang',lang);}catch(x){}try{client.from('profiles').update({lang:lang}).eq('id',uid).then(function(){},function(){});}catch(x){}renderDone();};
+    document.getElementById('ob_edit').onclick=function(){render();};
+    document.getElementById('ob_out3').onclick=function(){client.auth.signOut().then(function(){location.replace('index.html');});};
+  }
+  // Load any prior submission first: if present, show the waiting screen; otherwise
+  // show the blank profile form.
+  try{
+    client.from('profiles').select('submission').eq('id',uid).single().then(function(r){
+      var d=(r&&r.data)||{};existing=(d.submission&&d.submission.name)?d.submission:null;
+      if(existing)renderDone();else render();
+    },function(){render();});
+  }catch(e){render();}
 };
