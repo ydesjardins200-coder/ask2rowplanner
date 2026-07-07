@@ -77,7 +77,7 @@ function playerCard(i){
   return '<div class="pcard'+(openCards[i]?' open':'')+'" data-i="'+i+'"><div class="phead">'
    +'<button class="exp" data-i="'+i+'">'+(openCards[i]?'\u25BE':'\u25B8')+'</button>'
    +'<input class="pn" data-i="'+i+'" value="'+esc(p.name)+'">'
-   +'<select class="pside" data-i="'+i+'"><option value="strong"'+(p.side==='strong'?' selected':'')+''+esc(t('s_strong'))+'</option><option value="off"'+(p.side==='off'?' selected':'')+''+esc(t('s_off'))+'</option><option value=""'+(!p.side?' selected':'')+'>\u2014</option></select>'
+   +'<select class="pside" data-i="'+i+'"><option value="strong"'+(p.side==='strong'?' selected':'')+'>'+esc(t('s_strong'))+'</option><option value="off"'+(p.side==='off'?' selected':'')+'>'+esc(t('s_off'))+'</option><option value=""'+(!p.side?' selected':'')+'>\u2014</option></select>'
    +'<select class="psub" data-i="'+i+'"><option value="main"'+(!p.sub?' selected':'')+'>'+esc(t('m_main'))+'</option><option value="sub"'+(p.sub?' selected':'')+'>'+esc(t('m_sub'))+'</option></select>'
    +readyBadge(p)
    +'<button class="save'+d+'" data-i="'+i+'">'+tt+'</button>'
