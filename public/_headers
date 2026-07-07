@@ -2,3 +2,9 @@
 # vars — scripts/inject-secrets.sh adds the Basic-Auth line at build time.
 /*
   X-Robots-Tag: noindex, nofollow
+# Always revalidate code/style so a deploy is picked up immediately instead of
+# a stale cached copy (this was causing "missing" updates on mobile Safari).
+/js/*
+  Cache-Control: no-cache
+/css/*
+  Cache-Control: no-cache
