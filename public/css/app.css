@@ -152,8 +152,9 @@ body.is-member #logoutbtn{background:#24425f;border-color:#3d6a96}
 .lgbadge{display:inline-block;min-width:16px;padding:0 4px;border-radius:8px;background:#24425f;color:#cfe0f0;font-size:10px;font-weight:bold;text-align:center;line-height:15px}
 .lgbadge.full{background:#5fd08a;color:#08301c}
 .lgbadge.zero{background:#1a2a3d;color:#5a6f84}
-body.is-admin .minfo .tp .tprow[draggable]{cursor:grab}
-body.is-admin .minfo .tp .tprow.dragging{opacity:.45}
+body.is-admin .minfo .tp .tprow{cursor:grab;touch-action:none}
+body.tp-dragging{cursor:grabbing;-webkit-user-select:none;user-select:none}
+.tp-ghost{position:fixed;z-index:100000;pointer-events:none;background:#1c86ff;color:#fff;font-size:11px;font-weight:bold;padding:3px 8px;border-radius:6px;box-shadow:0 4px 14px #000a;white-space:nowrap}
 /* grouping cards as drop targets + inline role/remove */
 .grp.drop-hi{outline:2px dashed #5fd08a;outline-offset:1px;background:#12261c}
 .gmrow .gmn{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

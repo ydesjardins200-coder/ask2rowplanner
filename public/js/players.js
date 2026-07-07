@@ -284,7 +284,7 @@ function mapInfoHTML(){
   ord.forEach(function(p,i){
     var sc=p.side==='strong'?'#f4a6d7':(p.side==='off'?'#8fc0f0':'#c9d4de');
     var lc=legAssignedCount(p);
-    tp+='<tr class="tprow" data-n="'+esc(p.name)+'"'+(IS_ADMIN?' draggable="true"':'')+'>'
+    tp+='<tr class="tprow" data-n="'+esc(p.name)+'">'
       +'<td>'+(i+1)+'</td>'
       +'<td><span class="tpn" style="color:'+sc+'">'+esc(p.name)+'</span><span class="tprole">'+esc(mainRoleLbl(p))+'</span></td>'
       +'<td class="tplg"><span class="lgbadge'+(lc>=5?' full':(lc===0?' zero':''))+'">'+lc+'</span></td></tr>';
@@ -317,21 +317,46 @@ function mapInfoHTML(){
 // Wire drag-to-group + inline role/remove inside one rendered panel container.
 function bindMapInfo(c){
   if(!c)return;
-  var rows=c.querySelectorAll('.tprow');
-  for(var i=0;i<rows.length;i++){
-    rows[i].ondragstart=function(e){e.dataTransfer.setData('text/plain',this.getAttribute('data-n'));e.dataTransfer.effectAllowed='copy';this.classList.add('dragging');};
-    rows[i].ondragend=function(){this.classList.remove('dragging');};
-  }
-  var cards=c.querySelectorAll('.gpgrid .grp');
-  for(var k=0;k<cards.length;k++){
-    cards[k].ondragover=function(e){if(!IS_ADMIN)return;e.preventDefault();e.dataTransfer.dropEffect='copy';this.classList.add('drop-hi');};
-    cards[k].ondragleave=function(){this.classList.remove('drop-hi');};
-    cards[k].ondrop=function(e){e.preventDefault();this.classList.remove('drop-hi');if(!IS_ADMIN)return;var nm=e.dataTransfer.getData('text/plain'),code=this.getAttribute('data-c');if(nm&&code)addToRally(code,nm);};
-  }
   var rs=c.querySelectorAll('.gmrole');
   for(var r=0;r<rs.length;r++){rs[r].onchange=function(e){var code=e.target.getAttribute('data-c'),nm=e.target.getAttribute('data-n');for(var gi=0;gi<groups.length;gi++){if(groups[gi].code===code){if(!groups[gi].roles)groups[gi].roles={};groups[gi].roles[nm]=e.target.value;break;}}save();renderRallies();renderMapInfo();};}
   var dl=c.querySelectorAll('.gmdel');
-  for(var d=0;d<dl.length;d++){dl[d].onclick=function(e){removeFromRally(e.target.getAttribute('data-c'),e.target.getAttribute('data-n'));};}
+  for(var d=0;d<dl.length;d++){dl[d].onclick=function(e){var b=e.target.closest('button')||e.target;removeFromRally(b.getAttribute('data-c'),b.getAttribute('data-n'));};}
+  // Drag a teleport name onto a grouping card. Uses Pointer Events (not the HTML5
+  // drag API, which iOS Safari ignores) so it works on iPhone as well as desktop.
+  if(!IS_ADMIN)return;
+  var rows=c.querySelectorAll('.tprow');
+  for(var i=0;i<rows.length;i++)bindDragRow(rows[i]);
+}
+function bindDragRow(row){
+  row.onpointerdown=function(e){
+    if(e.button&&e.button!==0)return;
+    var name=row.getAttribute('data-n');if(!name)return;
+    var sx=e.clientX,sy=e.clientY,pid=e.pointerId,dragging=false,ghost=null,curHi=null;
+    function cardAt(x,y){var el2=document.elementFromPoint(x,y);return (el2&&el2.closest)?el2.closest('.grp[data-c]'):null;}
+    function move(ev){
+      if(!dragging){
+        if(Math.abs(ev.clientX-sx)+Math.abs(ev.clientY-sy)<8)return; // threshold: let taps & scrolls through
+        dragging=true;document.body.classList.add('tp-dragging');
+        ghost=document.createElement('div');ghost.className='tp-ghost';ghost.textContent=name;document.body.appendChild(ghost);
+        try{row.setPointerCapture(pid);}catch(_){}
+      }
+      ev.preventDefault();
+      ghost.style.left=(ev.clientX+12)+'px';ghost.style.top=(ev.clientY+8)+'px';
+      var card=cardAt(ev.clientX,ev.clientY);
+      if(card!==curHi){if(curHi)curHi.classList.remove('drop-hi');curHi=card;if(curHi)curHi.classList.add('drop-hi');}
+    }
+    function up(ev){
+      row.removeEventListener('pointermove',move);row.removeEventListener('pointerup',up);row.removeEventListener('pointercancel',up);
+      try{row.releasePointerCapture(pid);}catch(_){}
+      if(dragging){var card=cardAt(ev.clientX,ev.clientY);if(card){var code=card.getAttribute('data-c');if(code)addToRally(code,name);}}
+      if(ghost&&ghost.parentNode)ghost.parentNode.removeChild(ghost);
+      if(curHi)curHi.classList.remove('drop-hi');
+      document.body.classList.remove('tp-dragging');
+    }
+    row.addEventListener('pointermove',move);
+    row.addEventListener('pointerup',up);
+    row.addEventListener('pointercancel',up);
+  };
 }
 function renderMapInfo(){var h=mapInfoHTML();var a=el('mapinfo-blue'),b=el('mapinfo-yellow');if(a)a.innerHTML=h;if(b)b.innerHTML=h;bindMapInfo(a);bindMapInfo(b);if(typeof enforceRole==='function')enforceRole();}
 // ---- Image modal (lightbox) for any uploaded proof ----
