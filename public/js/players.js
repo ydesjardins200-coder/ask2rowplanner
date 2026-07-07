@@ -174,6 +174,13 @@ function removeFromRally(code,name){
   var p=null;roster.forEach(function(x){if(x.name===name)p=x;});if(!p||!p.legions)return;
   var idx=p.legions.indexOf(code);if(idx>=0)p.legions[idx]='';rallyPersist();
 }
+// Set a building's garrison Commander/Deputy hero and reflect it to the map.
+function setGarr(code,slot,val){
+  if(!garr[code])garr[code]={};
+  garr[code][slot]=val;
+  if(!garr[code].cmd&&!garr[code].dep)delete garr[code];
+  save();renderMap('blue');renderMap('yellow');renderRallies();
+}
 function renderRallies(){
   var c=el('rallytbl');if(!c)return;
   var h='<div class="sub">'+esc(t('rallies_intro'))+'</div>';
@@ -184,6 +191,11 @@ function renderRallies(){
     if(!g.roles)g.roles={};
     h+='<div class="grp gs-'+g.side+'"><div class="grphd"><b>'+esc(g.code)+'</b> <span class="gtag">'+sideLbl(g.side)+' \u00b7 '+esc(g.troop)+' \u00b7 '+lc+' '+esc(t('legions'))+'</span></div>';
     h+='<div class="grow"><span class="glbl">'+esc(leadLabel(g.code))+'</span><select class="glead" data-g="'+gi+'">'+nameOptions(curLead)+'</select></div>';
+    if(GARR_BUILDINGS.indexOf(g.code)>=0){
+      var gpair=garr[g.code]||{};
+      h+='<div class="grow gpairrow"><span class="glbl gpl">'+esc(t('commander'))+'</span><select class="gcmd" data-c="'+esc(g.code)+'">'+heroOptions(gpair.cmd)+'</select></div>';
+      h+='<div class="grow gpairrow"><span class="glbl gpl">'+esc(t('deputy'))+'</span><select class="gdep" data-c="'+esc(g.code)+'">'+heroOptions(gpair.dep)+'</select></div>';
+    }
     var shown=0;
     rows.forEach(function(r){
       if(r.lead&&r.first)return; // leader's first march is the dropdown above
@@ -207,6 +219,8 @@ function renderRallies(){
   h+='</div>';
   c.innerHTML=h;
   var gl=c.querySelectorAll('.glead');for(var i=0;i<gl.length;i++){gl[i].onchange=function(e){var gi=+e.target.getAttribute('data-g');assign[groups[gi].code]=e.target.value;groups[gi].leader=e.target.value;save();renderRallies();renderLife();renderMapInfo();renderMap('blue');renderMap('yellow');};}
+  var gcm=c.querySelectorAll('.gcmd');for(var ci=0;ci<gcm.length;ci++){gcm[ci].onchange=function(e){setGarr(e.target.getAttribute('data-c'),'cmd',e.target.value);};}
+  var gdp=c.querySelectorAll('.gdep');for(var pi=0;pi<gdp.length;pi++){gdp[pi].onchange=function(e){setGarr(e.target.getAttribute('data-c'),'dep',e.target.value);};}
   var mr=c.querySelectorAll('.mrole');for(var k=0;k<mr.length;k++){mr[k].onchange=function(e){var gi=+e.target.getAttribute('data-g'),nm=e.target.getAttribute('data-n');if(!groups[gi].roles)groups[gi].roles={};groups[gi].roles[nm]=e.target.value;save();};}
   var ga=c.querySelectorAll('.gadd');for(var a=0;a<ga.length;a++){ga[a].onchange=function(e){addToRally(e.target.getAttribute('data-c'),e.target.value);};}
   var md=c.querySelectorAll('.mdel');for(var d=0;d<md.length;d++){md[d].onclick=function(e){removeFromRally(e.target.getAttribute('data-c'),e.target.getAttribute('data-n'));};}

@@ -35,6 +35,9 @@ var GROUPS=[
  {code:"Beastmaster", leader:"BeastMaster", side:"support", troop:"Behemoth", members:["BeastMaster"]}
 ];
 var RALLY_ORDER=GROUPS.map(function(g){return g.code;});
+// Per-building garrison hero pairing: garr["H1"]={cmd:"<hero>",dep:"<hero>"}.
+var garr={};
+var GARR_BUILDINGS=["H1","H2","H3","H4","T1","T2","TH1","TH2"];
 var FUNCTIONS=["GARRISON LEAD","GARRISON FILL","GHOST CAV","FAEDRAKE","LIFESTONE","TOWERS"];
 var TARGETS={};   GROUPS.forEach(function(g){TARGETS[g.code]=g.members.length;});
 var TROOP={};     GROUPS.forEach(function(g){TROOP[g.code]=g.troop;});

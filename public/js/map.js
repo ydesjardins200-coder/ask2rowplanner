@@ -17,6 +17,16 @@ function bpos(b,color){
   if(m){for(var i=0;i<BUILD.length;i++)if(BUILD[i].code===m)return [BUILD[i].x,BUILD[i].y];}
   return [Math.round((2*MCENTER[0]-b.x)*10)/10,Math.round((2*MCENTER[1]-b.y)*10)/10];
 }
+// Read-only garrison Commander/Deputy caption shown under a building's picker.
+// Edited in the Rallies tab; this only reflects garr[code].
+function garrTag(code){
+  if(typeof GARR_BUILDINGS==='undefined'||GARR_BUILDINGS.indexOf(code)<0)return '';
+  var g=(typeof garr!=='undefined'&&garr[code])?garr[code]:null;
+  var cmd=g&&g.cmd?g.cmd:'',dep=g&&g.dep?g.dep:'';
+  if(!cmd&&!dep)return '';
+  var full=(cmd||'\u2014')+' / '+(dep||'\u2014');
+  return '<span class="bgarr" title="'+esc(full)+'"><b>'+esc(cmd||'\u2014')+'</b><i>'+esc(dep||'\u2014')+'</i></span>';
+}
 function renderMap(color){
  var wrap=el('wrap-'+color);var zn=ZONES[color];var strong=zn.strong;var off=zn.off;
  var youBase=(color==='blue')?LUC:YAE;var youName=(color==='blue')?'Lucia':'Yaen';
@@ -28,7 +38,7 @@ function renderMap(color){
  h+='<div class="you" style="left:'+youBase[0]+'%;top:'+(youBase[1]+7)+'%">'+esc(t('you'))+'</div>';
  h+='<div class="life" style="left:'+LIFE[0]+'%;top:'+LIFE[1]+'%"></div>';
  BUILD.forEach(function(b){var ld=(b.code in assign)?assign[b.code]:b.leader;var sd=sideFor(b,color);var bp=bpos(b,color);
-  h+='<div class="b'+(ld?'':' un')+'" style="left:'+bp[0]+'%;top:'+bp[1]+'%;border-color:'+CLR[sd]+'"><span class="code" style="color:'+CLR[sd]+'">'+b.code+'</span><select data-code="'+b.code+'">'+leaderOptions(ld)+'</select></div>';});
+  h+='<div class="b'+(ld?'':' un')+'" style="left:'+bp[0]+'%;top:'+bp[1]+'%;border-color:'+CLR[sd]+'"><span class="code" style="color:'+CLR[sd]+'">'+b.code+'</span><select data-code="'+b.code+'">'+leaderOptions(ld)+'</select>'+garrTag(b.code)+'</div>';});
  wrap.innerHTML=h;
  var sels=wrap.querySelectorAll('select');for(var i=0;i<sels.length;i++){sels[i].onchange=function(e){var code=e.target.getAttribute('data-code');assign[code]=e.target.value;for(var k=0;k<groups.length;k++){if(groups[k].code===code)groups[k].leader=e.target.value;}save();renderMap('blue');renderMap('yellow');if(typeof renderRallies==='function')renderRallies();if(typeof renderMapInfo==='function')renderMapInfo();};}
   if(typeof enforceRole==='function')enforceRole();

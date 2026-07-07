@@ -10,7 +10,7 @@ function myIndex(){for(var i=0;i<roster.length;i++)if(MYNAME&&roster[i].name===M
 // Members: disable plan-editing; re-enable only self-report controls on their own card.
 function enforceRole(){
   var b=document.body;if(b)b.className=IS_ADMIN?'is-admin':'is-member';
-  var lock='select[data-code],.glead,.pn,.pside,.psub,.rm,.addto,.pfunc,.pleg,.bchk,.bsel,.btxt,.bmck,.bfile,.save,.mrole,.gadd,.mdel,.gmrole,.gmdel,.plead,.adminonly';
+  var lock='select[data-code],.glead,.pn,.pside,.psub,.rm,.addto,.pfunc,.pleg,.bchk,.bsel,.btxt,.bmck,.bfile,.save,.mrole,.gadd,.mdel,.gmrole,.gmdel,.gcmd,.gdep,.plead,.adminonly';
   var n=document.querySelectorAll(lock);
   for(var i=0;i<n.length;i++){n[i].disabled=false;}
   if(IS_ADMIN)return;
@@ -28,7 +28,7 @@ window.forceRefresh=function(){
   if(rosterDirty&&!(typeof confirm==='function'&&confirm('You have unsaved local changes that will be discarded. Pull the latest team plan?')))return;
   SB.from('plan').select('data').eq('id',SBKEY).single().then(function(r){
     var d=(r&&r.data&&r.data.data)?r.data.data:null;
-    if(d){assign=d.a||{};if(d.r&&d.r.length)roster=d.r;if(d.g&&d.g.length)groups=d.g;rosterDirty=false;renderAll();enforceRole();if(typeof flash==='function')flash(t('fl_refreshed'));}
+    if(d){assign=d.a||{};garr=d.h||{};if(d.r&&d.r.length)roster=d.r;if(d.g&&d.g.length)groups=d.g;rosterDirty=false;renderAll();enforceRole();if(typeof flash==='function')flash(t('fl_refreshed'));}
     else if(typeof flash==='function')flash(t('fl_nothing'));
   },function(){if(typeof flash==='function')flash(t('fl_refreshfail'));});
 };
@@ -38,4 +38,4 @@ window.linkMe=function(name){MYNAME=name||'';if(window.saveMyPlayer)window.saveM
 initRoster();initGroups();buildTabs();applyStatic();renderAll();enforceRole();
 (function(){var ls=el('langsel');if(ls){try{ls.value=localStorage.getItem('s2ak_lang')||'en';}catch(e){}}})();
 if(window.__role&&window.setRole)window.setRole(window.__role.admin,window.__role.name);
-STORE.load(function(d){if(d){try{assign=d.a||{};if(!rosterDirty&&d.r&&d.r.length)roster=d.r;if(d.g&&d.g.length)groups=d.g;renderMap('blue');renderMap('yellow');if(!rosterDirty)renderPlayers();renderStaff();renderRallies();renderSides();renderMapInfo();renderLife();renderReady();enforceRole();}catch(e){}}});
+STORE.load(function(d){if(d){try{assign=d.a||{};garr=d.h||{};if(!rosterDirty&&d.r&&d.r.length)roster=d.r;if(d.g&&d.g.length)groups=d.g;renderMap('blue');renderMap('yellow');if(!rosterDirty)renderPlayers();renderStaff();renderRallies();renderSides();renderMapInfo();renderLife();renderReady();enforceRole();}catch(e){}}});

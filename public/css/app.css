@@ -197,3 +197,11 @@ body.tp-dragging{cursor:grabbing;-webkit-user-select:none;user-select:none}
 }
 
 option{background:#0f2036;color:#e8eef4}
+
+/* ---------- Garrison hero pairing (Commander / Deputy) ---------- */
+.grow.gpairrow .gpl{width:auto;flex:0 0 74px;text-align:left;color:#c9b8ff;font-weight:bold}
+.grow.gpairrow select{background:#141d33;border-color:#3a3a66}
+/* Read-only pairing caption on a map building box */
+.b .bgarr{display:block;margin-top:1px;font-size:7px;line-height:1.15;color:#c9b8ff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.b .bgarr b{color:#e7dcff;font-weight:900;display:block;overflow:hidden;text-overflow:ellipsis}
+.b .bgarr i{color:#9a8fc4;font-style:normal;display:block;overflow:hidden;text-overflow:ellipsis}

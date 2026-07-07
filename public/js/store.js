@@ -17,5 +17,5 @@ load:function(cb){
   try{setInterval(function(){fetchPlan(false);},15000);}catch(e){}
   try{if(typeof document!=='undefined'&&document.addEventListener)document.addEventListener('visibilitychange',function(){if(!document.hidden)fetchPlan(false);});}catch(e){}
 }};
-function save(){STORE.save({a:assign,r:roster,g:groups});}
+function save(){STORE.save({a:assign,r:roster,g:groups,h:garr});}
 function saveRoster(){STORE.saveRoster({a:assign,r:roster},roster);}
