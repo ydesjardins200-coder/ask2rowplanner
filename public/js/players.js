@@ -140,7 +140,7 @@ function uploadBuff(i,k,file){
 function addPlayer(){roster.push({name:t('new_player'),side:'',sub:false,func:'',legions:['','','','',''],buffs:{}});saveLocal();markDirty();renderPlayers();}
 function resetPlayers(){initRoster();saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();}
 // ---- Rallies tab: the grouping (editable; member dropdowns from registered list) ----
-function roleColor(role){if(role==='FILL')return '#f4c430';if(role==='Phase 1 - FIRST TAKE')return '#5fa8ff';if(role==='CAVS')return '#ff6b6b';if(role==='Backup garrison'||role==='Main garrison')return '#5fd08a';return '#9fb3c6';}
+function roleColor(role){if(role==='FILL')return '#f4c430';if(role==='Phase 1 - FIRST TAKE')return '#5fa8ff';if(role==='CAVS')return '#ff6b6b';if(role==='Lifestone carrier')return '#2fb3a4';if(role==='Lifestone support')return '#7fe3d6';if(role==='Beastmaster')return '#8bb84a';if(role==='Backup garrison'||role==='Main garrison')return '#5fd08a';return '#9fb3c6';}
 function leadLabel(code){if(code==='Ghost Cavalry')return 'Ghost cavalry leader (SUN)';if(code==='Lifestone')return 'Lifestone leader';return t('lead_main');}
 function leadCardColor(code){if(code==='Ghost Cavalry')return '#ff6b6b';if(code==='Lifestone')return '#2fb3a4';return '#5fd08a';}
 function rallyRows(g){
@@ -159,7 +159,7 @@ function rallyRows(g){
 }
 // Total marches committed to a group = one row per legion (incl. the leader's rally).
 function rallyLegions(g){return rallyRows(g).length;}
-function roleOptions(sel,code){var R=(code==='Ghost Cavalry'||code==='Fraedrake')?["CAVS"]:["","Backup garrison","FILL","Phase 1 - FIRST TAKE"];return R.map(function(r){return '<option value="'+esc(r)+'"'+((sel||'')===r?' selected':'')+'>'+esc(roleLabel(r))+'</option>';}).join('');}
+function roleOptions(sel,code){var R=(code==='Ghost Cavalry'||code==='Fraedrake')?["CAVS"]:(code==='Lifestone')?["","Lifestone carrier","Lifestone support","Beastmaster"]:["","Backup garrison","FILL","Phase 1 - FIRST TAKE"];return R.map(function(r){return '<option value="'+esc(r)+'"'+((sel||'')===r?' selected':'')+'>'+esc(roleLabel(r))+'</option>';}).join('');}
 function rallyPersist(){saveLocal();if(typeof saveRoster==='function')saveRoster();renderRallies();renderPlayers();renderMapInfo();renderStaff();renderLife();renderSides();}
 function addToRally(code,name){
   if(!name)return;var p=null;roster.forEach(function(x){if(x.name===name)p=x;});if(!p)return;
