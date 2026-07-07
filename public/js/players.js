@@ -193,8 +193,8 @@ function renderRallies(){
     h+='<div class="grow"><span class="glbl">'+esc(leadLabel(g.code))+'</span><select class="glead" data-g="'+gi+'">'+nameOptions(curLead)+'</select></div>';
     if(GARR_BUILDINGS.indexOf(g.code)>=0){
       var gpair=garr[g.code]||{};
-      h+='<div class="grow gpairrow"><span class="glbl gpl">'+esc(t('commander'))+'</span><select class="gcmd" data-c="'+esc(g.code)+'">'+heroOptions(gpair.cmd)+'</select></div>';
-      h+='<div class="grow gpairrow"><span class="glbl gpl">'+esc(t('deputy'))+'</span><select class="gdep" data-c="'+esc(g.code)+'">'+heroOptions(gpair.dep)+'</select></div>';
+      h+='<div class="grow gpairrow"><span class="glbl gpl">'+esc(t('commander'))+'</span><select class="gcmd" data-c="'+esc(g.code)+'">'+heroOptions(gpair.cmd,'Inf')+'</select></div>';
+      h+='<div class="grow gpairrow"><span class="glbl gpl">'+esc(t('deputy'))+'</span><select class="gdep" data-c="'+esc(g.code)+'">'+heroOptions(gpair.dep,'Inf')+'</select></div>';
     }
     var shown=0;
     rows.forEach(function(r){
