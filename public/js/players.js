@@ -7,8 +7,8 @@ function initRoster(){
   REG_SUB.forEach(function(n){roster.push({name:n,side:'',sub:true,func:'',legions:['','','','',''],buffs:{}});});
 }
 function initGroups(){groups=GROUPS.map(function(g){return {code:g.code,leader:g.leader,side:g.side,troop:g.troop};});}
-function legionOpts(sel){var o='<option value="">\u2014</option>';RALLY_ORDER.forEach(function(r){o+='<option'+(sel===r?' selected':'')+'>'+esc(r)+'</option>';});return o;}
-function funcOpts(sel){var o='<option value="">'+esc(t('pick'))+'</option>';FUNCTIONS.forEach(function(r){o+='<option'+(sel===r?' selected':'')+'>'+esc(r)+'</option>';});return o;}
+function legionOpts(sel){var o='<option value="">\u2014</option>';RALLY_ORDER.forEach(function(r){o+='<option value="'+esc(r)+'"'+(sel===r?' selected':'')+'>'+esc(funcLabel(r))+'</option>';});return o;}
+function funcOpts(sel){var o='<option value="">'+esc(t('pick'))+'</option>';FUNCTIONS.forEach(function(r){o+='<option value="'+esc(r)+'"'+(sel===r?' selected':'')+'>'+esc(funcLabel(r))+'</option>';});return o;}
 function membersOf(code){var out=[],seen={};roster.forEach(function(p){if(p.legions&&p.legions.indexOf(code)>=0&&!seen[p.name]){seen[p.name]=1;out.push(p.name);}});return out;}
 function legionCount(code){var n=0;roster.forEach(function(p){if(p.legions)p.legions.forEach(function(c){if(c===code)n++;});});return n;}
 // How many of THIS player's legion slots point at a group (duplicates allowed).
@@ -32,7 +32,7 @@ function nameOptions(sel){
   EXTRA_LEADERS.forEach(function(x){if(!seen[x]){seen[x]=1;names.push(x);}});
   if(sel&&!seen[sel])names.push(sel);
   names.sort(function(a,b){return a.toLowerCase()<b.toLowerCase()?-1:1;});
-  var o='<option value="">\u2014 none \u2014</option>';
+  var o='<option value="">'+esc(t('opt_none'))+'</option>';
   names.forEach(function(n){o+='<option'+(((sel||'')===n)?' selected':'')+'>'+esc(n)+'</option>';});
   return o;
 }
@@ -95,7 +95,7 @@ function renderPlayers(){
             [t('sec_unassigned'),function(p){return !p.sub&&p.side!=='strong'&&p.side!=='off';}],
             [t('sec_subs'),function(p){return p.sub;}]];
   var nMain=0,nSub=0;roster.forEach(function(p){if(p.sub)nSub++;else nMain++;});
-  var h='<div class="bar"><span class="sub">'+esc(t('players_intro'))+' <b>'+nMain+' + '+nSub+'</b></span></div><div class="sub" id="rdirty" style="color:#e0a52a"></div><div class="bar"><button class="adminonly" onclick="addPlayer()">'+esc(t('add_player'))+'</button></div>'+((!IS_ADMIN&&!MYNAME)?'<div class="linkme"><b>'+esc(t('which_player'))+'</b> '+esc(t('pick_name'))+': <select id="linkmesel"><option value="">\u2014 select \u2014</option>'+roster.map(function(pp){return '<option>'+esc(pp.name)+'</option>';}).join('')+'</select></div>':'');
+  var h='<div class="bar"><span class="sub">'+esc(t('players_intro'))+' <b>'+nMain+' + '+nSub+'</b></span></div><div class="sub" id="rdirty" style="color:#e0a52a"></div><div class="bar"><button class="adminonly" onclick="addPlayer()">'+esc(t('add_player'))+'</button></div>'+((!IS_ADMIN&&!MYNAME)?'<div class="linkme"><b>'+esc(t('which_player'))+'</b> '+esc(t('pick_name'))+': <select id="linkmesel"><option value="">'+esc(t('opt_select'))+'</option>'+roster.map(function(pp){return '<option>'+esc(pp.name)+'</option>';}).join('')+'</select></div>':'');
   secs.forEach(function(s){
     var idxs=[];roster.forEach(function(p,i){if(s[1](p))idxs.push(i);});
     if(idxs.length===0)return;
@@ -141,7 +141,7 @@ function addPlayer(){roster.push({name:t('new_player'),side:'',sub:false,func:''
 function resetPlayers(){initRoster();saveRoster();renderPlayers();renderSides();renderMapInfo();renderRallies();}
 // ---- Rallies tab: the grouping (editable; member dropdowns from registered list) ----
 function roleColor(role){if(role==='FILL')return '#f4c430';if(role==='Phase 1 - FIRST TAKE')return '#5fa8ff';if(role==='CAVS')return '#ff6b6b';if(role==='Lifestone carrier')return '#2fb3a4';if(role==='Lifestone support')return '#7fe3d6';if(role==='Beastmaster')return '#8bb84a';if(role==='Backup garrison'||role==='Main garrison')return '#5fd08a';return '#9fb3c6';}
-function leadLabel(code){if(code==='Ghost Cavalry')return 'Ghost cavalry leader (SUN)';if(code==='Lifestone')return 'Lifestone leader';return t('lead_main');}
+function leadLabel(code){if(code==='Ghost Cavalry')return t('lead_ghost');if(code==='Lifestone')return t('lead_life');return t('lead_main');}
 function leadCardColor(code){if(code==='Ghost Cavalry')return '#ff6b6b';if(code==='Lifestone')return '#2fb3a4';return '#5fd08a';}
 function rallyRows(g){
   var lead=(g.code in assign)?assign[g.code]:g.leader;
@@ -277,7 +277,7 @@ function teleportOrder(){
 // Player's headline role for the teleport list: their explicit function if set,
 // otherwise their lane side. Kept short so it fits the narrow column.
 function mainRoleLbl(p){
-  if(p.func)return p.func;
+  if(p.func)return funcLabel(p.func);
   if(p.side==='strong')return t('s_strong');
   if(p.side==='off')return t('s_off');
   return '\u2014';
@@ -418,7 +418,7 @@ function mergeDuplicates(rows){
 // Permanently remove a member: deletes their account record AND erases the linked
 // player from the roster, every rally/legion, all leader slots and map assignments.
 function removeMemberCompletely(id,name){
-  var label=name||'this member';
+  var label=name||t('this_member');
   if(typeof confirm==='function'&&!confirm(t('cf_remove').replace('{n}',label)))return;
   if(name){
     var me=(''+name).trim().toLowerCase();
@@ -440,7 +440,7 @@ function removeMemberCompletely(id,name){
 function renderMembers(){
   var c=el('memberstbl');if(!c)return;
   if(!IS_ADMIN){c.innerHTML='<div class="sub">'+esc(t('admins_only'))+'</div>';return;}
-  if(!SB){c.innerHTML='<div class="sub">Sign-in isn\u2019t configured, so there are no accounts to manage.</div>';return;}
+  if(!SB){c.innerHTML='<div class="sub">'+esc(t('md_no_signin'))+'</div>';return;}
   c.innerHTML='<div class="sub">'+esc(t('loading_members'))+'</div>';
   SB.from('profiles').select('id,email,role,approved,player,submission').then(function(res){
     if(!res||res.error){c.innerHTML='<div class="sub">'+esc(t('load_members_fail'))+'</div>';return;}
@@ -460,17 +460,17 @@ function renderMembers(){
     function src(m){var pl=null;roster.forEach(function(x){if(x.name===m.player)pl=x;});return (m.approved&&pl&&pl.buffs)?pl.buffs:((m.submission&&m.submission.buffs)||{});}
     function nm(m){return (m.submission&&m.submission.name)||m.player||'\u2014';}
     function bv(s,k){var e=s[k];return (e&&e.v!=null&&e.v!=='')?e.v:'\u2014';}
-    function yn(s,k){return (s[k]&&s[k].v)?'yes':'no';}
+    function yn(s,k){return (s[k]&&s[k].v)?t('yes'):t('no');}
     function troop(s){var e=s.maxed,v=e&&e.v;if(!v||typeof v!=='object')return '\u2014';var a=[];for(var k in v){if(v[k])a.push(k);}return a.length?a.join(', '):'\u2014';}
     function shot(s,k,lbl){var e=s[k];return (e&&e.img)?'<a class="viewshot" href="#" data-full="'+esc(e.img)+'">'+lbl+'</a>':'';}
     function detail(s){
-      var parts=['Decoration Lvl: <b>'+esc(bv(s,'decoration'))+'</b>','SVIP: <b>'+yn(s,'svip')+'</b>','Faction: <b>'+esc(bv(s,'faction'))+'</b>','Legendary skins: <b>'+esc(bv(s,'legendary'))+'</b>','Exemplar: <b>'+yn(s,'exemplar')+'</b>'];
-      var pf=[shot(s,'decoration','decoration'),shot(s,'svip','SVIP'),shot(s,'legendary','legendary skin'),shot(s,'maxpet','maxed pets')].filter(Boolean);
+      var parts=[esc(t('f_decoration'))+': <b>'+esc(bv(s,'decoration'))+'</b>','SVIP: <b>'+yn(s,'svip')+'</b>',esc(t('f_faction'))+': <b>'+esc(bv(s,'faction'))+'</b>',esc(t('md_legendary'))+': <b>'+esc(bv(s,'legendary'))+'</b>',esc(t('f_exemplar'))+': <b>'+yn(s,'exemplar')+'</b>'];
+      var pf=[shot(s,'decoration',esc(t('f_decoration'))),shot(s,'svip','SVIP'),shot(s,'legendary',esc(t('md_legendary'))),shot(s,'maxpet',esc(t('f_maxpet')))].filter(Boolean);
       var h='<div style="padding:6px 4px;font-size:12px;color:#cdd">'+parts.join(' &nbsp;\u00b7&nbsp; ')+'</div>';
-      if(pf.length)h+='<div style="padding:2px 4px 6px;font-size:12px">Proof: '+pf.join(' &nbsp;\u00b7&nbsp; ')+'</div>';
+      if(pf.length)h+='<div style="padding:2px 4px 6px;font-size:12px">'+esc(t('md_proof'))+': '+pf.join(' &nbsp;\u00b7&nbsp; ')+'</div>';
       return h;
     }
-    var h='<div class="sub"><b>'+rows.length+'</b> account'+(rows.length===1?'':'s')+' \u00b7 '+pending+' '+esc(t('members_intro'))+' <button class="mmerge">'+esc(t('merge_dupes'))+'</button></div>';
+    var h='<div class="sub"><b>'+rows.length+'</b> '+esc(t('md_accounts'))+' \u00b7 '+pending+' '+esc(t('members_intro'))+' <button class="mmerge">'+esc(t('merge_dupes'))+'</button></div>';
     h+='<table class="t"><tr><th></th><th>'+esc(t('col_email'))+'</th><th>'+esc(t('col_name'))+'</th><th>'+esc(t('col_uuid'))+'</th><th>'+esc(t('col_power'))+'</th><th>'+esc(t('col_troop'))+'</th><th>'+esc(t('col_approved'))+'</th><th>'+esc(t('col_role'))+'</th><th>'+esc(t('col_player'))+'</th><th></th></tr>';
     rows.forEach(function(m,ri){
       var s=src(m);

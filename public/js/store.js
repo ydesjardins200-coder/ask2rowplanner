@@ -2,7 +2,7 @@
 function saveLocal(){try{localStorage.setItem('btx_app_v2',JSON.stringify({a:assign,r:roster}));}catch(e){}}
 var SB=null,SBKEY='btx';
 var LEADKEY=(function(){try{return localStorage.getItem('btx_lead_key')||'';}catch(e){return '';}})();
-function setLeadKey(){var v=window.prompt('Leadership WRITE key (leave blank to clear). Only leaders with this key can change the shared plan; without it you still see live updates and can edit your own local copy.',LEADKEY);if(v===null)return;LEADKEY=v;try{localStorage.setItem('btx_lead_key',v);}catch(e){}flash(v?'Write key set':'Write key cleared');}
+function setLeadKey(){var v=window.prompt(t('lk_prompt'),LEADKEY);if(v===null)return;LEADKEY=v;try{localStorage.setItem('btx_lead_key',v);}catch(e){}flash(v?t('lk_set'):t('lk_cleared'));}
 (function(){try{if(window.SUPA&&window.SUPA.key&&window.SUPA.key.indexOf('PASTE')<0&&window.supabase){SB=window.supabase.createClient(window.SUPA.url,window.SUPA.key);}}catch(e){}})();
 function localFallback(){try{var v=localStorage.getItem('btx_app_v2');return v?JSON.parse(v):null;}catch(e){return null;}}
 var STORE={save:function(d){var s=JSON.stringify(d);try{localStorage.setItem('btx_app_v2',s);}catch(e){}if(SB){SB.rpc('save_plan',{p_id:SBKEY,p_data:d,p_secret:LEADKEY}).then(function(res){if(res&&res.error){flash(t('fl_syncfail'));}else if(res&&res.data===true){flash(t('fl_synced'));}else{flash(t('fl_readonly'));}},function(){flash(t('fl_syncfail'));});}else{flash(t('fl_savedlocal'));}},

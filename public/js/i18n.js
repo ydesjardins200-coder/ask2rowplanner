@@ -80,7 +80,7 @@ var I18N={
 };
 if(!I18N[LANG])LANG='en';
 function t(k,fb){var v=I18N[LANG]&&I18N[LANG][k];if(v!=null)return v;if(fb!=null)return fb;var e=I18N.en&&I18N.en[k];return e!=null?e:k;}
-function roleLabel(r){if(!r)return t('role_none');var m={'Backup garrison':'role_backup','FILL':'role_fill','Phase 1 - FIRST TAKE':'role_firsttake','CAVS':'role_cavs','Main garrison':'role_main'};return m[r]?t(m[r]):r;}
+function roleLabel(r){if(!r)return t('role_none');var m={'Backup garrison':'role_backup','FILL':'role_fill','Phase 1 - FIRST TAKE':'role_firsttake','CAVS':'role_cavs','Main garrison':'role_main','Lifestone carrier':'role_ls_carrier','Lifestone support':'role_ls_support','Beastmaster':'role_beast'};return m[r]?t(m[r]):r;}
 (function(){var F={
  en:{lead_short:"lead",fl_synced:"Synced \u2713",fl_saved:"Saved \u2713",fl_updated:"Updated (team)",fl_readonly:"Read-only \u2014 admins only",fl_syncfail:"Sync failed (local saved)",fl_savedlocal:"Saved (local)",fl_refreshed:"Refreshed \u2713",fl_refreshfail:"Refresh failed",fl_noconn:"No connection",fl_nothing:"Nothing to load yet",fl_uploading:"Uploading\u2026",fl_uploadfail:"Upload failed"},
  fr:{lead_short:"chef",fl_synced:"Synchronis\u00e9 \u2713",fl_saved:"Enregistr\u00e9 \u2713",fl_updated:"Mis \u00e0 jour (\u00e9quipe)",fl_readonly:"Lecture seule \u2014 admins seulement",fl_syncfail:"\u00c9chec de synchro (enregistr\u00e9 localement)",fl_savedlocal:"Enregistr\u00e9 (local)",fl_refreshed:"Actualis\u00e9 \u2713",fl_refreshfail:"\u00c9chec de l\u2019actualisation",fl_noconn:"Pas de connexion",fl_nothing:"Rien \u00e0 charger",fl_uploading:"T\u00e9l\u00e9versement\u2026",fl_uploadfail:"\u00c9chec du t\u00e9l\u00e9versement"},
@@ -220,4 +220,44 @@ function tp(s){var d=PHASE_TX[LANG];return (d&&d[s])||s;}
  fr:{unsaved_note:"Modifications non enregistrées — touchez Enregistrer pour partager avec l'équipe."},
  zh:{unsaved_note:"有未保存的更改 — 点击保存以与团队共享。"},
  vi:{unsaved_note:"Có thay đổi chưa lưu — nhấn Lưu để chia sẻ với nhóm."}
+};for(var l in F){if(I18N[l])for(var k in F[l])I18N[l][k]=F[l][k];}})();
+(function(){var F={
+ en:{opt_none:"— none —",opt_select:"— select —",no:"no",
+  role_ls_carrier:"Lifestone carrier",role_ls_support:"Lifestone support",role_beast:"Beastmaster",
+  lead_ghost:"Ghost Cavalry leader (SUN)",lead_life:"Lifestone leader",
+  func_gar_lead:"GARRISON LEAD",func_gar_fill:"GARRISON FILL",func_ghost:"GHOST CAV",func_towers:"TOWERS",
+  md_legendary:"Legendary skins",md_proof:"Proof",md_accounts:"accounts",
+  md_no_signin:"Sign-in isn't configured, so there are no accounts to manage.",
+  lk_prompt:"Leadership WRITE key (leave blank to clear). Only leaders with this key can change the shared plan; without it you still see live updates and can edit your own local copy.",
+  lk_set:"Write key set",lk_cleared:"Write key cleared"},
+ fr:{opt_none:"— aucun —",opt_select:"— sélectionner —",no:"non",
+  role_ls_carrier:"Porteur Lifestone",role_ls_support:"Soutien Lifestone",role_beast:"Beastmaster",
+  lead_ghost:"Chef Ghost Cavalry (SUN)",lead_life:"Chef Lifestone",
+  func_gar_lead:"CHEF DE GARNISON",func_gar_fill:"RENFORT GARNISON",func_ghost:"GHOST CAV",func_towers:"TOURS",
+  md_legendary:"Skins légendaires",md_proof:"Preuve",md_accounts:"comptes",
+  md_no_signin:"La connexion n'est pas configurée, il n'y a donc aucun compte à gérer.",
+  lk_prompt:"Clé d'ÉCRITURE de leadership (laisser vide pour effacer). Seuls les leaders avec cette clé peuvent modifier le plan partagé ; sans elle, vous voyez quand même les mises à jour en direct et pouvez modifier votre copie locale.",
+  lk_set:"Clé d'écriture définie",lk_cleared:"Clé d'écriture effacée"},
+ zh:{opt_none:"— 无 —",opt_select:"— 选择 —",no:"否",
+  role_ls_carrier:"Lifestone 运送者",role_ls_support:"Lifestone 支援",role_beast:"Beastmaster",
+  lead_ghost:"Ghost Cavalry 队长 (SUN)",lead_life:"Lifestone 队长",
+  func_gar_lead:"驻防队长",func_gar_fill:"驻防填补",func_ghost:"GHOST CAV",func_towers:"箭塔",
+  md_legendary:"传奇皮肤",md_proof:"证明",md_accounts:"个账户",
+  md_no_signin:"未配置登录，因此没有可管理的账户。",
+  lk_prompt:"领导写入密钥（留空以清除）。只有拥有此密钥的领导才能更改共享计划；没有它，你仍能看到实时更新并编辑本地副本。",
+  lk_set:"已设置写入密钥",lk_cleared:"已清除写入密钥"},
+ vi:{opt_none:"— không —",opt_select:"— chọn —",no:"không",
+  role_ls_carrier:"Người mang Lifestone",role_ls_support:"Hỗ trợ Lifestone",role_beast:"Beastmaster",
+  lead_ghost:"Chỉ huy Ghost Cavalry (SUN)",lead_life:"Chỉ huy Lifestone",
+  func_gar_lead:"CHỈ HUY ĐỒN",func_gar_fill:"BỔ SUNG ĐỒN",func_ghost:"GHOST CAV",func_towers:"THÁP",
+  md_legendary:"Skin huyền thoại",md_proof:"Bằng chứng",md_accounts:"tài khoản",
+  md_no_signin:"Chưa cấu hình đăng nhập, nên không có tài khoản nào để quản lý.",
+  lk_prompt:"Khóa GHI của lãnh đạo (để trống để xóa). Chỉ lãnh đạo có khóa này mới thay đổi được kế hoạch chung; không có nó bạn vẫn thấy cập nhật trực tiếp và sửa bản sao cục bộ.",
+  lk_set:"Đã đặt khóa ghi",lk_cleared:"Đã xóa khóa ghi"}
+};for(var l in F){if(I18N[l])for(var k in F[l])I18N[l][k]=F[l][k];}})();
+// Function labels (teleport list + player card). Proper nouns (FAEDRAKE, LIFESTONE)
+// and the Ghost Cavalry abbreviation stay in original form.
+function funcLabel(f){if(!f)return f;var m={'GARRISON LEAD':'func_gar_lead','GARRISON FILL':'func_gar_fill','GHOST CAV':'func_ghost','TOWERS':'func_towers'};return m[f]?t(m[f]):f;}
+(function(){var F={
+ en:{this_member:"this member"},fr:{this_member:"ce membre"},zh:{this_member:"此成员"},vi:{this_member:"thành viên này"}
 };for(var l in F){if(I18N[l])for(var k in F[l])I18N[l][k]=F[l][k];}})();

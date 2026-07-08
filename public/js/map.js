@@ -1,5 +1,5 @@
 // map.js — Blue/Yellow interactive maps + assignments
-function leaderOptions(sel){var names=["— none —"];roster.forEach(function(p){if(p.name&&names.indexOf(p.name)<0)names.push(p.name);});EXTRA_LEADERS.forEach(function(x){if(names.indexOf(x)<0)names.push(x);});return names.map(function(n){var v=(n==='— none —')?'':n;return '<option value="'+esc(v)+'"'+(((sel||'')===v)?' selected':'')+'>'+esc(n)+'</option>';}).join('');}
+function leaderOptions(sel){var names=["\u0001NONE"];roster.forEach(function(p){if(p.name&&names.indexOf(p.name)<0)names.push(p.name);});EXTRA_LEADERS.forEach(function(x){if(names.indexOf(x)<0)names.push(x);});return names.map(function(n){var v=(n==='\u0001NONE')?'':n;return '<option value="'+esc(v)+'"'+(((sel||'')===v)?' selected':'')+'>'+esc(n==='\u0001NONE'?t('opt_none'):n)+'</option>';}).join('');}
 function sideFor(b,color){if(color==='blue')return b.side;if(b.side==='strong')return 'off';if(b.side==='off')return 'strong';return b.side;}
 var CLR={strong:'#e06fb5',off:'#5b9bd5',center:'#2fb3a4',support:'#c8952a'};
 // Divide line per map. Blue is the accurate reference. Yellow is the same
@@ -31,8 +31,8 @@ function renderMap(color){
  var wrap=el('wrap-'+color);var zn=ZONES[color];var strong=zn.strong;var off=zn.off;
  var youBase=(color==='blue')?LUC:YAE;var youName=(color==='blue')?'Lucia':'Yaen';
  var dv=DIVIDE[color];var h='<div class="divide" style="left:'+dv.l+'%;top:'+dv.t+'%;width:'+dv.w+'%;transform:rotate('+dv.r+'deg)"></div>';
- h+='<div class="zone" style="color:#f4a6d7;left:'+strong[0]+'%;top:'+strong[1]+'%">STRONG</div>';
- h+='<div class="zone" style="color:#8fc0f0;left:'+off[0]+'%;top:'+off[1]+'%">OFF</div>';
+ h+='<div class="zone" style="color:#f4a6d7;left:'+strong[0]+'%;top:'+strong[1]+'%">'+esc(t('s_strong'))+'</div>';
+ h+='<div class="zone" style="color:#8fc0f0;left:'+off[0]+'%;top:'+off[1]+'%">'+esc(t('s_off'))+'</div>';
  h+='<div class="base" style="left:'+LUC[0]+'%;top:'+LUC[1]+'%;color:#9fe0ff">Lucia</div>';
  h+='<div class="base" style="left:'+YAE[0]+'%;top:'+YAE[1]+'%;color:#ffce7a">Yaen</div>';
  h+='<div class="you" style="left:'+youBase[0]+'%;top:'+(youBase[1]+7)+'%">'+esc(t('you'))+'</div>';
