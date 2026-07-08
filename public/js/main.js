@@ -25,7 +25,7 @@ function renderAll(){renderMap("blue");renderMap("yellow");renderPlayers();rende
 function applyRole(){renderAll();enforceRole();}
 window.forceRefresh=function(){
   if(typeof SB==='undefined'||!SB){if(typeof flash==='function')flash(t('fl_noconn'));return;}
-  if(rosterDirty&&!(typeof confirm==='function'&&confirm('You have unsaved local changes that will be discarded. Pull the latest team plan?')))return;
+  if(rosterDirty&&!(typeof confirm==='function'&&confirm(t('cf_unsaved'))))return;
   SB.from('plan').select('data').eq('id',SBKEY).single().then(function(r){
     var d=(r&&r.data&&r.data.data)?r.data.data:null;
     if(d){assign=d.a||{};garr=d.h||{};if(d.r&&d.r.length)roster=d.r;if(d.g&&d.g.length)groups=d.g;rosterDirty=false;renderAll();enforceRole();if(typeof flash==='function')flash(t('fl_refreshed'));}

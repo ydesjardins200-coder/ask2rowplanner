@@ -40,8 +40,8 @@ function sideLbl(s){return s==='strong'?'Strong':s==='off'?'Off':s==='lifestone'
 // ---- readiness + buffs ----
 var rosterDirty=false;
 var openCards={};
-function rdirtyNote(){var n=el('rdirty');if(n)n.textContent=rosterDirty?'Unsaved changes \u2014 tap Save to share with the team.':'';}
-function markDirty(){rosterDirty=true;var b=document.querySelectorAll('#playerlist .save');for(var i=0;i<b.length;i++){b[i].className='save dirty';b[i].textContent='Save*';}rdirtyNote();}
+function rdirtyNote(){var n=el('rdirty');if(n)n.textContent=rosterDirty?t('unsaved_note'):'';}
+function markDirty(){rosterDirty=true;var b=document.querySelectorAll('#playerlist .save');for(var i=0;i<b.length;i++){b[i].className='save dirty';b[i].textContent=t('save')+'*';}rdirtyNote();}
 function clearDirty(){rosterDirty=false;var b=document.querySelectorAll('#playerlist .save');for(var i=0;i<b.length;i++){b[i].className='save';b[i].textContent=t('save');}rdirtyNote();}
 function commitRoster(){saveRoster();clearDirty();renderMap('blue');renderMap('yellow');renderRallies();renderStaff();renderSides();renderMapInfo();renderLife();renderReady();}
 function readyBadge(p){var n=buffCount(p),t=fieldsFor(p).length;var cls=n>=t?'rdy full':(n>0?'rdy part':'rdy none');return '<span class="'+cls+'">'+n+'/'+t+'</span>';}
@@ -124,13 +124,13 @@ function renderPlayers(){
 function updateBadge(i){var card=document.querySelector('.pcard[data-i="'+i+'"]');if(!card)return;var old=card.querySelector('.rdy');if(!old)return;var t=document.createElement('div');t.innerHTML=readyBadge(roster[i]);old.parentNode.replaceChild(t.firstChild,old);}
 function uploadBuff(i,k,file){
   if(!file)return;var p=roster[i];
-  if(!SB){alert('Screenshot proof needs the site connected to Supabase with a "buffs" storage bucket. Checkmarks work without it.');return;}
+  if(!SB){alert(t('al_no_supabase'));return;}
   flash(t('fl_uploading'));
   var safe=(p.name||'p').replace(/[^a-zA-Z0-9]/g,'_').slice(0,24);
   var path=safe+'/'+k.replace(/[^a-zA-Z0-9]/g,'_')+'_'+Date.now()+'.jpg';
   try{
     SB.storage.from('buffs').upload(path,file,{upsert:true,contentType:(file.type||'image/jpeg')}).then(function(res){
-      if(res&&res.error){flash(t('fl_uploadfail'));alert('Upload failed \u2014 make sure the "buffs" storage bucket exists (see setup).');return;}
+      if(res&&res.error){flash(t('fl_uploadfail'));alert(t('al_upload_fail'));return;}
       var pub=SB.storage.from('buffs').getPublicUrl(path);
       var url=(pub&&pub.data&&pub.data.publicUrl)?pub.data.publicUrl:'';
       var b=pbuffs(roster[i]);b[k]=b[k]||{};b[k].img=url;saveRoster();renderPlayers();
@@ -167,7 +167,7 @@ function addToRally(code,name){
   // Duplicates allowed: a player can commit more than one of their 5 legions to
   // the same group. Only the 5-slot ceiling stops them.
   var idx=p.legions.indexOf('');
-  if(idx<0){alert(name+' already has all 5 legions assigned. Free one on their player card first.');renderRallies();return;}
+  if(idx<0){alert(t('al_five_legions').replace('{n}',name));renderRallies();return;}
   p.legions[idx]=code;rallyPersist();
 }
 function removeFromRally(code,name){
@@ -253,7 +253,7 @@ function renderReady(){
   var full=0;roster.forEach(function(p){if(buffCount(p)>=FIELDS.length)full++;});
   var h='<div class="sub"><b>'+full+'/'+roster.length+'</b> '+esc(t('ready_note'))+'.</div><table class="t stat"><tr><th>'+esc(t('col_player_short'))+'</th><th>'+esc(t('col_side'))+'</th><th>'+esc(t('col_fields'))+'</th><th>'+esc(t('col_missing'))+'</th></tr>';
   rows.forEach(function(r){
-    var p=r.p,miss=[];FIELDS.forEach(function(f){var e=pbuffs(p)[f.key];if(!(e&&isFilled(f,e.v)))miss.push(f.label);});
+    var p=r.p,miss=[];FIELDS.forEach(function(f){var e=pbuffs(p)[f.key];if(!(e&&isFilled(f,e.v)))miss.push(t('f_'+f.key,f.label));});
     var cls=r.n>=FIELDS.length?'ok':(r.n>0?'over':'bad');
     h+='<tr><td>'+esc(p.name)+(p.sub?' <span style="color:#8aa0b6">(sub)</span>':'')+'</td><td>'+sideLbl(p.side)+'</td><td class="'+cls+'">'+r.n+'/'+FIELDS.length+'</td><td style="font-size:10px;color:#d3a9b8">'+(miss.length?esc(miss.join(', ')):'\u2014')+'</td></tr>';
   });
@@ -383,7 +383,7 @@ function openImg(url){
 }
 // ---- Admin: Members panel (approve + assign team/player + role) ----
 function mergeDuplicates(rows){
-  if(!SB){alert('Sign-in not configured.');return;}
+  if(!SB){alert(t('al_signin'));return;}
   var groups={};
   rows.forEach(function(m){
     if(!m.approved)return;
@@ -394,9 +394,9 @@ function mergeDuplicates(rows){
     if(!key)return;(groups[key]=groups[key]||[]).push(m);
   });
   var dups=Object.keys(groups).map(function(k){return groups[k];}).filter(function(g){return g.length>1;});
-  if(!dups.length){alert('No duplicate accounts found (matched by UUID, then in-game name).');return;}
+  if(!dups.length){alert(t('al_no_dupes'));return;}
   var summary=dups.map(function(g){return ((g[0].submission&&g[0].submission.name)||g[0].player||'?')+' \u00d7'+g.length;}).join(', ');
-  if(!confirm('Merge duplicates: '+summary+'\n\nThe most complete data is kept on one player and the extra account(s) are removed. This cannot be undone.'))return;
+  if(!confirm(t('cf_merge').replace('{s}',summary)))return;
   var toDelete=[],changed=false;
   dups.forEach(function(g){
     var primary=g[0],pname=(primary.submission&&primary.submission.name)||primary.player;
@@ -419,7 +419,7 @@ function mergeDuplicates(rows){
 // player from the roster, every rally/legion, all leader slots and map assignments.
 function removeMemberCompletely(id,name){
   var label=name||'this member';
-  if(typeof confirm==='function'&&!confirm('Remove '+label+' completely?\n\nThis deletes their account record and erases them from the roster, all rallies, every role, and any leader/tower slot they hold. This cannot be undone.'))return;
+  if(typeof confirm==='function'&&!confirm(t('cf_remove').replace('{n}',label)))return;
   if(name){
     var me=(''+name).trim().toLowerCase();
     // roster
@@ -483,7 +483,7 @@ function renderMembers(){
        +'<td style="font-size:11px">'+esc(troop(s))+'</td>'
        +'<td style="text-align:center"><input type="checkbox" class="mapp" data-id="'+m.id+'" data-r="'+ri+'"'+(m.approved?' checked':'')+'></td>'
        +'<td><select class="mrole" data-id="'+m.id+'"><option value="member"'+(m.role!=='admin'?' selected':'')+'>'+esc(t('r_member'))+'</option><option value="admin"'+(m.role==='admin'?' selected':'')+'>'+esc(t('r_admin'))+'</option></select></td>'
-       +'<td>'+(!m.approved?'<span style="color:#9fb3c6;font-size:11px">'+esc(t('approve_to_add'))+'</span>':(m.submission?'<span class="mplayer-locked" title="Auto-assigned from their signup">'+esc(m.player||'\u2014')+'</span>':('<select class="mplayer" data-id="'+m.id+'"><option value="">\u2014 unassigned \u2014</option>'+opts.map(function(n){return '<option'+(m.player===n?' selected':'')+'>'+esc(n)+'</option>';}).join('')+'</select>')))+'</td>'
+       +'<td>'+(!m.approved?'<span style="color:#9fb3c6;font-size:11px">'+esc(t('approve_to_add'))+'</span>':(m.submission?'<span class="mplayer-locked" title="'+esc(t('auto_assigned'))+'">'+esc(m.player||'\u2014')+'</span>':('<select class="mplayer" data-id="'+m.id+'"><option value="">'+esc(t('opt_unassigned'))+'</option>'+opts.map(function(n){return '<option'+(m.player===n?' selected':'')+'>'+esc(n)+'</option>';}).join('')+'</select>')))+'</td>'
        +'<td style="text-align:center"><button class="mdelall" data-id="'+m.id+'" data-n="'+esc(m.player||nm(m)||'')+'" title="'+esc(t('remove_member'))+'">\uD83D\uDDD1</button></td>'
        +'</tr>';
       h+='<tr class="mdet" id="mdet_'+ri+'" style="display:none"><td></td><td colspan="9">'+detail(s)+'</td></tr>';
@@ -520,13 +520,13 @@ function renderPhases(){
   var c=el('phasetbl');if(!c)return;
   var h='';
   PHASES.forEach(function(ph,pi){
-    h+='<div class="phhdr '+ph.cls+'">'+esc(ph.title)+'</div>';
+    h+='<div class="phhdr '+ph.cls+'">'+esc(tp(ph.title))+'</div>';
     h+='<table class="t"><tr><th>'+esc(t('col_group'))+'</th><th>'+esc(t('col_leader'))+'</th><th>'+esc(t('col_side'))+'</th><th>'+esc(t('col_objective'))+'</th></tr>';
     ph.rows.forEach(function(row,ri){
-      h+='<tr><td><b>'+esc(row.group)+'</b></td>'
+      h+='<tr><td><b>'+esc(tp(row.group))+'</b></td>'
        +'<td><select class="plead" data-p="'+pi+'" data-r="'+ri+'">'+nameOptions(phaseLead(pi,ri,row))+'</select></td>'
        +'<td style="color:'+row.sc+';font-weight:bold">'+esc(row.side)+'</td>'
-       +'<td>'+esc(row.obj)+'</td></tr>';
+       +'<td>'+esc(tp(row.obj))+'</td></tr>';
     });
     h+='</table>';
   });
